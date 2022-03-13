@@ -5,10 +5,13 @@ using UnityEngine;
 public class SpawnPiece : MonoBehaviour
 {
     private List<Vector3> piecePos = new List<Vector3>();
+    private List<Quaternion> pieceRot = new List<Quaternion>();
     private List<Vector3> randPos = new List<Vector3>();
+    private List<Quaternion> randRot = new List<Quaternion>();
     public GameObject currentPiece;
     private GameObject newPiece;
     private Vector3 newRandPos;
+    private Quaternion newRandRot;
 
     void Start()
     {  
@@ -17,13 +20,14 @@ public class SpawnPiece : MonoBehaviour
             if(child.gameObject.tag == "PiecePos")
             {
                 piecePos.Add(child.transform.position);
+                pieceRot.Add(child.transform.rotation);    
                 Destroy(child.gameObject);
             }
         }
 
         for (int i = 0; i < piecePos.Count; i++)
         {
-            newPiece = Instantiate(currentPiece, piecePos[i], Quaternion.identity);
+            newPiece = Instantiate(currentPiece, piecePos[i], pieceRot[i]);
             newPiece.transform.SetParent(transform);
         }
     }
@@ -31,25 +35,24 @@ public class SpawnPiece : MonoBehaviour
 
     public void Shuffle()
     {
-        foreach (Transform child in transform)
-        {
-            newRandPos = piecePos[Random.Range(0, piecePos.Count)];
+        randPos.AddRange(piecePos);
+        randRot.AddRange(pieceRot);
 
-            if (!randPos.Contains(newRandPos) && child.gameObject.tag == "FoodPiece")
+            foreach (Transform child in transform)
+        {
+            if (child.gameObject.tag == "FoodPiece")
             {
+                newRandRot = randRot[Random.Range(0, randRot.Count)];
+                newRandPos = randPos[Random.Range(0, randPos.Count)];
                 child.transform.position = newRandPos;
-                randPos.Add(newRandPos);
-                Debug.Log(randPos);
-            }
-            else if (randPos.Count >= (transform.childCount - 2))
-            {
-                Debug.Log("rand cleared");
-                randPos.Clear();
-                break;
-            }
-            else
-            {
-               newRandPos = piecePos[Random.Range(0, piecePos.Count)]; 
+                child.transform.rotation = newRandRot;
+                randPos.Remove(newRandPos);
+                randRot.Remove(newRandRot);
+
+                foreach (Transform grandchild in child) 
+                {
+                    Destroy(grandchild.gameObject);
+                }
             }
         }
     }

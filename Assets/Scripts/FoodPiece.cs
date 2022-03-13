@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class FoodPiece : MonoBehaviour
 {
+    [HideInInspector]
     public string type;
+    
+    [HideInInspector]
     public bool isSelectable, isRecommended;
+
+    [HideInInspector]
     public GameObject recSign;
+    
     private GameObject newRec;
     private int typeSelect;
 
@@ -52,7 +58,12 @@ public class FoodPiece : MonoBehaviour
                 type = "Skip";
             }
 
-            else if (43 <= typeSelect)
+            else if (43 <= typeSelect && typeSelect <= 52)
+            {
+                type = "Encourage";
+            }
+
+            else if (53 <= typeSelect)
             {
                 type = "Normal";
             }        
