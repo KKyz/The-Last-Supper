@@ -1,9 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+<<<<<<< Updated upstream
 //using Mirror;
 
 public class PlayerFunctions : MonoBehaviour
+=======
+using Mirror;
+
+public class PlayerFunctions : NetworkBehaviour
+>>>>>>> Stashed changes
 {
     [HideInInspector]
     public SpawnPiece plate;
@@ -224,7 +230,11 @@ public class PlayerFunctions : MonoBehaviour
 
     void Update()
     {
+<<<<<<< Updated upstream
         if (player.actionable && player != null)
+=======
+        if (player != null && player.actionable)
+>>>>>>> Stashed changes
         {
 
             if (Input.GetKeyDown("1")){CmdPoison();}
