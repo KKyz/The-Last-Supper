@@ -475,8 +475,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdCancelAction
-        m_Mode: 1
+        m_MethodName: RpcResetActions
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1650,6 +1650,7 @@ GameObject:
   - component: {fileID: 4155133632722578598}
   - component: {fileID: 4131714695531162901}
   - component: {fileID: 269979441813457103}
+  - component: {fileID: 8698564207709150152}
   m_Layer: 5
   m_Name: PlayerCanvas
   m_TagString: Untagged
@@ -1775,6 +1776,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 081be327bc3468a4dbdbf81d8b81394f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   plate: {fileID: 0}
   playerScrolls: {fileID: 0}
   player: {fileID: 0}
@@ -1784,6 +1787,23 @@ MonoBehaviour:
   drinkPlate: {fileID: 5927585440408363999, guid: 2b5a29bc8827f1d469ec6750360b033b, type: 3}
   recommendFlag: {fileID: 8617076803369267631, guid: 1f65f40ba6cee8642b6e059e356a7408, type: 3}
   typeFlag: {fileID: 171628518531057079, guid: 264eab23bb4504b4f86eb7786790b0ce, type: 3}
+--- !u!114 &8698564207709150152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4155133632722578584}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  serverOnly: 0
+  visible: 0
+  m_AssetId: 907caa8609722354d848aff8fda84d6e
+  hasSpawned: 0
 --- !u!1 &4155133633447916630
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,15 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-<<<<<<< Updated upstream
-//using Mirror;
-
-public class PlayerFunctions : MonoBehaviour
-=======
 using Mirror;
 
 public class PlayerFunctions : NetworkBehaviour
->>>>>>> Stashed changes
 {
     [HideInInspector]
     public SpawnPiece plate;
@@ -197,8 +191,8 @@ public class PlayerFunctions : NetworkBehaviour
         player.orderVictim = false;
         CmdCancelAction();
 
-        if (openDrinkMenu != null){Destroy(openDrinkMenu);}
-        if (newDrinkPlate != null){Destroy(newDrinkPlate);}
+        if (openDrinkMenu != null){Destroy(openDrinkMenu); NetworkServer.Destroy(openDrinkMenu);}
+        if (newDrinkPlate != null){Destroy(newDrinkPlate); NetworkServer.Destroy(newDrinkPlate);}
 
         foreach (GameObject targetPiece in smellTargets)
         {
@@ -207,6 +201,7 @@ public class PlayerFunctions : NetworkBehaviour
                 if (flag.tag == "TypeFlag")
                 {
                     Destroy(flag.gameObject);
+                    NetworkServer.Destroy(flag.gameObject);
                 }
             }
         }
@@ -230,11 +225,7 @@ public class PlayerFunctions : NetworkBehaviour
 
     void Update()
     {
-<<<<<<< Updated upstream
-        if (player.actionable && player != null)
-=======
         if (player != null && player.actionable)
->>>>>>> Stashed changes
         {
 
             if (Input.GetKeyDown("1")){CmdPoison();}
@@ -297,6 +288,7 @@ public class PlayerFunctions : NetworkBehaviour
                             if (foodType == "Health"){CmdHealth();}
 
                             Destroy(piece.transform.gameObject);
+                            NetworkServer.Destroy(piece.transform.gameObject);
                             isEating = false;
                             CmdCancelAction();
                             gameManager.NextPlayer();   
@@ -310,6 +302,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 if (piece.transform.childCount == 0)
                                 {
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
+                                    NetworkServer.Spawn(currentRecommend);
                                     currentRecommend.transform.LookAt(playerCam.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
@@ -324,6 +317,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 if (piece.transform.gameObject == player.recommendedPiece)
                                 {
                                     Destroy(currentRecommend);
+                                    NetworkServer.Destroy(currentRecommend);
                                     player.recommendedPiece = null;
                                 }
 
@@ -331,7 +325,10 @@ public class PlayerFunctions : NetworkBehaviour
                                 else
                                 {
                                     Destroy(currentRecommend);
+                                    NetworkServer.Destroy(currentRecommend);
+                                    NetworkServer.Destroy(piece.transform.gameObject);
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
+                                    NetworkServer.Spawn(currentRecommend);
                                     currentRecommend.transform.LookAt(playerCam.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
@@ -365,6 +362,7 @@ public class PlayerFunctions : NetworkBehaviour
                                     if (child.gameObject.tag == "TypeFlag" && child.gameObject.name != "PlantedFlag")
                                     {
                                         Destroy(child.gameObject);
+                                        NetworkServer.Destroy(child.gameObject);
                                     }
                                 }
 

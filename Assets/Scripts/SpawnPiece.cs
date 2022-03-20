@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class SpawnPiece : MonoBehaviour
+public class SpawnPiece : NetworkBehaviour
 {
     private List<Vector3> piecePos = new List<Vector3>();
     private List<Quaternion> pieceRot = new List<Quaternion>();
@@ -12,8 +13,8 @@ public class SpawnPiece : MonoBehaviour
     private GameObject newPiece;
     private Vector3 newRandPos;
     private Quaternion newRandRot;
-
-    void Start()
+    
+    public void Start()
     {  
         foreach (Transform child in transform)
         {
@@ -29,10 +30,10 @@ public class SpawnPiece : MonoBehaviour
         {
             newPiece = Instantiate(currentPiece, piecePos[i], pieceRot[i]);
             newPiece.transform.SetParent(transform);
+            NetworkServer.Spawn(newPiece);
         }
     }
-
-
+    
     public void Shuffle()
     {
         randPos.AddRange(piecePos);
@@ -52,6 +53,7 @@ public class SpawnPiece : MonoBehaviour
                 foreach (Transform grandchild in child) 
                 {
                     Destroy(grandchild.gameObject);
+                    NetworkServer.Destroy(grandchild.gameObject);
                 }
             }
         }
