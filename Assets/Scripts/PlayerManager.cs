@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Mirror;
 
-public class PlayerManager : NetworkBehaviour
+public class PlayerManager : MonoBehaviour
 {
     public int health;
 
@@ -16,7 +15,7 @@ public class PlayerManager : NetworkBehaviour
     [HideInInspector]
     public GameObject recommendedPiece;
 
-    public void OnClientStart()
+    public void Start()
     {
         health = 2;
         actionable = false;

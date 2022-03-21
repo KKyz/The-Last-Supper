@@ -29,10 +29,14 @@ public class GameManager : NetworkManager
         base.OnServerAddPlayer(conn);
         
         //Adds new player to players list when joined
-        GameObject newPlayer = GameObject.FindGameObjectWithTag("Player");
-        if (!players.Contains(newPlayer))
+        GameObject[] newPlayers = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject newPlayer in newPlayers)
         {
-            players.Add(newPlayer);
+            if (!players.Contains(newPlayer))
+            {
+                players.Add(newPlayer);
+                Debug.Log("new player joined");
+            }
         }
     }
 
