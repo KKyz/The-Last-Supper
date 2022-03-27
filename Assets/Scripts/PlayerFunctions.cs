@@ -21,7 +21,7 @@ public class PlayerFunctions : NetworkBehaviour
     [HideInInspector]
     public GameManager gameManager;
 
-    public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, reciept;
+    public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt;
 
     private EnableDisableScrollButtons buttonToggle;
     private bool isEating, isRecommending, isSmelling;
@@ -45,7 +45,7 @@ public class PlayerFunctions : NetworkBehaviour
         isSmelling = false;
         smellConfirm.SetActive(false);
         smellTargets.Clear();
-        buttonToggle.ToggleButtons(6);
+        buttonToggle.ToggleButtons(4);
         StartCoroutine(PostStartCall());
     }
 
@@ -185,8 +185,9 @@ public class PlayerFunctions : NetworkBehaviour
     {
         RpcResetActions();
         buttonToggle.ToggleButtons(6);
-        newReceipt = Instantiate(reciept, transform.position, Quaternion.identity);
-        newReceipt.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "You Died!";
+        newReceipt = Instantiate(receipt, transform.position, Quaternion.identity);
+        newReceipt.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "You Lose";
+        newReceipt.GetComponent<ShowStats>().LoadStats(player);
         newReceipt.transform.SetParent(transform);
     }
 
@@ -194,8 +195,9 @@ public class PlayerFunctions : NetworkBehaviour
     {
         RpcResetActions();
         buttonToggle.ToggleButtons(5);
-        newReceipt = Instantiate(reciept, transform.position, Quaternion.identity);
-        newReceipt.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = "You Win!";
+        newReceipt = Instantiate(receipt, transform.position, Quaternion.identity);
+        newReceipt.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "You Win";
+        newReceipt.GetComponent<ShowStats>().LoadStats(player);
         newReceipt.transform.SetParent(transform);
     }
 
@@ -304,7 +306,11 @@ public class PlayerFunctions : NetworkBehaviour
                             string foodType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
                             Debug.Log(foodType);
                             
-                            if (foodType == "Normal"){gameManager.nPieces -= 1;}
+                            if (foodType == "Normal")
+                            {
+                                gameManager.nPieces -= 1;
+                                player.piecesEaten += 1;
+                            }
                             
                             if (foodType == "Slap"){playerScrolls.AddScrollAmount(1, 0);}
 
@@ -324,6 +330,12 @@ public class PlayerFunctions : NetworkBehaviour
                             
                             if (gameManager.nPieces <= 0)
                             {gameManager.NextCourse();}
+
+                            if (player.piecesEaten >= 10)
+                            {
+                                CmdHealth();
+                                player.piecesEaten = 0;
+                            }
 
                             Destroy(piece.transform.gameObject);
                             NetworkServer.Destroy(piece.transform.gameObject);

@@ -31,14 +31,15 @@ public class EnableDisableScrollButtons : MonoBehaviour
         if (isActive == 1)
         {
 
-            foreach (Transform button in scrollButtons)
+            foreach (GameObject button in scrollButtons)
             {
-                button.gameObject.SetActive(true);
+                StartCoroutine(SpawnButtons(button));
             }
 
-            foreach (Transform button in actionButtons)
+            foreach (GameObject button in actionButtons)
             {
-                button.gameObject.SetActive(false);
+                if (button.activeInHierarchy)
+                {StartCoroutine(DespawnButtons(button));}
             }
 
             cancelButton.SetActive(false);
@@ -48,16 +49,18 @@ public class EnableDisableScrollButtons : MonoBehaviour
         else if (isActive == 2)
         {
 
-            foreach (Transform button in scrollButtons)
+            foreach (GameObject button in scrollButtons)
             {
-                button.gameObject.SetActive(false);
+                if (button.activeInHierarchy)
+                {StartCoroutine(DespawnButtons(button));}
             }
 
-            foreach (Transform button in actionButtons)
+            foreach (GameObject button in actionButtons)
             {
                 if (button.name == "SlapButton" || button.name == "RecommendButton")
                 {continue;}
-                button.gameObject.SetActive(true);
+
+                StartCoroutine(SpawnButtons(button));
             }
 
             cancelButton.SetActive(false);
@@ -67,69 +70,42 @@ public class EnableDisableScrollButtons : MonoBehaviour
         else if (isActive == 3)
         {
             
-            foreach (Transform button in scrollButtons)
+            foreach (GameObject button in scrollButtons)
             {
-                button.gameObject.SetActive(false);
+                if (button.activeInHierarchy)
+                {StartCoroutine(DespawnButtons(button));}
             }
 
-            foreach (Transform button in actionButtons)
+            foreach (GameObject button in actionButtons)
             {
-                button.gameObject.SetActive(false);
+                if (button.activeInHierarchy)
+                {StartCoroutine(DespawnButtons(button));}
             }
 
-            cancelButton.SetActive(true);
+            StartCoroutine(SpawnButtons(cancelButton));
         }
 
-        //Disables everything (except for Slap)
+        // (isActive == 4) Disables everything (except for Slap)
+        // (isActive == 5) Disables every button except skip (used for DrinkMenu)
+        // (isActive == 6) Disables everything (no exceptions)
 
-        else if (isActive == 4)
+        else if (isActive == 4 || isActive == 5 || isActive == 6)
         {
-            foreach (Transform button in scrollButtons)
+            foreach (GameObject button in scrollButtons)
             {
-                button.gameObject.SetActive(false);
+                if (button.activeInHierarchy)
+                {StartCoroutine(DespawnButtons(button));}
             }
 
-            foreach (Transform button in actionButtons)
+            foreach (GameObject button in actionButtons)
             {
-                button.gameObject.SetActive(false);
+                if (button.activeInHierarchy)
+                {StartCoroutine(DespawnButtons(button));}
             }  
 
-            cancelButton.SetActive(false);
+            StartCoroutine(DespawnButtons(cancelButton));
         }
-
-        //Disables every button except skip (used for DrinkMenu)
-
-        else if (isActive == 5)
-        {
-            foreach (Transform button in scrollButtons)
-            {
-                button.gameObject.SetActive(false);
-            }
-
-            foreach (Transform button in actionButtons)
-            {
-                button.gameObject.SetActive(false);
-            }  
-
-            cancelButton.SetActive(false);
-        }
-
-        //Disables everything (no exceptions)
-
-        else if (isActive == 6)
-        {
-            foreach (Transform button in scrollButtons)
-            {
-                button.gameObject.SetActive(false);
-            }
-
-            foreach (Transform button in actionButtons)
-            {
-                button.gameObject.SetActive(false);
-            }  
-
-            cancelButton.SetActive(false);
-        }
+        
     }
 
     void Update()
@@ -144,20 +120,39 @@ public class EnableDisableScrollButtons : MonoBehaviour
         }
 
         if (menuMode == 2 && playerManager != null && !playerManager.hasRecommended)
-        {recommendButton.SetActive(true);}
+        {StartCoroutine(SpawnButtons(recommendButton));}
         else
         {recommendButton.SetActive(false);}
 
         if (menuMode == 4 && playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
-        {slapButton.SetActive(true);}
+        {StartCoroutine(SpawnButtons(slapButton));}
         else
         {slapButton.SetActive(false);}
 
         if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0)
-        if (menuMode == 1 || menuMode == 5)
-            {skipButton.SetActive(true);}
+        {
+            if (menuMode == 1 || menuMode == 5)
+            {StartCoroutine(SpawnButtons(skipButton));}
             else
             {skipButton.SetActive(false);}
+        }
 
+    }
+
+    IEnumerator SpawnButtons(GameObject button)
+    {
+        yield return new WaitForSeconds(1f);
+        button.SetActive(true);
+        float targetPos = button.transform.position.y;
+        //button.transform.position = transform.position + new Vector3(0, -5f, 0);
+        //LeanTween.moveY(button, targetPos, 3f);
+    }
+
+    IEnumerator DespawnButtons(GameObject button)
+    {
+        yield return new WaitForSeconds(1f);
+        float targetPos = transform.position.y - 5f;
+        //LeanTween.moveY(button, targetPos, 3f);
+        button.SetActive(false);
     }
 }

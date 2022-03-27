@@ -62,7 +62,7 @@ public class OrderDrink : MonoBehaviour
         ChangeAmount();
     }
 
-    public void UpdateWine()
+    private void UpdateWine()
     {
         if (victim != null)
         {
@@ -70,7 +70,7 @@ public class OrderDrink : MonoBehaviour
             {
                 foreach (Transform wine in wines)
                 {
-                    if (poison == true)
+                    if (poison)
                     {
                         wine.gameObject.GetComponent<Image>().sprite = psnWine;
                     }

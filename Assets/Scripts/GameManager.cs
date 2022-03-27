@@ -46,8 +46,11 @@ public class GameManager : NetworkManager
         {gameCanEnd = true;}
     }
 
-    public override void OnClientDisconnect()
+    public override void OnServerDisconnect(NetworkConnection conn)
     {
+        base.OnServerDisconnect(conn);
+        
+        activePlayers -= 1;
         foreach (GameObject player in players)
         {
             if (player == null)
@@ -108,9 +111,8 @@ public class GameManager : NetworkManager
     public void NextPlayer()
     {
         //If encouraged, then don't switch
-        // Doesn't work(?)
         if (playerScript.isEncouraged)
-        {playerScript.isEncouraged = false; Debug.Log("Encourage cleared");}
+        {playerScript.isEncouraged = false;}
 
         else
         {
@@ -125,6 +127,7 @@ public class GameManager : NetworkManager
 
             //Sets next player as CurrentPlayer
             currentPlayer = players[turn];
+            playerScript = currentPlayer.GetComponent<PlayerManager>();
             playerUI.RpcSync(currentPlayer);
             playerUI.RpcActionToggle(true);
             Debug.Log(currentPlayer.name);
@@ -144,10 +147,13 @@ public class GameManager : NetworkManager
     public void NextCourse()
     {
         course += 1;
-        
+
         foreach (GameObject player in players)
         {
-            player.GetComponent<PlayerManager>().courseCount = course;
+            if (player != null)
+            {
+                player.GetComponent<PlayerManager>().courseCount = course + 1;
+            }
         }
 
         if (currentPlate != null)

@@ -5,12 +5,13 @@ using Mirror;
 
 public class PlayerManager : NetworkBehaviour
 {
-    public int health, scrollCount, courseCount, pieceCount, timer;
-
-    //[HideInInspector]
-    public bool isEncouraged, actionable, hasRecommended, orderVictim;
+    [HideInInspector]
+    public int health, scrollCount, courseCount, pieceCount, timer, piecesEaten;
 
     [HideInInspector]
+    public bool isEncouraged, actionable, hasRecommended, orderVictim;
+
+    //HideInInspector]
     public bool[] psnArray = new bool[4];
 
     [HideInInspector]
@@ -22,8 +23,9 @@ public class PlayerManager : NetworkBehaviour
     {
         health = 2;
         scrollCount = 0;
-        courseCount = 0;
+        courseCount = 1;
         pieceCount = 0;
+        piecesEaten = 0;
         timer = 0;
         actionable = false;
         isEncouraged = false;
