@@ -13,11 +13,11 @@ public class TakeDrink : MonoBehaviour
 
     public void Drink(int i)
     {
-        if (playerF.player.psnArray[i] == true)
+        if (playerF.player.psnArray[i])
         {
             playerF.CmdPoison();
         }
-        playerF.RpcResetActions(false);
+        playerF.RpcResetActions();
         Destroy(gameObject);
     }
 }

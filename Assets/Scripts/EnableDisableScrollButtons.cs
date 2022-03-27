@@ -13,7 +13,8 @@ public class EnableDisableScrollButtons : MonoBehaviour
     public GameObject slapButton, cancelButton, recommendButton, skipButton;
     public Transform actionButtons;
     public Transform scrollButtons;
-
+    
+    [SerializeField]
     private int menuMode;
 
     void Start()

@@ -18,22 +18,28 @@ public class SpawnPiece : NetworkBehaviour
     {  
         foreach (Transform child in transform)
         {
-            if(child.gameObject.tag == "PiecePos")
+            if(child.CompareTag("PiecePos"))
             {
                 piecePos.Add(child.transform.position);
                 pieceRot.Add(child.transform.rotation);    
                 Destroy(child.gameObject);
             }
         }
-
+        
+        RpcInitPlate();    
+    }
+    
+    private void RpcInitPlate()
+    {
+        Debug.Log("PlateCreated");
         for (int i = 0; i < piecePos.Count; i++)
         {
             newPiece = Instantiate(currentPiece, piecePos[i], pieceRot[i]);
-            newPiece.transform.SetParent(transform);
             NetworkServer.Spawn(newPiece);
+            newPiece.transform.SetParent(transform);
         }
     }
-    
+
     public void Shuffle()
     {
         randPos.AddRange(piecePos);
@@ -41,7 +47,7 @@ public class SpawnPiece : NetworkBehaviour
 
             foreach (Transform child in transform)
         {
-            if (child.gameObject.tag == "FoodPiece")
+            if (child.CompareTag("FoodPiece"))
             {
                 newRandRot = randRot[Random.Range(0, randRot.Count)];
                 newRandPos = randPos[Random.Range(0, randPos.Count)];

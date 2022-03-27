@@ -1,10 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : NetworkBehaviour
 {
-    public int health;
+    public int health, scrollCount, courseCount, pieceCount, timer;
 
     //[HideInInspector]
     public bool isEncouraged, actionable, hasRecommended, orderVictim;
@@ -14,10 +15,16 @@ public class PlayerManager : MonoBehaviour
 
     [HideInInspector]
     public GameObject recommendedPiece;
+    
+    private GameObject playerCam;
 
     public void Start()
     {
         health = 2;
+        scrollCount = 0;
+        courseCount = 0;
+        pieceCount = 0;
+        timer = 0;
         actionable = false;
         isEncouraged = false;
         hasRecommended = false;
@@ -28,5 +35,8 @@ public class PlayerManager : MonoBehaviour
         {
             psnArray[i] = false;
         }
+
+        playerCam = transform.GetChild(0).gameObject;
+        if(!isLocalPlayer) {playerCam.SetActive(false);}
     }
 }

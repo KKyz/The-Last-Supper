@@ -9,19 +9,20 @@ public class GameManager : NetworkManager
     public PlayerManager playerScript;
     
     public PlayerFunctions playerUI;
-
     
     public List<GameObject> players = new List<GameObject>();
 
     [HideInInspector]
     public GameObject currentPlayer;
 
-    public int nPieces;
+    public int nPieces, activePlayers;
+    public bool gameCanEnd;
 
     public List<GameObject> courses = new List<GameObject>();
     private GameObject seats, currentPlate;
     private List<Vector3> playerPos = new List<Vector3>();
-    
+
+    [SerializeField]
     private int turn, course;
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -35,7 +36,24 @@ public class GameManager : NetworkManager
             if (!players.Contains(newPlayer))
             {
                 players.Add(newPlayer);
+                activePlayers += 1;
                 Debug.Log("new player joined");
+
+            }
+        }
+
+        if (players.Count >= 2)
+        {gameCanEnd = true;}
+    }
+
+    public override void OnClientDisconnect()
+    {
+        foreach (GameObject player in players)
+        {
+            if (player == null)
+            {
+                NetworkServer.Destroy(player.gameObject);
+                players.Remove(player);
             }
         }
     }
@@ -43,6 +61,8 @@ public class GameManager : NetworkManager
     public override void OnStartServer()
     {
         //Initial operations when server begins
+        gameCanEnd = false;
+        activePlayers = 0;
         seats = GameObject.Find("Players");
 
         course = -1;
@@ -74,14 +94,11 @@ public class GameManager : NetworkManager
 
         if (Input.GetKeyDown("v"))
         {NextCourse();}
-
-        //if (nPieces == 0)
-        //{NextCourse();}
     }
 
     public void NextEncourage()
     {
-        //Function called by PlayerFunctions to trigger encourege of next player
+        //Function called by PlayerFunctions to trigger encourage of next player
         if (turn < players.Count - 1)
         {players[turn + 1].GetComponent<PlayerManager>().isEncouraged = true;}
         else
@@ -103,7 +120,7 @@ public class GameManager : NetworkManager
             {turn = 0;}
 
             //Reset all CurrentPlayer operations
-            playerUI.RpcResetActions(true);
+            playerUI.RpcResetActions();
             playerUI.RpcActionToggle(false);
 
             //Sets next player as CurrentPlayer
@@ -114,25 +131,35 @@ public class GameManager : NetworkManager
         }
     }
 
+    IEnumerator CheckNPieces()
+    {
+        yield return 0;
+        foreach (Transform piece in currentPlate.transform)
+        {
+            if (piece.transform.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Normal")
+            {nPieces += 1;}
+        }
+    }
+    
     public void NextCourse()
     {
         course += 1;
+        
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<PlayerManager>().courseCount = course;
+        }
 
+        if (currentPlate != null)
+        {Destroy(currentPlate);}
+        
         if (course < 3)
-        {
-            Destroy(currentPlate);
-            currentPlate = Instantiate(courses[course], transform.position, Quaternion.identity);
-            NetworkServer.Spawn(currentPlate);
-        }
-
-        //If more than 1 player is alive at this stage, then desserts plate keeps refreshing
+        {currentPlate = Instantiate(courses[course], transform.position, Quaternion.identity);}
         else
-        {
-            course = 2;
-            Destroy(currentPlate);
-            currentPlate = Instantiate(courses[2], transform.position, Quaternion.identity);
-            NetworkServer.Spawn(currentPlate);
-        }
+        {currentPlate = Instantiate(courses[2], transform.position, Quaternion.identity);}
+        
+        NetworkServer.Spawn(currentPlate);
+        StartCoroutine(CheckNPieces());
 
         playerUI.plate = currentPlate.GetComponent<SpawnPiece>();
         currentPlate.transform.SetParent(transform);

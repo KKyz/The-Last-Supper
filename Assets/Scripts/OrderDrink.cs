@@ -74,7 +74,7 @@ public class OrderDrink : MonoBehaviour
                     {
                         wine.gameObject.GetComponent<Image>().sprite = psnWine;
                     }
-                    else{wine.gameObject.GetComponent<Image>().sprite = normalWine;}
+                    else {wine.gameObject.GetComponent<Image>().sprite = normalWine;}
                 }
             }
         }

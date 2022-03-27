@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class FoodPiece : MonoBehaviour
 {
-    [HideInInspector]
     public string type;
     
     [HideInInspector]
     public bool isSelectable, isRecommended;
 
-    [HideInInspector]
-    public GameObject recSign;
-    
     private GameObject newRec;
     private int typeSelect;
 
@@ -69,29 +65,5 @@ public class FoodPiece : MonoBehaviour
             }        
 
         } 
-    }
-
-    void Update()
-    {
-        
-    }
-
-    void OnMouseOver()
-    {
-
-        if (Input.GetMouseButtonDown(1))
-        {
-            if (!isRecommended)
-            {
-                newRec = Instantiate(recSign, new Vector3(transform.position.x + 0.75f, transform.position.y + 1.25f, transform.position.z), Quaternion.identity);
-                newRec.transform.SetParent(transform);
-                isRecommended = true;
-            }
-            else
-            {
-                Destroy(newRec);
-                isRecommended = false;
-            }
-        }
     }
 }
