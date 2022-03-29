@@ -6,59 +6,83 @@ using UnityEngine.UIElements;
 
 public class TweenTest : MonoBehaviour
 {
-    public List<GameObject> children = new List<GameObject>(); 
     void Start()
     {
-        StartCoroutine(DespawnFlag(gameObject));
+        StartCoroutine(SpawnButtons(gameObject));
     }
     
-    IEnumerator SpawnButton(List<GameObject> buttons)
+    IEnumerator SpawnButtons(GameObject buttons)
     {
-        foreach (GameObject button in buttons)
+        buttons.SetActive(true);
+        
+        if (buttons.transform.childCount > 1)
+        {
+            // Spawn Children of buttons (e.g. action buttons, scroll buttons)
+            foreach (Transform button in buttons.transform)
+            {
+                if (button.name != "SlapButton" || button.name != "RecommendButton")
+                {
+                    if (!button.gameObject.activeInHierarchy)
+                    {
+                        Vector3 goalPos = button.position;
+                        yield return new WaitForSeconds(0.2f);
+                        button.gameObject.SetActive(true);
+                        button.position = new Vector3((goalPos.x - 100), goalPos.y, 0);
+                        LeanTween.move(button.gameObject, goalPos, 0.2f);
+                    }
+                }
+            }
+        }
+        
+        // Spawn individual button (e.g. cancel button)
+        else
         {
             yield return new WaitForSeconds(0.2f);
-            Vector3 goalPos = button.transform.position;
-            button.transform.position = new Vector3((goalPos.x - 10), goalPos.y, 0);
-            button.SetActive(true);
-            LeanTween.move(button, goalPos, 0.2f);
+            Vector3 goalPos = buttons.transform.position;
+            buttons.transform.position = new Vector3((goalPos.x - 10), goalPos.y, 0);
+            buttons.gameObject.SetActive(true);
+            LeanTween.move(buttons, goalPos, 0.2f);
         }
     }
-    
-    IEnumerator DespawnButton(List<GameObject> buttons)
+
+    IEnumerator DespawnButtons(GameObject buttons)
     {
-        foreach (GameObject button in buttons)
+        if (buttons.transform.childCount > 1)
         {
-            Vector3 startPos = button.transform.position;
-            Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 100), 0);
-            yield return new WaitForSeconds(0.2f);
-            LeanTween.alpha(button, 0, 0.1f);
-            LeanTween.move(button, goalPos, 0.2f);
+            // Despawn Children of buttons (e.g. action buttons, scroll buttons)
+            foreach (Transform button in buttons.transform)
+            {
+                if (button.gameObject.activeInHierarchy)
+                {
+                    Vector3 startPos = button.position;
+                    Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 100), 0);
+                    yield return new WaitForSeconds(0.2f);
+                    //LeanTween.alpha(button.gameObject, 0, 0.1f);
+                    LeanTween.move(button.gameObject, goalPos, 0.2f);
+                }
+            }
+
+            foreach (Transform button in buttons.transform)
+            {
+                yield return new WaitForSeconds(0.3f);
+                button.gameObject.SetActive(false);
+            }
         }
 
-        foreach (GameObject button in buttons)
+        // Despawn individual button (e.g. cancel button)
+        else
         {
+            if (buttons.gameObject.activeInHierarchy)
+            {
+                Vector3 startPos = buttons.transform.position;
+                Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 100), 0);
+                yield return new WaitForSeconds(0.2f);
+                LeanTween.alpha(buttons.gameObject, 0, 0.5f);
+                LeanTween.move(buttons.gameObject, goalPos, 0.2f);
+            }
+
             yield return new WaitForSeconds(0.3f);
-            button.SetActive(false);
+            buttons.gameObject.SetActive(false);
         }
-    }
-
-    IEnumerator SpawnFlag(GameObject flagObject)
-    {
-        yield return 0;
-        Vector3 goalPos = flagObject.transform.position;
-        Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 8f), goalPos.z);
-        flagObject.transform.position = startPos;
-        flagObject.GetComponent<SpriteRenderer>().color = new Color (1, 1, 1, 0);
-        LeanTween.alpha(flagObject, 1, 0.9f);
-        LeanTween.move(flagObject, goalPos, 0.6f);
-    }
-    
-    IEnumerator DespawnFlag(GameObject flagObject)
-    {
-        yield return 0;
-        Vector3 startPos = flagObject.transform.position;
-        Vector3 goalPos = new Vector3(startPos.x, (startPos.y + 8f), startPos.z);
-        LeanTween.alpha(flagObject, 0, 0.4f);
-        LeanTween.move(flagObject, goalPos, 0.6f);
     }
 }

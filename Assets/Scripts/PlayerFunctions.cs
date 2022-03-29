@@ -210,7 +210,6 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (toggle)
         {
-            buttonToggle.ToggleButtons(2);
             player.hasRecommended = false;
         }
 
