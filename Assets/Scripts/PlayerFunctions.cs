@@ -124,7 +124,7 @@ public class PlayerFunctions : NetworkBehaviour
             {
                 if (flag.tag == "TypeFlag")
                 {
-                    flag.GetComponent<SetFlagType>().SetFlag(pieceType);
+                    StartCoroutine(flag.GetComponent<SetFlagType>().SetFlag(pieceType));
                 }
             }
         }
@@ -141,6 +141,7 @@ public class PlayerFunctions : NetworkBehaviour
     public void CmdOrderDrink()
     {
         openDrinkMenu = Instantiate(drinkMenu, transform.position, Quaternion.identity);
+        openDrinkMenu.GetComponent<SpawnMenu>().SlideInMenu();
         openDrinkMenu.transform.SetParent(transform);
         buttonToggle.ToggleButtons(6);
         playerScrolls.AddScrollAmount(-1, 4);
@@ -151,6 +152,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void CmdReceiveDrink()
     {
         newDrinkPlate = Instantiate(drinkPlate, transform.position, Quaternion.identity);
+        newDrinkPlate.GetComponent<SpawnMenu>().SlideInMenu();
         newDrinkPlate.transform.SetParent(transform);
         buttonToggle.ToggleButtons(5);
     }
@@ -227,8 +229,8 @@ public class PlayerFunctions : NetworkBehaviour
         player.orderVictim = false;
         CmdCancelAction();
 
-        if (openDrinkMenu != null){Destroy(openDrinkMenu); NetworkServer.Destroy(openDrinkMenu);}
-        if (newDrinkPlate != null){Destroy(newDrinkPlate); NetworkServer.Destroy(newDrinkPlate);}
+        if (openDrinkMenu != null){openDrinkMenu.GetComponent<SpawnMenu>().SlideOutMenu();}
+        if (newDrinkPlate != null){newDrinkPlate.GetComponent<SpawnMenu>().SlideOutMenu();}
 
         foreach (GameObject targetPiece in smellTargets)
         {
@@ -254,6 +256,26 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.playerManager = player;
         playerCam = newPlayer.transform.GetChild(0).GetComponent<Camera>();
         healthBar.SetHealth(newPlayer.GetComponent<PlayerManager>().health);
+    }
+    
+    private IEnumerator DespawnBillboard(GameObject billboard)
+    {
+        Vector3 startPos = billboard.transform.position;
+        Vector3 goalPos = new Vector3(startPos.x, (startPos.y + 1f), startPos.z);
+        LeanTween.alpha(billboard, 0, 0.4f);
+        LeanTween.move(billboard, goalPos, 0.6f);
+        yield return new WaitForSeconds(1f);
+        NetworkServer.Destroy(billboard);
+    }
+    
+    private void SpawnBillboard(GameObject billboard)
+    {
+        Vector3 goalPos = billboard.transform.position;
+        Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
+        billboard.transform.position = startPos;
+        billboard.GetComponent<SpriteRenderer>().color = new Color (1, 1, 1, 0);
+        LeanTween.alpha(billboard, 1, 0.9f);
+        LeanTween.move(billboard, goalPos, 0.6f);
     }
 
     void Update()
@@ -354,6 +376,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 {
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
                                     NetworkServer.Spawn(currentRecommend);
+                                    SpawnBillboard(currentRecommend);
                                     currentRecommend.transform.LookAt(playerCam.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
@@ -367,18 +390,17 @@ public class PlayerFunctions : NetworkBehaviour
                                 //Just destroy flag
                                 if (piece.transform.gameObject == player.recommendedPiece)
                                 {
-                                    Destroy(currentRecommend);
-                                    NetworkServer.Destroy(currentRecommend);
+                                    StartCoroutine(DespawnBillboard(currentRecommend));
                                     player.recommendedPiece = null;
                                 }
 
                                 //Replace flag with a new one at a different piece
                                 else
                                 {
-                                    Destroy(currentRecommend);
-                                    NetworkServer.Destroy(currentRecommend);
+                                    StartCoroutine(DespawnBillboard(currentRecommend));
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
                                     NetworkServer.Spawn(currentRecommend);
+                                    SpawnBillboard(currentRecommend);
                                     currentRecommend.transform.LookAt(playerCam.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
@@ -397,6 +419,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 if (smellTargets.Count <= 2)
                                 {
                                     smellTarget = Instantiate(typeFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
+                                    SpawnBillboard(smellTarget);
                                     smellTarget.transform.LookAt(playerCam.transform.position);
                                     smellTarget.transform.SetParent(piece.transform);
                                     smellTargets.Add(piece.transform.gameObject);
@@ -411,8 +434,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 {
                                     if (child.gameObject.tag == "TypeFlag" && child.gameObject.name != "PlantedFlag")
                                     {
-                                        Destroy(child.gameObject);
-                                        NetworkServer.Destroy(child.gameObject);
+                                        StartCoroutine(DespawnBillboard(child.gameObject));
                                     }
                                 }
 

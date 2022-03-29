@@ -18,6 +18,6 @@ public class TakeDrink : MonoBehaviour
             playerF.CmdPoison();
         }
         playerF.RpcResetActions();
-        Destroy(gameObject);
+        gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 }

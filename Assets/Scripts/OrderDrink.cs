@@ -84,7 +84,7 @@ public class OrderDrink : MonoBehaviour
     {
         victims.Clear();
         buttonToggle.ToggleButtons(2);
-        Destroy(gameObject);
+        gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 
     public void ChangeAmount()
