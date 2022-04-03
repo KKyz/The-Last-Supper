@@ -11,8 +11,7 @@ public class GameManager : NetworkManager
     public PlayerFunctions playerUI;
     
     public List<GameObject> players = new List<GameObject>();
-
-    [HideInInspector]
+    
     public GameObject currentPlayer;
 
     public int nPieces, activePlayers;
@@ -37,7 +36,7 @@ public class GameManager : NetworkManager
             {
                 players.Add(newPlayer);
                 activePlayers += 1;
-                Debug.Log("new player joined");
+                //Debug.Log("new player joined");
 
             }
         }
@@ -81,12 +80,11 @@ public class GameManager : NetworkManager
         
         turn = 0;
         currentPlayer = players[turn];
-        Debug.Log(currentPlayer.name);
+        //Debug.Log(currentPlayer.name);
         
         playerUI.RpcSync(currentPlayer);
         playerScript = currentPlayer.GetComponent<PlayerManager>();
         playerUI.RpcActionToggle(true);
-        playerUI.CmdCancelAction();
     }
     
     void Update()

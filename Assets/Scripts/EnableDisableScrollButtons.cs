@@ -16,26 +16,22 @@ public class EnableDisableScrollButtons : MonoBehaviour
     
     [SerializeField]
     private int menuMode;
-
-    void Start()
-    {
-        actionButtons.SetActive(true);
-        scrollButtons.SetActive(true);
-    }
-
+    
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
         Debug.Log("menuMode is: "+ menuMode.ToString());
         
         // Opens Scrolls Menu
-        if (isActive == 1)
+        // (isActive == 5) Disables every button except skip (used for DrinkMenu)
+        if (isActive == 1 || isActive == 5)
         {
+            StopCoroutine(DespawnButtons(scrollButtons));
             StartCoroutine(SpawnButtons(scrollButtons));
             
             StartCoroutine(DespawnButtons(actionButtons));
 
-            cancelButton.SetActive(false);
+            StartCoroutine(DespawnButtons(cancelButton));
         }
 
         // Opens Actions Menu
@@ -43,9 +39,10 @@ public class EnableDisableScrollButtons : MonoBehaviour
         {
             StartCoroutine(DespawnButtons(scrollButtons));
             
+            StopCoroutine(DespawnButtons(actionButtons));
             StartCoroutine(SpawnButtons(actionButtons));
 
-            cancelButton.SetActive(false);
+            StartCoroutine(DespawnButtons(cancelButton));
         }
 
         //Enables Cancel Button
@@ -55,43 +52,46 @@ public class EnableDisableScrollButtons : MonoBehaviour
             
             StartCoroutine(DespawnButtons(actionButtons));
 
+            StopCoroutine(DespawnButtons(cancelButton));
             StartCoroutine(SpawnButtons(cancelButton));
         }
 
         // (isActive == 4) Disables everything (except for Slap)
-        // (isActive == 5) Disables every button except skip (used for DrinkMenu)
         // (isActive == 6) Disables everything (no exceptions)
 
-        else if (isActive == 4 || isActive == 5 || isActive == 6)
+        else if (isActive == 4 || isActive == 6)
         {
+            StopCoroutine(SpawnButtons(scrollButtons));
             StartCoroutine(DespawnButtons(scrollButtons));
             
+            StopCoroutine(SpawnButtons(actionButtons));
             StartCoroutine(DespawnButtons(actionButtons));
 
+            StopCoroutine(SpawnButtons(cancelButton));
             StartCoroutine(DespawnButtons(cancelButton));
         }
         
     }
     
-    IEnumerator SpawnButtons(GameObject buttons)
+    public IEnumerator SpawnButtons(GameObject buttons)
     {
         buttons.SetActive(true);
         
-        if (buttons.transform.childCount > 1)
+        if (buttons.transform.childCount > 2)
         {
-            // Spawn Children of buttons (e.g. action buttons, scroll buttons)
+            Debug.Log("Spawn multiple " + buttons.name);
             foreach (Transform button in buttons.transform)
             {
-                if (button.name != "SlapButton" || button.name != "RecommendButton")
+                if (button.gameObject.activeInHierarchy)
                 {
-                    if (!button.gameObject.activeInHierarchy)
-                    {
-                        yield return new WaitForSeconds(0.2f);
-                        button.gameObject.SetActive(true);
-                        Vector3 goalPos = button.position;
-                        button.position = new Vector3((goalPos.x - 10), goalPos.y, 0);
-                        LeanTween.move(button.gameObject, goalPos, 0.2f);
-                    }
+                    yield return new WaitForSeconds(0.2f);
+                    Vector3 goalPos = button.position;
+                    CanvasGroup buttonCG = button.GetComponent<CanvasGroup>();
+                    Vector3 startPos = new Vector3(goalPos.x, (goalPos.y - 300), 0);
+                    buttonCG.alpha = 0f;
+                    button.position = startPos;
+                    LeanTween.alphaCanvas(buttonCG, 1, 0.5f);
+                    LeanTween.move(button.gameObject, goalPos, 0.3f);
                 }
             }
         }
@@ -101,78 +101,84 @@ public class EnableDisableScrollButtons : MonoBehaviour
         {
             yield return new WaitForSeconds(0.2f);
             Vector3 goalPos = buttons.transform.position;
-            buttons.transform.position = new Vector3((goalPos.x - 10), goalPos.y, 0);
-            buttons.gameObject.SetActive(true);
-            LeanTween.move(buttons, goalPos, 0.2f);
+            CanvasGroup buttonCG = buttons.GetComponent<CanvasGroup>();
+            Vector3 startPos = new Vector3(goalPos.x, (goalPos.y - 300), 0);
+            buttonCG.alpha = 0f;
+            buttons.transform.position = startPos;
+            LeanTween.alphaCanvas(buttonCG, 1, 0.5f);
+            LeanTween.move(buttons.gameObject, goalPos, 0.3f);
         }
     }
     
-    IEnumerator DespawnButtons(GameObject buttons)
+    public IEnumerator DespawnButtons(GameObject buttons)
     {
-        if (buttons.transform.childCount > 1)
+        if (buttons.transform.childCount > 2)
         {
+            Debug.Log("Despawn multiple " + buttons.name);
             // Despawn Children of buttons (e.g. action buttons, scroll buttons)
             foreach (Transform button in buttons.transform)
             {
                 if (button.gameObject.activeInHierarchy)
                 {
                     Vector3 startPos = button.position;
-                    Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 100), 0);
-                    yield return new WaitForSeconds(0.2f);
-                    //LeanTween.alpha(button.gameObject, 0, 0.1f);
-                    LeanTween.move(button.gameObject, goalPos, 0.2f);
-                }
-            }
+                    CanvasGroup buttonCG = button.GetComponent<CanvasGroup>();
+                    Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 300), 0);
+                    LeanTween.alphaCanvas(buttonCG, 0, 0.1f);
+                    LeanTween.move(button.gameObject, goalPos, 0.3f);
+                    yield return new WaitForSeconds(0.3f);
+                    button.position = startPos;
 
-            foreach (Transform button in buttons.transform)
-            {
-                yield return new WaitForSeconds(0.3f);
-                button.gameObject.SetActive(false);
+                }
             }
         }
 
         // Despawn individual button (e.g. cancel button)
         else
         {
+            Debug.Log("Despawn individual " + buttons.name);
+            
             if (buttons.gameObject.activeInHierarchy)
             {
                 Vector3 startPos = buttons.transform.position;
-                Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 100), 0);
-                yield return new WaitForSeconds(0.2f);
-                LeanTween.alpha(buttons.gameObject, 0, 0.1f);
-                LeanTween.move(buttons.gameObject, goalPos, 0.2f);
+                CanvasGroup buttonCG = buttons.GetComponent<CanvasGroup>();
+                Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 300), 0);
+                LeanTween.alphaCanvas(buttonCG, 0, 0.1f);
+                LeanTween.move(buttons.gameObject, goalPos, 0.3f);
+                yield return new WaitForSeconds(0.3f);
+                buttons.transform.position = startPos;
             }
-
-            yield return new WaitForSeconds(0.3f);
-            buttons.gameObject.SetActive(false);
         }
+        
+        buttons.SetActive(false);
     }
 
     void Update()
     {
         if (menuMode == 1)
         {
-            for (int i = 0; i <= 4; i++)
+            for (int i = 1; i <= 5; i++)
             {
-                if (playerScrollArray.GetValue((i + 1)).amount > 0){scrollButtons.transform.gameObject.SetActive(true);}
-                else{scrollButtons.transform.gameObject.SetActive(false);}
+                if (playerScrollArray.GetValue((i)).amount > 0){scrollButtons.transform.GetChild(i).gameObject.SetActive(true);}
+                else{scrollButtons.transform.GetChild(i).gameObject.SetActive(false);}
             }           
         }
 
         if (menuMode == 2 && playerManager != null && !playerManager.hasRecommended)
-        {StartCoroutine(SpawnButtons(recommendButton));}
+        {recommendButton.SetActive(true);}
         else
         {recommendButton.SetActive(false);}
 
-        if (menuMode == 4 && playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
+        if (menuMode == 4 && playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0 && !slapButton.activeInHierarchy)
         {StartCoroutine(SpawnButtons(slapButton));}
         else
         {slapButton.SetActive(false);}
 
-        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0)
+        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.activeInHierarchy)
         {
-            if (menuMode == 1 || menuMode == 5)
+            if (menuMode == 5)
             {StartCoroutine(SpawnButtons(skipButton));}
+            else if (menuMode == 1)
+            {skipButton.SetActive(true);}
             else
             {skipButton.SetActive(false);}
         }

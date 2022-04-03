@@ -11,25 +11,25 @@ public class TweenTest : MonoBehaviour
         StartCoroutine(SpawnButtons(gameObject));
     }
     
-    IEnumerator SpawnButtons(GameObject buttons)
+    public IEnumerator SpawnButtons(GameObject buttons)
     {
         buttons.SetActive(true);
         
-        if (buttons.transform.childCount > 1)
+        if (buttons.transform.childCount > 2)
         {
-            // Spawn Children of buttons (e.g. action buttons, scroll buttons)
+            Debug.Log("Spawn multiple " + buttons.name);
             foreach (Transform button in buttons.transform)
             {
-                if (button.name != "SlapButton" || button.name != "RecommendButton")
+                if (button.gameObject.activeInHierarchy)
                 {
-                    if (!button.gameObject.activeInHierarchy)
-                    {
-                        Vector3 goalPos = button.position;
-                        yield return new WaitForSeconds(0.2f);
-                        button.gameObject.SetActive(true);
-                        button.position = new Vector3((goalPos.x - 100), goalPos.y, 0);
-                        LeanTween.move(button.gameObject, goalPos, 0.2f);
-                    }
+                    yield return new WaitForSeconds(0.2f);
+                    Vector3 goalPos = button.position;
+                    CanvasGroup buttonCG = button.GetComponent<CanvasGroup>();
+                    Vector3 startPos = new Vector3(goalPos.x, (goalPos.y - 300), 0);
+                    buttonCG.alpha = 0f;
+                    button.position = startPos;
+                    LeanTween.alphaCanvas(buttonCG, 1, 0.6f);
+                    LeanTween.move(button.gameObject, goalPos, 0.4f);
                 }
             }
         }
@@ -39,9 +39,10 @@ public class TweenTest : MonoBehaviour
         {
             yield return new WaitForSeconds(0.2f);
             Vector3 goalPos = buttons.transform.position;
-            buttons.transform.position = new Vector3((goalPos.x - 10), goalPos.y, 0);
-            buttons.gameObject.SetActive(true);
-            LeanTween.move(buttons, goalPos, 0.2f);
+            Vector3 startPos = new Vector3(goalPos.x, (goalPos.y - 300), 0);
+            buttons.transform.position = startPos;
+            LeanTween.alpha(buttons.gameObject, 1, 0.4f);
+            LeanTween.move(buttons, goalPos, 0.3f);
         }
     }
 

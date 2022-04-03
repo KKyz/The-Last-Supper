@@ -16,6 +16,15 @@ public class SpawnPiece : NetworkBehaviour
     
     public void Start()
     {  
+        RefreshPieceList();
+        RpcInitPlate();    
+    }
+
+    private void RefreshPieceList()
+    {
+        piecePos.Clear();
+        pieceRot.Clear();
+        
         foreach (Transform child in transform)
         {
             if(child.CompareTag("PiecePos"))
@@ -25,13 +34,14 @@ public class SpawnPiece : NetworkBehaviour
                 Destroy(child.gameObject);
             }
         }
-        
-        RpcInitPlate();    
     }
     
     private void RpcInitPlate()
     {
-        Debug.Log("PlateCreated");
+        if (!isServer)
+        {return;}
+        
+        //Debug.Log("PlateCreated");
         for (int i = 0; i < piecePos.Count; i++)
         {
             newPiece = Instantiate(currentPiece, piecePos[i], pieceRot[i]);
@@ -42,10 +52,11 @@ public class SpawnPiece : NetworkBehaviour
 
     public void Shuffle()
     {
-        randPos.AddRange(piecePos);
-        randRot.AddRange(pieceRot);
+        RefreshPieceList();
+        randPos = piecePos;
+        randRot = pieceRot;
 
-            foreach (Transform child in transform)
+        foreach (Transform child in transform)
         {
             if (child.CompareTag("FoodPiece"))
             {

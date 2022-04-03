@@ -122,7 +122,7 @@ public class PlayerFunctions : NetworkBehaviour
             
             foreach (Transform flag in piece.transform)
             {
-                if (flag.tag == "TypeFlag")
+                if (flag.CompareTag("TypeFlag"))
                 {
                     StartCoroutine(flag.GetComponent<SetFlagType>().SetFlag(pieceType));
                 }
@@ -130,7 +130,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
 
         smellTargets.Clear();
-        smellConfirm.SetActive(false);
+        StartCoroutine(buttonToggle.DespawnButtons(smellConfirm));
         playerScrolls.AddScrollAmount(-1, 2);
         player.scrollCount += 1;
         isSmelling = false;
@@ -211,6 +211,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (toggle)
         {
             player.hasRecommended = false;
+            buttonToggle.ToggleButtons(2);
         }
 
         else
@@ -244,7 +245,8 @@ public class PlayerFunctions : NetworkBehaviour
         }
 
         smellTargets.Clear();
-        smellConfirm.SetActive(false);
+        if (smellConfirm.activeInHierarchy)
+        {StartCoroutine(buttonToggle.DespawnButtons(smellConfirm));}
     }
     
     public void RpcSync(GameObject newPlayer)
@@ -263,7 +265,7 @@ public class PlayerFunctions : NetworkBehaviour
         Vector3 goalPos = new Vector3(startPos.x, (startPos.y + 1f), startPos.z);
         LeanTween.alpha(billboard, 0, 0.4f);
         LeanTween.move(billboard, goalPos, 0.6f);
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(0.6f);
         NetworkServer.Destroy(billboard);
     }
     
@@ -305,7 +307,7 @@ public class PlayerFunctions : NetworkBehaviour
             if (player.health <= 0 && newReceipt == null)
             {CmdDie();}
             
-            if(gameManager.activePlayers == 1 && player.actionable && newReceipt == null && gameManager.gameCanEnd)
+            if(gameManager.activePlayers == 1 && player.actionable && newReceipt == null && gameManager.gameCanEnd && player.health > 0)
             {CmdWin();}
 
             if (player.orderVictim && newDrinkPlate == null)
@@ -423,22 +425,25 @@ public class PlayerFunctions : NetworkBehaviour
                                     smellTarget.transform.SetParent(piece.transform);
                                     smellTargets.Add(piece.transform.gameObject);
                                 }
+
                                 if (smellTargets.Count >= 3)
-                                {smellConfirm.SetActive(true);}
+                                {
+                                    StartCoroutine(buttonToggle.SpawnButtons(smellConfirm));
+                                }
                             }
 
                             else
                             {
                                 foreach (Transform child in piece.transform)
                                 {
-                                    if (child.gameObject.tag == "TypeFlag" && child.gameObject.name != "PlantedFlag")
+                                    if (child.CompareTag("TypeFlag") && child.gameObject.name != "PlantedFlag")
                                     {
                                         StartCoroutine(DespawnBillboard(child.gameObject));
                                     }
                                 }
 
                                 smellTargets.Remove(piece.transform.gameObject);
-                                smellConfirm.SetActive(false);
+                                StartCoroutine(buttonToggle.DespawnButtons(smellConfirm));
                             }
                         }
                     }
