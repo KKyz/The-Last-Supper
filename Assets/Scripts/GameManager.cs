@@ -1,167 +1,126 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using UnityEngine;
 using Mirror;
 
 public class GameManager : NetworkManager
 {
-    [HideInInspector]
-    public PlayerManager playerScript;
-    
     public PlayerFunctions playerUI;
-    
-    public List<GameObject> players = new List<GameObject>();
-    
-    public GameObject currentPlayer;
 
-    public int nPieces, activePlayers;
-    public bool gameCanEnd;
+    public StateManager stateManager;
+    
+    private bool isServer;
 
     public List<GameObject> courses = new List<GameObject>();
-    private GameObject seats, currentPlate;
-    private List<Vector3> playerPos = new List<Vector3>();
-
-    [SerializeField]
-    private int turn, course;
+    private GameObject currentPlate;
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
-        
         //Adds new player to players list when joined
         GameObject[] newPlayers = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject newPlayer in newPlayers)
         {
-            if (!players.Contains(newPlayer))
+            if (!stateManager.players.Contains(newPlayer.GetComponent<NetworkIdentity>().netId))
             {
-                players.Add(newPlayer);
-                activePlayers += 1;
-                //Debug.Log("new player joined");
-
+                newPlayer.name = "Player: " + UnityEngine.Random.Range(0, 999).ToString();
+                stateManager.players.Add(newPlayer.GetComponent<NetworkIdentity>().netId);
             }
         }
 
-        if (players.Count >= 2)
-        {gameCanEnd = true;}
+        if (stateManager.players.Count >= 2)
+        {
+            stateManager.gameCanEnd = true;
+        }
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        base.OnServerDisconnect(conn);
-        
-        activePlayers -= 1;
-        foreach (GameObject player in players)
-        {
-            if (player == null)
-            {
-                NetworkServer.Destroy(player.gameObject);
-                players.Remove(player);
-            }
-        }
     }
 
     public override void OnStartServer()
     {
         //Initial operations when server begins
-        gameCanEnd = false;
-        activePlayers = 0;
-        seats = GameObject.Find("Players");
+        stateManager.gameCanEnd = false;
+        isServer = true;
 
-        course = -1;
+        stateManager.course = -1;
         NextCourse();
-        
+
         StartCoroutine(PostStartCall());
     }
 
-    IEnumerator PostStartCall()
+    private IEnumerator PostStartCall()
     {
-        yield return new WaitForEndOfFrame();
+        yield return 0;
         playerUI = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         
-        turn = 0;
-        currentPlayer = players[turn];
-        //Debug.Log(currentPlayer.name);
-        
-        playerUI.RpcSync(currentPlayer);
-        playerScript = currentPlayer.GetComponent<PlayerManager>();
-        playerUI.RpcActionToggle(true);
+        stateManager.turn = 0;
+        stateManager.currentPlayer = NetworkClient.spawned[stateManager.players[0]].gameObject;
+        stateManager.playerScript = stateManager.currentPlayer.GetComponent<PlayerManager>();
+        Debug.Log(stateManager.currentPlayer.name);
     }
     
     void Update()
     {
-        //For debugging
-        if (Input.GetKeyDown("c"))
-        {NextPlayer();}
-
-        if (Input.GetKeyDown("v"))
-        {NextCourse();}
+        if (isServer)
+        {
+            if (Input.GetKeyDown("v"))
+            {
+                NextCourse();
+            }
+        }
     }
-
+    
     public void NextEncourage()
     {
         //Function called by PlayerFunctions to trigger encourage of next player
-        if (turn < players.Count - 1)
-        {players[turn + 1].GetComponent<PlayerManager>().isEncouraged = true;}
+        if (stateManager.turn < stateManager.players.Count - 1)
+        {NetworkServer.spawned[stateManager.players[stateManager.turn + 1]].gameObject.GetComponent<PlayerManager>().isEncouraged = true;}
         else
-        {players[0].GetComponent<PlayerManager>().isEncouraged = true;}
-    }
-
-    public void NextPlayer()
-    {
-        //If encouraged, then don't switch
-        if (playerScript.isEncouraged)
-        {playerScript.isEncouraged = false;}
-
-        else
-        {
-            if (turn < players.Count - 1)
-            {turn += 1;}
-            else
-            {turn = 0;}
-
-            //Reset all CurrentPlayer operations
-            playerUI.RpcResetActions();
-            playerUI.RpcActionToggle(false);
-
-            //Sets next player as CurrentPlayer
-            currentPlayer = players[turn];
-            playerScript = currentPlayer.GetComponent<PlayerManager>();
-            playerUI.RpcSync(currentPlayer);
-            playerUI.RpcActionToggle(true);
-            Debug.Log(currentPlayer.name);
-        }
+        {NetworkServer.spawned[stateManager.players[0]].GetComponent<PlayerManager>().isEncouraged = true;}
     }
 
     IEnumerator CheckNPieces()
     {
+        //Checks # of normal pieces (used to swap plates)
         yield return 0;
         foreach (Transform piece in currentPlate.transform)
         {
             if (piece.transform.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Normal")
-            {nPieces += 1;}
+            {stateManager.nPieces += 1;}
         }
     }
     
     public void NextCourse()
     {
-        course += 1;
+        stateManager.course += 1;
 
-        foreach (GameObject player in players)
+        foreach (uint playerID in stateManager.players)
         {
-            if (player != null)
+            GameObject playerObj = NetworkServer.spawned[playerID].gameObject;
+            
+            if ( playerObj != null)
             {
-                player.GetComponent<PlayerManager>().courseCount = course + 1;
+                playerObj.GetComponent<PlayerManager>().courseCount = stateManager.course + 1;
             }
         }
 
         if (currentPlate != null)
-        {Destroy(currentPlate);}
-        
-        if (course < 3)
-        {currentPlate = Instantiate(courses[course], transform.position, Quaternion.identity);}
+        {
+            Destroy(currentPlate);
+        }
+
+        if (stateManager.course < 3)
+        {
+            currentPlate = Instantiate(courses[stateManager.course], transform.position, Quaternion.identity);
+        }
         else
-        {currentPlate = Instantiate(courses[2], transform.position, Quaternion.identity);}
-        
+        {
+            currentPlate = Instantiate(courses[2], transform.position, Quaternion.identity);
+        }
+
         NetworkServer.Spawn(currentPlate);
         StartCoroutine(CheckNPieces());
 

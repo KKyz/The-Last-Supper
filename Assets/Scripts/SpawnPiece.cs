@@ -7,8 +7,8 @@ public class SpawnPiece : NetworkBehaviour
 {
     private List<Vector3> piecePos = new List<Vector3>();
     private List<Quaternion> pieceRot = new List<Quaternion>();
-    private List<Vector3> randPos = new List<Vector3>();
-    private List<Quaternion> randRot = new List<Quaternion>();
+    private  List<Vector3> randPos = new List<Vector3>();
+    private  List<Quaternion> randRot = new List<Quaternion>();
     public GameObject currentPiece;
     private GameObject newPiece;
     private Vector3 newRandPos;
@@ -50,6 +50,7 @@ public class SpawnPiece : NetworkBehaviour
         }
     }
 
+    [ClientRpc]
     public void Shuffle()
     {
         RefreshPieceList();

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,10 +10,11 @@ public class OrderDrink : MonoBehaviour
     private Transform buttons, wines;
     private PlayerManager victim;
     private bool takeHealth;
+    private bool[] psnArray = new bool[4];
     private GameObject psnButton, orderButton;
     private int buttonCount;
     private List<PlayerManager> victims = new List<PlayerManager>();
-    private GameManager gameManager;
+    private StateManager stateManager;
     private EnableDisableScrollButtons buttonToggle;
 
     public void Start()
@@ -25,16 +27,17 @@ public class OrderDrink : MonoBehaviour
         orderButton = transform.Find("OrderButton").gameObject;
         buttons = transform.Find("Buttons");
         wines = transform.Find("Wines");
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         buttonToggle =  buttonToggle = GameObject.Find("PlayerCanvas").GetComponent<EnableDisableScrollButtons>();
 
-        if (gameManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
+        if (stateManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
         {psnButton.SetActive(true);}
         else {psnButton.SetActive(false);}
 
-        foreach (GameObject player in gameManager.players)
+        foreach (uint playerID in stateManager.players)
         {
-            if (player != gameManager.currentPlayer)
+            GameObject player = NetworkServer.spawned[playerID].gameObject;
+            if (player != stateManager.currentPlayer)
             {
                 victims.Add(player.GetComponent<PlayerManager>());
                 buttons.GetChild(buttonCount).gameObject.SetActive(true);
@@ -50,7 +53,7 @@ public class OrderDrink : MonoBehaviour
         {orderButton.SetActive(true);}
         else {orderButton.SetActive(false);}
 
-        if (victim != null && gameManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
+        if (victim != null && stateManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
         {psnButton.SetActive(true);}
         else {psnButton.SetActive(false);}
     }
@@ -66,7 +69,7 @@ public class OrderDrink : MonoBehaviour
     {
         if (victim != null)
         {
-            foreach (bool poison in victim.psnArray)
+            foreach (bool poison in psnArray)
             {
                 foreach (Transform wine in wines)
                 {
@@ -92,7 +95,7 @@ public class OrderDrink : MonoBehaviour
 
         for (int i = 0; i < 4; i++)
         {
-            victim.psnArray[i] = false;
+            psnArray[i] = false;
         }
 
         if (!takeHealth)
@@ -101,7 +104,7 @@ public class OrderDrink : MonoBehaviour
             for (int i = 0; i < 2; i++)
             {
                 int j = Random.Range(0, 4);
-                victim.psnArray[j] = true;
+                psnArray[j] = true;
 
                 int k = -1;
                 while (k != j)
@@ -109,7 +112,7 @@ public class OrderDrink : MonoBehaviour
                     k = Random.Range(0, 4);
                 }
 
-                victim.psnArray[k] = true;
+                psnArray[k] = true;
 
             }
             UpdateWine();
@@ -123,21 +126,28 @@ public class OrderDrink : MonoBehaviour
             {
                 int j = Random.Range(0, 4);
                 {
-                    victim.psnArray[j] = true;
+                    psnArray[j] = true;
                 }
             }
             UpdateWine();
             psnButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "Poison Two Drinks \n (Costs One Heart)";
         }
+        
+        victim.psn0 = psnArray[0];
+        victim.psn1 = psnArray[1];
+        victim.psn2 = psnArray[2];
+        victim.psn3 = psnArray[3];
+        
     }
 
     public void Order()
     {
+        victim.SyncPsn();
         victim.orderVictim = true;
 
         if (takeHealth)
         {
-            gameManager.currentPlayer.GetComponent<PlayerManager>().health -= 1;
+            stateManager.currentPlayer.GetComponent<PlayerManager>().health -= 1;
         }
 
         CloseMenu();

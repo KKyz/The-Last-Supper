@@ -6,20 +6,20 @@ using TMPro;
 
 public class PlayerFunctions : NetworkBehaviour
 {
-    [HideInInspector]
+    //[HideInInspector]
     public SpawnPiece plate;
 
-    [HideInInspector]
+    //[HideInInspector]
     public ScrollArray playerScrolls;
 
-    [HideInInspector]
+    //[HideInInspector]
     public PlayerManager player;
 
-    [HideInInspector]
-    public Camera playerCam;
-
-    [HideInInspector]
+    //[HideInInspector]
     public GameManager gameManager;
+
+    //[HideInInspector] 
+    public StateManager stateManager;
 
     public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt;
 
@@ -33,6 +33,7 @@ public class PlayerFunctions : NetworkBehaviour
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
         healthBar = GameObject.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.GetChild(2).gameObject;
@@ -40,19 +41,29 @@ public class PlayerFunctions : NetworkBehaviour
         isEating = false;
         isRecommending = false;
         player = null;
-        playerCam = null;
         newReceipt = null;
         isSmelling = false;
         smellConfirm.SetActive(false);
         smellTargets.Clear();
-        buttonToggle.ToggleButtons(4);
+
         StartCoroutine(PostStartCall());
     }
 
-    IEnumerator PostStartCall()
+    private IEnumerator PostStartCall()
     {
         yield return new WaitForEndOfFrame();
+        
         plate = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
+        
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject newPlayer in players)
+        { 
+            if (newPlayer.GetComponent<PlayerManager>().isLocalPlayer)
+            {
+                player = newPlayer.GetComponent<PlayerManager>();
+                playerScrolls = newPlayer.GetComponent<ScrollArray>();
+            }
+        }
     }
     
     //[Command]
@@ -90,7 +101,8 @@ public class PlayerFunctions : NetworkBehaviour
     //[Command]
     public void CmdSlap()
     {
-        gameManager.NextPlayer();
+        RpcResetActions();
+        stateManager.SetCurrentPlayer();
         playerScrolls.AddScrollAmount(-1, 0);
         player.scrollCount += 1;
     }
@@ -99,7 +111,8 @@ public class PlayerFunctions : NetworkBehaviour
     public void CmdSkip()
     {
         player.orderVictim = false;
-        gameManager.NextPlayer();
+        RpcResetActions();
+        stateManager.SetCurrentPlayer();
         playerScrolls.AddScrollAmount(-1, 1);
         player.scrollCount += 1;
     }
@@ -130,7 +143,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
 
         smellTargets.Clear();
-        StartCoroutine(buttonToggle.DespawnButtons(smellConfirm));
+        smellConfirm.SetActive(false);
         playerScrolls.AddScrollAmount(-1, 2);
         player.scrollCount += 1;
         isSmelling = false;
@@ -202,24 +215,6 @@ public class PlayerFunctions : NetworkBehaviour
         newReceipt.GetComponent<ShowStats>().LoadStats(player);
         newReceipt.transform.SetParent(transform);
     }
-
-    
-    public void RpcActionToggle(bool toggle)
-    {
-        player.actionable = toggle;
-
-        if (toggle)
-        {
-            player.hasRecommended = false;
-            buttonToggle.ToggleButtons(2);
-        }
-
-        else
-        {
-            buttonToggle.ToggleButtons(4);
-        }
-    }
-
     
     public void RpcResetActions()
     {
@@ -246,19 +241,9 @@ public class PlayerFunctions : NetworkBehaviour
 
         smellTargets.Clear();
         if (smellConfirm.activeInHierarchy)
-        {StartCoroutine(buttonToggle.DespawnButtons(smellConfirm));}
+        {smellConfirm.SetActive(false);}
     }
-    
-    public void RpcSync(GameObject newPlayer)
-    {
-        player = newPlayer.GetComponent<PlayerManager>();
-        playerScrolls = newPlayer.GetComponent<ScrollArray>();
-        buttonToggle.playerScrollArray = playerScrolls;
-        buttonToggle.playerManager = player;
-        playerCam = newPlayer.transform.GetChild(0).GetComponent<Camera>();
-        healthBar.SetHealth(newPlayer.GetComponent<PlayerManager>().health);
-    }
-    
+
     private IEnumerator DespawnBillboard(GameObject billboard)
     {
         Vector3 startPos = billboard.transform.position;
@@ -279,8 +264,26 @@ public class PlayerFunctions : NetworkBehaviour
         LeanTween.move(billboard, goalPos, 0.6f);
     }
 
+    [Command(requiresAuthority = false)]
+    public void DestroyPiece(GameObject piece)
+    {
+        NetworkServer.Destroy(piece);
+    }
+
     void Update()
     {
+        if (player != null && stateManager.currentPlayer == player.gameObject && !player.actionable && buttonToggle.menuMode != 2)
+        {
+            player.actionable = true;
+            buttonToggle.ToggleButtons(2);
+        }
+        else if(player != null && stateManager.currentPlayer != player.gameObject && buttonToggle.menuMode != 4)
+        {
+            player.actionable = false;
+            player.hasRecommended = false;
+            buttonToggle.ToggleButtons(4);
+        }
+
         if (player != null && player.actionable)
         {
 
@@ -307,7 +310,7 @@ public class PlayerFunctions : NetworkBehaviour
             if (player.health <= 0 && newReceipt == null)
             {CmdDie();}
             
-            if(gameManager.activePlayers == 1 && player.actionable && newReceipt == null && gameManager.gameCanEnd && player.health > 0)
+            if(stateManager.players.Count == 1 && player.actionable && newReceipt == null && stateManager.gameCanEnd && player.health > 0)
             {CmdWin();}
 
             if (player.orderVictim && newDrinkPlate == null)
@@ -316,7 +319,7 @@ public class PlayerFunctions : NetworkBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 RaycastHit  piece;
-                var ray = playerCam.ScreenPointToRay(Input.mousePosition);
+                var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
              
                 if (Physics.Raycast(ray, out piece))
                 {
@@ -331,7 +334,7 @@ public class PlayerFunctions : NetworkBehaviour
                             
                             if (foodType == "Normal")
                             {
-                                gameManager.nPieces -= 1;
+                                stateManager.nPieces -= 1;
                                 player.piecesEaten += 1;
                             }
                             
@@ -351,7 +354,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                             if (foodType == "Health"){CmdHealth();}
                             
-                            if (gameManager.nPieces <= 0)
+                            if (stateManager.nPieces <= 0)
                             {gameManager.NextCourse();}
 
                             if (player.piecesEaten >= 10)
@@ -359,13 +362,13 @@ public class PlayerFunctions : NetworkBehaviour
                                 CmdHealth();
                                 player.piecesEaten = 0;
                             }
-
-                            Destroy(piece.transform.gameObject);
-                            NetworkServer.Destroy(piece.transform.gameObject);
+                            
+                            DestroyPiece(piece.transform.gameObject);
                             player.pieceCount += 1;
                             isEating = false;
                             CmdCancelAction();
-                            gameManager.NextPlayer();
+                            RpcResetActions();
+                            stateManager.SetCurrentPlayer();
                         }
 
                         if (isRecommending)
@@ -378,7 +381,7 @@ public class PlayerFunctions : NetworkBehaviour
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
                                     NetworkServer.Spawn(currentRecommend);
                                     SpawnBillboard(currentRecommend);
-                                    currentRecommend.transform.LookAt(playerCam.transform.position);
+                                    currentRecommend.transform.LookAt(Camera.main.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
                                 }
@@ -402,7 +405,7 @@ public class PlayerFunctions : NetworkBehaviour
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
                                     NetworkServer.Spawn(currentRecommend);
                                     SpawnBillboard(currentRecommend);
-                                    currentRecommend.transform.LookAt(playerCam.transform.position);
+                                    currentRecommend.transform.LookAt(Camera.main.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
                                 }
@@ -421,14 +424,14 @@ public class PlayerFunctions : NetworkBehaviour
                                 {
                                     smellTarget = Instantiate(typeFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
                                     SpawnBillboard(smellTarget);
-                                    smellTarget.transform.LookAt(playerCam.transform.position);
+                                    smellTarget.transform.LookAt(Camera.main.transform.position);
                                     smellTarget.transform.SetParent(piece.transform);
                                     smellTargets.Add(piece.transform.gameObject);
                                 }
 
                                 if (smellTargets.Count >= 3)
                                 {
-                                    StartCoroutine(buttonToggle.SpawnButtons(smellConfirm));
+                                    smellConfirm.SetActive(true);
                                 }
                             }
 
@@ -443,7 +446,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 }
 
                                 smellTargets.Remove(piece.transform.gameObject);
-                                StartCoroutine(buttonToggle.DespawnButtons(smellConfirm));
+                                smellConfirm.SetActive(false);
                             }
                         }
                     }

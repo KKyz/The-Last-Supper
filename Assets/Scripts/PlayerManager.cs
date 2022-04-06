@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,17 +6,18 @@ using Mirror;
 
 public class PlayerManager : NetworkBehaviour
 {
-    [HideInInspector]
     public int health, scrollCount, courseCount, pieceCount, timer, piecesEaten;
 
-    [HideInInspector]
-    public bool isEncouraged, actionable, hasRecommended, orderVictim;
+    public bool actionable;
 
-    //HideInInspector]
+    public bool isEncouraged, hasRecommended, orderVictim;
+
+    [SyncVar] 
+    public bool psn0, psn1, psn2, psn3;
+
     public bool[] psnArray = new bool[4];
 
-    [HideInInspector]
-    public GameObject recommendedPiece;
+    [HideInInspector] public GameObject recommendedPiece;
     
     private GameObject playerCam;
 
@@ -40,5 +42,14 @@ public class PlayerManager : NetworkBehaviour
 
         playerCam = transform.GetChild(0).gameObject;
         if(!isLocalPlayer) {playerCam.SetActive(false);}
+    }
+
+    [ClientRpc]
+    public void SyncPsn()
+    {
+        psnArray[0] = psn0;
+        psnArray[1] = psn1;
+        psnArray[2] = psn2;
+        psnArray[3] = psn3;
     }
 }
