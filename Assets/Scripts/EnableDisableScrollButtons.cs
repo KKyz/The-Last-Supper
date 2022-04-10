@@ -39,7 +39,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
-        Debug.Log("MenuMode is: " + menuMode);
 
         // Opens Scrolls Menu
         if (isActive == 1)

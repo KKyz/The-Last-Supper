@@ -1,23 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Mirror;
 
-public class FoodPiece : MonoBehaviour
+public class FoodPiece : NetworkBehaviour
 {
+    [SyncVar]
     public string type;
     
     [HideInInspector]
     public bool isSelectable, isRecommended;
 
-    private GameObject newRec;
-    private int typeSelect;
-
-    void Start()
+    [Server]
+    public void SetType()
     {
-        isSelectable = false;
-        isRecommended = false;
-
+        int typeSelect;
+        
         typeSelect = Random.Range(0, 100);
+        
         {
             if (typeSelect <= 2)
             {
@@ -65,5 +65,13 @@ public class FoodPiece : MonoBehaviour
             }        
 
         } 
+        
+    }
+
+    void Start()
+    {
+        isSelectable = false;
+        isRecommended = false;
+        
     }
 }

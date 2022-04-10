@@ -20,6 +20,9 @@ public class PlayerFunctions : NetworkBehaviour
 
     //[HideInInspector] 
     public StateManager stateManager;
+    
+    //[HideInInspector]
+    public MealManager mealManager;
 
     public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt;
 
@@ -34,6 +37,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
+        mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
         healthBar = GameObject.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.GetChild(2).gameObject;
@@ -52,9 +56,7 @@ public class PlayerFunctions : NetworkBehaviour
     private IEnumerator PostStartCall()
     {
         yield return new WaitForEndOfFrame();
-        
-        plate = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
-        
+
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject newPlayer in players)
         { 
@@ -93,6 +95,7 @@ public class PlayerFunctions : NetworkBehaviour
     //[Command]
     public void CmdQuake()
     {
+        plate = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
         plate.Shuffle();
         playerScrolls.AddScrollAmount(-1, 3);
         player.scrollCount += 1;
@@ -191,7 +194,7 @@ public class PlayerFunctions : NetworkBehaviour
     //[Command]
     public void CmdEncourage()
     {
-        gameManager.NextEncourage();
+        stateManager.NextEncourage();
         playerScrolls.AddScrollAmount(-1, 5);
         player.scrollCount += 1;
     }
@@ -200,6 +203,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         RpcResetActions();
         buttonToggle.ToggleButtons(6);
+        stateManager.removeActivePlayer();
         newReceipt = Instantiate(receipt, transform.position, Quaternion.identity);
         newReceipt.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "You Lose";
         newReceipt.GetComponent<ShowStats>().LoadStats(player);
@@ -254,7 +258,7 @@ public class PlayerFunctions : NetworkBehaviour
         NetworkServer.Destroy(billboard);
     }
     
-    private void SpawnBillboard(GameObject billboard)
+    private IEnumerator SpawnBillboard(GameObject billboard)
     {
         Vector3 goalPos = billboard.transform.position;
         Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
@@ -262,12 +266,21 @@ public class PlayerFunctions : NetworkBehaviour
         billboard.GetComponent<SpriteRenderer>().color = new Color (1, 1, 1, 0);
         LeanTween.alpha(billboard, 1, 0.9f);
         LeanTween.move(billboard, goalPos, 0.6f);
+        yield return 0;
+    }
+    
+    [Command(requiresAuthority = false)]
+    private void CmdCreateRecommend(GameObject flag)
+    {
+        NetworkServer.Spawn(flag);
+        StartCoroutine(SpawnBillboard(flag));
     }
 
     [Command(requiresAuthority = false)]
-    public void DestroyPiece(GameObject piece)
+    private void DestroyPiece(GameObject piece)
     {
         NetworkServer.Destroy(piece);
+        StartCoroutine(mealManager.CheckNPieces());
     }
 
     void Update()
@@ -310,7 +323,7 @@ public class PlayerFunctions : NetworkBehaviour
             if (player.health <= 0 && newReceipt == null)
             {CmdDie();}
             
-            if(stateManager.players.Count == 1 && player.actionable && newReceipt == null && stateManager.gameCanEnd && player.health > 0)
+            if(stateManager.activePlayers == 1 && newReceipt == null && stateManager.gameCanEnd && player.health > 0)
             {CmdWin();}
 
             if (player.orderVictim && newDrinkPlate == null)
@@ -334,7 +347,7 @@ public class PlayerFunctions : NetworkBehaviour
                             
                             if (foodType == "Normal")
                             {
-                                stateManager.nPieces -= 1;
+                                mealManager.nPieces -= 1;
                                 player.piecesEaten += 1;
                             }
                             
@@ -353,9 +366,12 @@ public class PlayerFunctions : NetworkBehaviour
                             if (foodType == "Poison"){CmdPoison();}
 
                             if (foodType == "Health"){CmdHealth();}
-                            
-                            if (stateManager.nPieces <= 0)
-                            {gameManager.NextCourse();}
+
+                            if (mealManager.nPieces <= 0)
+                            {
+                                mealManager.NextCourse();
+                                plate = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
+                            }
 
                             if (player.piecesEaten >= 10)
                             {
@@ -379,8 +395,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 if (piece.transform.childCount == 0)
                                 {
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
-                                    NetworkServer.Spawn(currentRecommend);
-                                    SpawnBillboard(currentRecommend);
+                                    CmdCreateRecommend(currentRecommend);
                                     currentRecommend.transform.LookAt(Camera.main.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
@@ -403,8 +418,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 {
                                     StartCoroutine(DespawnBillboard(currentRecommend));
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
-                                    NetworkServer.Spawn(currentRecommend);
-                                    SpawnBillboard(currentRecommend);
+                                    CmdCreateRecommend(currentRecommend);
                                     currentRecommend.transform.LookAt(Camera.main.transform.position);
                                     currentRecommend.transform.SetParent(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
@@ -423,7 +437,8 @@ public class PlayerFunctions : NetworkBehaviour
                                 if (smellTargets.Count <= 2)
                                 {
                                     smellTarget = Instantiate(typeFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
-                                    SpawnBillboard(smellTarget);
+                                    StopCoroutine(DespawnBillboard(smellTarget));
+                                    StartCoroutine(SpawnBillboard(smellTarget));
                                     smellTarget.transform.LookAt(Camera.main.transform.position);
                                     smellTarget.transform.SetParent(piece.transform);
                                     smellTargets.Add(piece.transform.gameObject);
@@ -441,6 +456,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 {
                                     if (child.CompareTag("TypeFlag") && child.gameObject.name != "PlantedFlag")
                                     {
+                                        StopCoroutine(SpawnBillboard(child.gameObject));
                                         StartCoroutine(DespawnBillboard(child.gameObject));
                                     }
                                 }

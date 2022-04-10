@@ -10,7 +10,7 @@ public class PlayerManager : NetworkBehaviour
 
     public bool actionable;
 
-    public bool isEncouraged, hasRecommended, orderVictim;
+    [SyncVar] public bool isEncouraged, hasRecommended, orderVictim;
 
     [SyncVar] 
     public bool psn0, psn1, psn2, psn3;

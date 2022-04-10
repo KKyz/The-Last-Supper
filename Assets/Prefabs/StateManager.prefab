@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8346021116494286420}
   - component: {fileID: 8346021116494286421}
   - component: {fileID: 8346021116494286422}
+  - component: {fileID: 3518149696456122340}
   m_Layer: 0
   m_Name: StateManager
   m_TagString: Untagged
@@ -64,7 +65,26 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   currentPlayer: {fileID: 0}
+  playerScript: {fileID: 0}
   gameCanEnd: 0
   turn: 0
+--- !u!114 &3518149696456122340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8346021116494286423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e43f8b2a03fa26b4d8bc37494471e110, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   course: 0
   nPieces: 0
+  courses:
+  - {fileID: 4723392658126809247, guid: e1025b5f8b5e2934e82472921dc7f553, type: 3}
+  - {fileID: 8136041450091477235, guid: a199bc8679c54be41a1a4ebea8fd0655, type: 3}
+  - {fileID: 2525988890905768603, guid: c2f925a9fbee68340b24423b9c981ea0, type: 3}

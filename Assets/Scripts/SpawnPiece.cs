@@ -46,11 +46,12 @@ public class SpawnPiece : NetworkBehaviour
         {
             newPiece = Instantiate(currentPiece, piecePos[i], pieceRot[i]);
             NetworkServer.Spawn(newPiece);
+            newPiece.GetComponent<FoodPiece>().SetType();
             newPiece.transform.SetParent(transform);
         }
     }
 
-    [ClientRpc]
+    [Command(requiresAuthority = false)]
     public void Shuffle()
     {
         RefreshPieceList();
