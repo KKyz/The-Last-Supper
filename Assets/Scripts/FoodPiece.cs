@@ -12,66 +12,81 @@ public class FoodPiece : NetworkBehaviour
     public bool isSelectable, isRecommended;
 
     [Server]
-    public void SetType()
+    public void SetType(bool setNorm, bool setPsn, float[] scrollProb)
     {
-        int typeSelect;
-        
-        typeSelect = Random.Range(0, 100);
-        
+        if (setNorm)
         {
-            if (typeSelect <= 2)
+            type = "Normal";
+        }
+
+        else if (setPsn)
+        {
+            type = "Poison";
+        }
+
+        else
+        {
+            List<float> accScrollProb = new List<float>();
+            //For every probability in scrollProb...
+            //Start from beginning of list and add up every element until current index
+            //Add new number into accScrollProb
+            for (int i = 0; i < scrollProb.Length; i++)
             {
-                type = "Poison";
+                float accProb = 0;
+                for (int j = 0; j < i; j++)
+                {
+                    accProb += scrollProb[j];
+                }
+                accScrollProb.Add(accProb);
             }
 
-            else if (3 <= typeSelect && typeSelect <= 10)
+            float prob = (Random.Range(0, 100))/100;
+            if (prob <= accScrollProb[0])
             {
                 type = "Order";
             }
 
-            else if (10 <= typeSelect && typeSelect <= 17)
+            else if (prob <= accScrollProb[1])
             {
                 type = "Quake";
             }
 
-            else if (18 <= typeSelect && typeSelect <= 23)
+            else if (prob <= accScrollProb[2])
             {
                 type = "Smell";
             }
 
-            else if (24 <= typeSelect && typeSelect <= 28)
+            else if (prob <= accScrollProb[3])
             {
                 type = "Health";
             }
 
-            else if (29 <= typeSelect && typeSelect <= 35)
+            else if (prob <= accScrollProb[4])
             {
                 type = "Slap";
             }
 
-            else if (36 <= typeSelect && typeSelect <= 42)
+            else if (prob <= accScrollProb[5])
             {
                 type = "Skip";
             }
 
-            else if (43 <= typeSelect && typeSelect <= 52)
+            else if (prob <= accScrollProb[6])
             {
                 type = "Encourage";
             }
+        }     
+    }
 
-            else if (53 <= typeSelect)
-            {
-                type = "Normal";
-            }        
-
-        } 
-        
+    [Server]
+    public void FakePsn()
+    {
+        type = "FakePoison";
     }
 
     void Start()
     {
         isSelectable = false;
         isRecommended = false;
-        
     }
 }

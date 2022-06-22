@@ -63,4 +63,12 @@ public class StateManager : NetworkBehaviour
         else
         {NetworkServer.spawned[players[0]].GetComponent<PlayerManager>().isEncouraged = true;}
     }
+
+    public void NextEject()
+    {
+        if (turn < players.Count - 1)
+        {NetworkServer.spawned[players[turn + 1]].gameObject.GetComponent<PlayerFunctions>().CmdDie();}
+        else
+        {NetworkServer.spawned[players[0]].gameObject.GetComponent<PlayerFunctions>().CmdDie();}
+    }
 }

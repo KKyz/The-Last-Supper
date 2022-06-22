@@ -18,7 +18,7 @@ public class SetFlagType : MonoBehaviour
         LeanTween.alpha(gameObject, 0, 0.7f);
         yield return new WaitForSeconds(0.71f);
 
-        if (type == "Poison")
+        if (type == "Poison" || type == "FakePoison")
         {
             currentFlag = flags[0];
         }

@@ -27,7 +27,7 @@ public class PlayerFunctions : NetworkBehaviour
     public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt;
 
     private EnableDisableScrollButtons buttonToggle;
-    private bool isEating, isRecommending, isSmelling;
+    public string currentState;
     private GameObject currentRecommend, smellTarget, smellConfirm, newDrinkPlate, newReceipt, openDrinkMenu;
     private ShowHealth healthBar;
     private string pieceType;
@@ -42,11 +42,9 @@ public class PlayerFunctions : NetworkBehaviour
         healthBar = GameObject.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.GetChild(2).gameObject;
 
-        isEating = false;
-        isRecommending = false;
+        currentState = "Idle";
         player = null;
         newReceipt = null;
-        isSmelling = false;
         smellConfirm.SetActive(false);
         smellTargets.Clear();
 
@@ -123,9 +121,7 @@ public class PlayerFunctions : NetworkBehaviour
     //[Command]
     public void CmdSmell()
     {
-        isRecommending = false;
-        isSmelling = true;
-        isEating = false;
+        currentState = "Smelling";
         CmdStartAction();
     }
 
@@ -149,8 +145,27 @@ public class PlayerFunctions : NetworkBehaviour
         smellConfirm.SetActive(false);
         playerScrolls.AddScrollAmount(-1, 2);
         player.scrollCount += 1;
-        isSmelling = false;
+        currentState = "Idle";
         CmdCancelAction();
+    }
+
+    public void CmdFakePoison()
+    {
+        currentState = "Poisoning";
+        CmdStartAction();
+    }
+
+    public void CmdSwap()
+    {
+        currentState = "Swapping";
+        CmdStartAction();
+    }
+
+    public void CmdEject()
+    {
+        stateManager.NextEject();
+        playerScrolls.AddScrollAmount(-1, 5);
+        player.scrollCount += 1;
     }
 
     
@@ -176,18 +191,14 @@ public class PlayerFunctions : NetworkBehaviour
     //[Command]
     public void CmdEat()
     {
-        isEating = true;
-        isRecommending = false;
-        isSmelling = false;
+        currentState = "Eating";
         CmdStartAction();
     }
 
     //[Command]
     public void CmdRecommend()
     {
-        isRecommending = true;
-        isSmelling = false;
-        isEating = false;
+        currentState = "Recommending";
         CmdStartAction();
     }
 
@@ -199,7 +210,7 @@ public class PlayerFunctions : NetworkBehaviour
         player.scrollCount += 1;
     }
 
-    private void CmdDie()
+    public void CmdDie()
     {
         RpcResetActions();
         buttonToggle.ToggleButtons(6);
@@ -222,9 +233,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void RpcResetActions()
     {
-        isEating = false;
-        isRecommending = false;
-        isSmelling = false;
+        currentState = "Idle";
         player.orderVictim = false;
         CmdCancelAction();
 
@@ -312,7 +321,7 @@ public class PlayerFunctions : NetworkBehaviour
 
             if (Input.GetKeyDown("6")){CmdEat();}
 
-            if (Input.GetKeyDown("7")){isRecommending = true; Debug.Log("Ready to recommend");}
+            if (Input.GetKeyDown("7")){currentState = "Recommending"; Debug.Log("Ready to recommend");}
             
             if (Input.GetKeyDown("8")){CmdSmell(); Debug.Log("Ready to smell");}
 
@@ -339,16 +348,22 @@ public class PlayerFunctions : NetworkBehaviour
                     if (piece.transform.CompareTag("FoodPiece"))
                     {
                         //Where the player is eating
-                        if (isEating)
+                        if (currentState == "Eating")
                         {
                 
                             string foodType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
                             Debug.Log(foodType);
                             
+                            player.piecesEaten += 1;
+
+                            if (foodType == "Poison")
+                            {
+                                mealManager.pPieces -= 1;
+                            }
+
                             if (foodType == "Normal")
                             {
                                 mealManager.nPieces -= 1;
-                                player.piecesEaten += 1;
                             }
                             
                             if (foodType == "Slap"){playerScrolls.AddScrollAmount(1, 0);}
@@ -381,13 +396,13 @@ public class PlayerFunctions : NetworkBehaviour
                             
                             DestroyPiece(piece.transform.gameObject);
                             player.pieceCount += 1;
-                            isEating = false;
+                            currentState = "Idle";
                             CmdCancelAction();
                             RpcResetActions();
                             stateManager.SetCurrentPlayer();
                         }
 
-                        if (isRecommending)
+                        else if (currentState == "Recommending")
                         {
                             if (player.recommendedPiece == null)
                             {
@@ -425,12 +440,12 @@ public class PlayerFunctions : NetworkBehaviour
                                 }
                             }
                             
-                            isRecommending = false;
+                            currentState = "Idle";
                             player.hasRecommended = true;
                             CmdCancelAction();
                         }
 
-                        if (isSmelling)
+                        else if (currentState == "Smelling")
                         {
                             if (!smellTargets.Contains(piece.transform.gameObject))
                             {
@@ -464,6 +479,44 @@ public class PlayerFunctions : NetworkBehaviour
                                 smellTargets.Remove(piece.transform.gameObject);
                                 smellConfirm.SetActive(false);
                             }
+                        }
+
+                        else if (currentState == "Poisoning")
+                        {
+                            piece.transform.GetComponent<FoodPiece>().FakePsn();
+                        }
+
+                        else if (currentState == "Swapping")
+                        {
+                            Transform tempTransform;
+                            Transform piece1 = null;
+                            Transform piece2 = null;
+
+                            if (piece1 == null && piece2 == null)
+                            {
+                                piece1 = piece.transform;
+                            }
+
+                            else if (piece1 != null && piece2 == null)
+                            {
+                                piece2 = piece.transform;
+                            }
+
+                            else if (piece.transform == piece1)
+                            {
+                                piece1 = null;
+                            }
+
+                            else if (piece.transform == piece2)
+                            {
+                                piece2 = null;
+                            }
+
+                        }
+
+                        else if (currentState != "Idle")
+                        {
+                            Debug.LogWarning("STATE NOT FOUND");
                         }
                     }
                 }

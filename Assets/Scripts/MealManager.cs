@@ -2,16 +2,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using TMPro;
 
 public class MealManager : NetworkBehaviour
 {
-    [SyncVar] public int course, nPieces;
+    [SyncVar] public int course, nPieces, pPieces;
 
     private StateManager stateManager;
+
+    public TextMeshProUGUI psnCounter, normCounter;
 
     void Start()
     {
         stateManager = gameObject.GetComponent<StateManager>();
+        psnCounter = GameObject.Find("PsnCounter").GetComponent<TextMeshProUGUI>();
+        normCounter = GameObject.Find("NormCounter").GetComponent<TextMeshProUGUI>();
     }
 
     public List<GameObject> courses = new List<GameObject>();
@@ -22,11 +27,19 @@ public class MealManager : NetworkBehaviour
         //Checks # of normal pieces (used to swap plates)
         yield return 0;
         nPieces = 0;
+        pPieces = 0;
+
         foreach (Transform piece in currentPlate.transform)
         {
             if (piece.transform.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Normal")
             {nPieces += 1;}
+
+            if (piece.transform.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Poison")
+            {pPieces += 1;}
         }
+
+        psnCounter.text = pPieces.ToString();
+        normCounter.text = nPieces.ToString();
     }
     
     [Command(requiresAuthority = false)]
