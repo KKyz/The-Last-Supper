@@ -15,9 +15,6 @@ public class PlayerFunctions : NetworkBehaviour
     //[HideInInspector]
     public PlayerManager player;
 
-    //[HideInInspector]
-    public GameManager gameManager;
-
     //[HideInInspector] 
     public StateManager stateManager;
     
@@ -28,19 +25,19 @@ public class PlayerFunctions : NetworkBehaviour
 
     private EnableDisableScrollButtons buttonToggle;
     public string currentState;
-    private GameObject currentRecommend, smellTarget, smellConfirm, newDrinkPlate, newReceipt, openDrinkMenu;
+    private GameObject currentRecommend, smellTarget, smellConfirm, newDrinkPlate, newReceipt, openDrinkMenu, vomitSplash;
     private ShowHealth healthBar;
     private string pieceType;
     private List<GameObject> smellTargets = new List<GameObject>();
 
     void Start()
     {
-        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
         healthBar = GameObject.Find("HealthBar").GetComponent<ShowHealth>();
-        smellConfirm = transform.GetChild(2).gameObject;
+        vomitSplash = transform.GetChild(0).gameObject;
+        smellConfirm = transform.GetChild(3).gameObject;
 
         currentState = "Idle";
         player = null;
@@ -65,7 +62,7 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
     }
-    
+
     //[Command]
     public void CmdStartAction()
     {
@@ -79,15 +76,22 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     //[Command]
-    public void CmdPoison()
+    public void CmdPoison(bool splash)
     {
-        if (player.health >= 1){player.health -= 1; healthBar.SetHealth(player.health);}
+        if (player.health >= 1)
+        {
+            player.health -= 1; healthBar.SetHealth(player.health);
+            if (splash)
+            {
+                vomitSplash.SetActive(true);
+            }
+        }
     }
 
     //[Command]
     public void CmdHealth()
     {
-        if (player.health < 2){player.health += 1; healthBar.SetHealth(player.health);}
+        if (player.health < 3){player.health += 1; healthBar.SetHealth(player.health);}
     }
 
     //[Command]
@@ -269,6 +273,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     private IEnumerator SpawnBillboard(GameObject billboard)
     {
+        billboard.transform.LookAt(Camera.main.transform.position);
         Vector3 goalPos = billboard.transform.position;
         Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
         billboard.transform.position = startPos;
@@ -277,19 +282,36 @@ public class PlayerFunctions : NetworkBehaviour
         LeanTween.move(billboard, goalPos, 0.6f);
         yield return 0;
     }
-    
-    [Command(requiresAuthority = false)]
-    private void CmdCreateRecommend(GameObject flag)
+
+    [ClientRpc]
+    public void RpcSpawnBillboard(GameObject billboard)
     {
-        NetworkServer.Spawn(flag);
-        StartCoroutine(SpawnBillboard(flag));
+        //Use this method to call SpawnBillboard on ALL clients rather than just locally
+        StartCoroutine(SpawnBillboard(billboard));
+    }
+    
+    [ClientRpc]
+    public void RpcDespawnBillboard(GameObject billboard)
+    {
+        //Use this method to call SpawnBillboard on ALL clients rather than just locally
+        StartCoroutine(DespawnBillboard(billboard));
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdCreateRecommend(Transform piece)
+    {
+        //Add Authority to this function
+        currentRecommend.transform.SetParent(piece);
+        NetworkServer.Spawn(currentRecommend);
+        RpcSpawnBillboard(currentRecommend);
     }
 
     [Command(requiresAuthority = false)]
     private void DestroyPiece(GameObject piece)
     {
+        //Add Authority to this function
         NetworkServer.Destroy(piece);
-        StartCoroutine(mealManager.CheckNPieces());
+        mealManager.CheckNPieces();
     }
 
     void Update()
@@ -309,7 +331,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (player != null && player.actionable)
         {
 
-            if (Input.GetKeyDown("1")){CmdPoison();}
+            if (Input.GetKeyDown("1")){CmdPoison(true);}
 
             if (Input.GetKeyDown("2")){CmdQuake();}
 
@@ -378,7 +400,7 @@ public class PlayerFunctions : NetworkBehaviour
                             
                             if (foodType == "Encourage"){playerScrolls.AddScrollAmount(1, 5);}
 
-                            if (foodType == "Poison"){CmdPoison();}
+                            if (foodType == "Poison"){CmdPoison(true);}
 
                             if (foodType == "Health"){CmdHealth();}
 
@@ -410,9 +432,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 if (piece.transform.childCount == 0)
                                 {
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
-                                    CmdCreateRecommend(currentRecommend);
-                                    currentRecommend.transform.LookAt(Camera.main.transform.position);
-                                    currentRecommend.transform.SetParent(piece.transform);
+                                    CmdCreateRecommend(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
                                 }
 
@@ -424,18 +444,16 @@ public class PlayerFunctions : NetworkBehaviour
                                 //Just destroy flag
                                 if (piece.transform.gameObject == player.recommendedPiece)
                                 {
-                                    StartCoroutine(DespawnBillboard(currentRecommend));
+                                    RpcDespawnBillboard(currentRecommend);
                                     player.recommendedPiece = null;
                                 }
 
                                 //Replace flag with a new one at a different piece
                                 else
                                 {
-                                    StartCoroutine(DespawnBillboard(currentRecommend));
+                                    RpcDespawnBillboard(currentRecommend);
                                     currentRecommend = Instantiate(recommendFlag, new Vector3(piece.transform.position.x + 0.75f, piece.transform.position.y + 1f, piece.transform.position.z), Quaternion.identity);
-                                    CmdCreateRecommend(currentRecommend);
-                                    currentRecommend.transform.LookAt(Camera.main.transform.position);
-                                    currentRecommend.transform.SetParent(piece.transform);
+                                    CmdCreateRecommend(piece.transform);
                                     player.recommendedPiece = piece.transform.gameObject;
                                 }
                             }
@@ -459,7 +477,7 @@ public class PlayerFunctions : NetworkBehaviour
                                     smellTargets.Add(piece.transform.gameObject);
                                 }
 
-                                if (smellTargets.Count >= 3)
+                                if (smellTargets.Count >= 1)
                                 {
                                     smellConfirm.SetActive(true);
                                 }
@@ -488,30 +506,27 @@ public class PlayerFunctions : NetworkBehaviour
 
                         else if (currentState == "Swapping")
                         {
-                            Transform tempTransform;
-                            Transform piece1 = null;
-                            Transform piece2 = null;
-
-                            if (piece1 == null && piece2 == null)
-                            {
-                                piece1 = piece.transform;
-                            }
-
-                            else if (piece1 != null && piece2 == null)
-                            {
-                                piece2 = piece.transform;
-                            }
-
-                            else if (piece.transform == piece1)
-                            {
-                                piece1 = null;
-                            }
-
-                            else if (piece.transform == piece2)
-                            {
-                                piece2 = null;
-                            }
-
+                            // string stringHold;
+                            // string piece1Type = null;
+                            // string piece2Type = null;
+                            //
+                            // if (piece1Type == null)
+                            // {
+                            //     piece1Type = piece.transform.GetComponent<FoodPiece>().type;
+                            // }
+                            //
+                            // else if (piece2Type == null)
+                            // {
+                            //     piece2Type = piece.transform.GetComponent<FoodPiece>().type;
+                            // }
+                            //
+                            // while (piece1Type != null || piece2Type != null)
+                            // {
+                            //     if (piece1Type == null)
+                            //     {
+                            //         piece1Type = piece.transform;
+                            //     }
+                            // }
                         }
 
                         else if (currentState != "Idle")

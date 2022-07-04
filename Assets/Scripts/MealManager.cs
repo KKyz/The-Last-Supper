@@ -22,10 +22,9 @@ public class MealManager : NetworkBehaviour
     public List<GameObject> courses = new List<GameObject>();
     private GameObject currentPlate;
     
-    public IEnumerator CheckNPieces()
+    public void CheckNPieces()
     {
         //Checks # of normal pieces (used to swap plates)
-        yield return 0;
         nPieces = 0;
         pPieces = 0;
 
@@ -42,9 +41,10 @@ public class MealManager : NetworkBehaviour
         normCounter.text = nPieces.ToString();
     }
     
-    [Command(requiresAuthority = false)]
+    
     public void NextCourse()
     {
+        //Add Authority
         Debug.Log("Next Course!");
         course += 1;
 
@@ -73,7 +73,7 @@ public class MealManager : NetworkBehaviour
         }
 
         NetworkServer.Spawn(currentPlate);
-        StartCoroutine(CheckNPieces());
+        CheckNPieces();
         currentPlate.transform.SetParent(transform);
     }
 }

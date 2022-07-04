@@ -12,14 +12,14 @@ public class FoodPiece : NetworkBehaviour
     public bool isSelectable, isRecommended;
 
     [Server]
-    public void SetType(bool setNorm, bool setPsn, float[] scrollProb)
+    public void SetType(int mode, float[] scrollProb)
     {
-        if (setNorm)
+        if (mode == 0)
         {
             type = "Normal";
         }
 
-        else if (setPsn)
+        else if (mode == 1)
         {
             type = "Poison";
         }
@@ -30,7 +30,8 @@ public class FoodPiece : NetworkBehaviour
             //For every probability in scrollProb...
             //Start from beginning of list and add up every element until current index
             //Add new number into accScrollProb
-            for (int i = 0; i < scrollProb.Length; i++)
+
+            for (int i = 1; i <= scrollProb.Length; i++)
             {
                 float accProb = 0;
                 for (int j = 0; j < i; j++)
@@ -40,7 +41,17 @@ public class FoodPiece : NetworkBehaviour
                 accScrollProb.Add(accProb);
             }
 
-            float prob = (Random.Range(0, 100))/100;
+            // string scrollResult = "piecePos: ";
+            // foreach (var item in accScrollProb)
+            // {
+            //     scrollResult += item.ToString() + ", ";
+            // }
+            // Debug.LogWarning(scrollResult);
+
+
+            //Setting random.range as float as dividing integer by integer results in rounding to 0
+
+            float prob = (float)Random.Range(0, 100)/100;
             if (prob <= accScrollProb[0])
             {
                 type = "Order";

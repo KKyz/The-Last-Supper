@@ -14,8 +14,8 @@ public class SpawnPiece : NetworkBehaviour
     private Quaternion newRandRot;
     public int normalCount, psnCount, scrollCount;
     public float[] scrollProbability;
-    public GameObject currentPiece;
-    
+    public GameObject[] currentPiece;
+
     public void Start()
     {  
         RefreshPieceList();
@@ -48,36 +48,39 @@ public class SpawnPiece : NetworkBehaviour
         //Until i = scrollPiece keep adding scroll pieces
         //Code will check what the percentage of scroll pieces should be
         
-        for (int i = 0; i < normalPiece; i++)
+        for (int i = normalPiece; i > 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
-            newPiece = Instantiate(currentPiece, piecePos[j], pieceRot[j]);
+            int k = Random.Range(0, currentPiece.Length - 1);
+            newPiece = Instantiate(currentPiece[k], piecePos[j], pieceRot[j]);
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
-            newPiece.GetComponent<FoodPiece>().SetType(true, false, null);
+            newPiece.GetComponent<FoodPiece>().SetType(0, null);
             newPiece.transform.SetParent(transform);
         }
 
-        for (int i = 0; i < psnPiece; i++)
+        for (int i = psnPiece; i > 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
-            newPiece = Instantiate(currentPiece, piecePos[j], pieceRot[j]);
+            int k = Random.Range(0, currentPiece.Length - 1);
+            newPiece = Instantiate(currentPiece[k], piecePos[j], pieceRot[j]);
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
-            newPiece.GetComponent<FoodPiece>().SetType(false, true, null);
+            newPiece.GetComponent<FoodPiece>().SetType(1, null);
             newPiece.transform.SetParent(transform);
         }
 
-        for (int i = 0; i < scrollPiece; i++)
+        for (int i = scrollPiece - 1; i >= 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
-            newPiece = Instantiate(currentPiece, piecePos[j], pieceRot[j]);
+            int k = Random.Range(0, currentPiece.Length - 1);
+            newPiece = Instantiate(currentPiece[k], piecePos[j], pieceRot[j]);
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
-            newPiece.GetComponent<FoodPiece>().SetType(false, false, scrollProbability);
+            newPiece.GetComponent<FoodPiece>().SetType(2, scrollProbability);
             newPiece.transform.SetParent(transform);
         }
     }

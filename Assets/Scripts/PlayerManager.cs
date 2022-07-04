@@ -17,7 +17,7 @@ public class PlayerManager : NetworkBehaviour
 
     public bool[] psnArray = new bool[4];
 
-    [HideInInspector] public GameObject recommendedPiece;
+    public GameObject recommendedPiece;
     
     private GameObject playerCam;
 

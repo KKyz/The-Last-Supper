@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using Mirror.Examples.Chat;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class OrderDrink : MonoBehaviour
 {
     public Sprite psnWine, normalWine;
     private Transform buttons, wines;
+    private PlayerFunctions playerFunctions;
     private PlayerManager victim;
     private bool takeHealth;
     private bool[] psnArray = new bool[4];
@@ -28,6 +30,7 @@ public class OrderDrink : MonoBehaviour
         buttons = transform.Find("Buttons");
         wines = transform.Find("Wines");
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
+        playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         buttonToggle =  buttonToggle = GameObject.Find("PlayerCanvas").GetComponent<EnableDisableScrollButtons>();
 
         if (stateManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
@@ -147,7 +150,7 @@ public class OrderDrink : MonoBehaviour
 
         if (takeHealth)
         {
-            stateManager.currentPlayer.GetComponent<PlayerManager>().health -= 1;
+            playerFunctions.CmdPoison(false);
         }
 
         CloseMenu();

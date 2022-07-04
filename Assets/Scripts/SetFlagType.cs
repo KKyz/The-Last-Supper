@@ -46,9 +46,21 @@ public class SetFlagType : MonoBehaviour
         {
             currentFlag = flags[6];
         }
-        else
+        else if (type == "Encourage")
         {
             currentFlag = flags[7];
+        }
+        else if (type == "Fake")
+        {
+            currentFlag = flags[8];
+        }
+        else if (type == "Swap")
+        {
+            currentFlag = flags[9];
+        }
+        else
+        {
+            currentFlag = flags[10];
         }
         
         LeanTween.alpha(gameObject, 1, 0.7f);

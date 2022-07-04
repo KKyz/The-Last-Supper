@@ -127,7 +127,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             cancelButton.SetActive(false);
         }
 
-        //Disables everything (no exceptions)
+        //Disables everything (no exceptions, used for end of game or disconnect)
 
         else if (isActive == 6)
         {
@@ -149,9 +149,9 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     {
         if (menuMode == 1)
         {
-            for (int i = 1; i <= 4; i++)
+            for (int i = 1; i < scrollButtons.childCount; i++)
             {
-                if (playerScrollArray.GetValue((i + 1)).amount > 0){scrollButtons.GetChild(i).gameObject.SetActive(true);}
+                if (playerScrollArray.GetValue((i)).amount > 0){scrollButtons.GetChild(i).gameObject.SetActive(true);}
                 else{scrollButtons.GetChild(i).gameObject.SetActive(false);}
             }           
         }

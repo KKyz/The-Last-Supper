@@ -247,7 +247,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  currentPiece: {fileID: 6399384744527095782, guid: ddb9140e1236dd94a8eac5fd1bbe5893, type: 3}
+  normalCount: 3
+  psnCount: 4
+  scrollCount: 2
+  scrollProbability:
+  - 0.143
+  - 0.143
+  - 0.143
+  - 0.143
+  - 0.143
+  - 0.143
+  - 0.143
+  currentPiece:
+  - {fileID: 6399384744527095782, guid: ddb9140e1236dd94a8eac5fd1bbe5893, type: 3}
 --- !u!114 &-8581689013261450315
 MonoBehaviour:
   m_ObjectHideFlags: 0
