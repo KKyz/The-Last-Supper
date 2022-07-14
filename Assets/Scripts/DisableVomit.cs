@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DisableVomit : MonoBehaviour
@@ -11,9 +10,8 @@ public class DisableVomit : MonoBehaviour
 
     private IEnumerator DisableSplash()
     {
-        LeanTween.alpha(gameObject, 0, 0.5f);
+        LeanTween.alpha(gameObject, 0f, 0.5f);
         yield return new WaitForSeconds(0.7f);
         gameObject.SetActive(false);
     }
-
 }

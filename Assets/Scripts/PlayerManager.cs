@@ -10,13 +10,15 @@ public class PlayerManager : NetworkBehaviour
 
     public bool actionable;
 
-    [SyncVar] public bool isEncouraged, hasRecommended, orderVictim;
+    [SyncVar] 
+    public bool isEncouraged, hasRecommended, orderVictim;
 
     [SyncVar] 
     public bool psn0, psn1, psn2, psn3;
 
     public bool[] psnArray = new bool[4];
-
+    
+    [SyncVar]
     public GameObject recommendedPiece;
     
     private GameObject playerCam;
@@ -40,16 +42,26 @@ public class PlayerManager : NetworkBehaviour
             psnArray[i] = false;
         }
 
-        playerCam = transform.GetChild(0).gameObject;
-        if(!isLocalPlayer) {playerCam.SetActive(false);}
+        playerCam = transform.Find("Camera").gameObject;
+        if (!isLocalPlayer)
+        {
+            playerCam.SetActive(false);
+        }
     }
-
-    [ClientRpc]
+    
+    
     public void SyncPsn()
     {
+        /*Shouldn't this function run on both server and specific client? (Is TargetRpc required?)*/
+        
         psnArray[0] = psn0;
         psnArray[1] = psn1;
         psnArray[2] = psn2;
         psnArray[3] = psn3;
+    }
+
+    public void Eject()
+    {
+        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().CmdDie();
     }
 }

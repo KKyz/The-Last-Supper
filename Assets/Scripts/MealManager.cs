@@ -6,46 +6,47 @@ using TMPro;
 
 public class MealManager : NetworkBehaviour
 {
-    [SyncVar] public int course, nPieces, pPieces;
+    [SyncVar] public int course, nPieces;
 
     private StateManager stateManager;
 
-    public TextMeshProUGUI psnCounter, normCounter;
+    public TextMeshProUGUI normCounter;
 
     void Start()
     {
         stateManager = gameObject.GetComponent<StateManager>();
-        psnCounter = GameObject.Find("PsnCounter").GetComponent<TextMeshProUGUI>();
         normCounter = GameObject.Find("NormCounter").GetComponent<TextMeshProUGUI>();
     }
 
     public List<GameObject> courses = new List<GameObject>();
     private GameObject currentPlate;
     
-    public void CheckNPieces()
+    public IEnumerator CheckNPieces()
     {
         //Checks # of normal pieces (used to swap plates)
+        
+        yield return 0; //DO NOT REMOVE THIS, IT NEEDS YIELD RETURN 0 IN ORDER TO CHECK W PLATE PROPER
         nPieces = 0;
-        pPieces = 0;
 
         foreach (Transform piece in currentPlate.transform)
         {
-            if (piece.transform.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Normal")
+            if (piece.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Normal")
             {nPieces += 1;}
-
-            if (piece.transform.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Poison")
-            {pPieces += 1;}
         }
+        
+        UpdatePieceCounters();
+    }
 
-        psnCounter.text = pPieces.ToString();
+    [ClientRpc]
+    public void UpdatePieceCounters()
+    {
         normCounter.text = nPieces.ToString();
     }
     
-    
+    [Command(requiresAuthority = false)]
     public void NextCourse()
     {
         //Add Authority
-        Debug.Log("Next Course!");
         course += 1;
 
         foreach (uint playerID in stateManager.players)
@@ -73,7 +74,8 @@ public class MealManager : NetworkBehaviour
         }
 
         NetworkServer.Spawn(currentPlate);
-        CheckNPieces();
         currentPlate.transform.SetParent(transform);
+        /* This function doesn't run on clients*/
+        StartCoroutine(CheckNPieces());
     }
 }

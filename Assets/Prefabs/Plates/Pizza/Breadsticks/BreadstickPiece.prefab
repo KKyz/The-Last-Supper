@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3352256514666492453}
   - component: {fileID: -2264889489222866775}
   - component: {fileID: -4704984123868409410}
-  - component: {fileID: -5209147504414359790}
+  - component: {fileID: 8217100307601365566}
   m_Layer: 0
   m_Name: BreadstickPiece
   m_TagString: FoodPiece
@@ -110,10 +110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7d4980e22067c44ad3994bfa153c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   type: 
-  isSelectable: 0
-  isRecommended: 0
-  recSign: {fileID: 8617076803369267631, guid: 1f65f40ba6cee8642b6e059e356a7408, type: 3}
+  recommendFlag: {fileID: 0}
 --- !u!114 &-4704984123868409410
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
   visible: 0
   m_AssetId: 8a6849cffd5ab2145a687d092f4340a8
   hasSpawned: 0
---- !u!114 &-5209147504414359790
+--- !u!114 &8217100307601365566
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

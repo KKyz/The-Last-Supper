@@ -7,19 +7,21 @@ using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
-    public GameObject startMenu;
+    public GameObject startMenu, blur;
 
     private void Start()
     {
+        blur = transform.Find("Blur").gameObject;
+        startMenu = transform.Find("Start").gameObject;
         OpenMainMenu();
     }
 
-    public void OpenMenu(GameObject MenuObj)
+    public void OpenMenu(GameObject MenuCont)
     {
-        MenuObj.SetActive(true);
+        MenuCont.SetActive(true);
         startMenu.SetActive(false);
 
-        foreach (Transform menuObj in MenuObj.transform)
+        foreach (Transform menuObj in MenuCont.transform)
         {
             if (menuObj.CompareTag("TitleMenu"))
             {
@@ -53,17 +55,17 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void CloseMenu(GameObject MenuObj)
+    public void CloseMenu(GameObject MenuCont)
     {
-        StartCoroutine(CloseMenuTween(MenuObj));
+        StartCoroutine(CloseMenuTween(MenuCont));
         startMenu.SetActive(true);
         
         OpenMainMenu();
     }
 
-    private IEnumerator CloseMenuTween(GameObject MenuObj)
+    private IEnumerator CloseMenuTween(GameObject MenuCont)
     {
-        foreach (Transform menuObj in MenuObj.transform)
+        foreach (Transform menuObj in MenuCont.transform)
         {
             if (menuObj.CompareTag("TitleMenu"))
             {
@@ -83,6 +85,6 @@ public class MenuManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(1f);
-        MenuObj.SetActive(false);
+        MenuCont.SetActive(false);
     }
 }

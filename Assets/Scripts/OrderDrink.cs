@@ -37,6 +37,9 @@ public class OrderDrink : MonoBehaviour
         {psnButton.SetActive(true);}
         else {psnButton.SetActive(false);}
 
+        /* This for loop doesn't work on client end as the client somehow cannot see stateManager.players,
+         despite it being perfectly visible in both server and clients' inspector of StateManager*/
+        
         foreach (uint playerID in stateManager.players)
         {
             GameObject player = NetworkServer.spawned[playerID].gameObject;
@@ -56,7 +59,7 @@ public class OrderDrink : MonoBehaviour
         {orderButton.SetActive(true);}
         else {orderButton.SetActive(false);}
 
-        if (victim != null && stateManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
+        if (victim != null && stateManager.currentPlayer.GetComponent<PlayerManager>().health >= 2)
         {psnButton.SetActive(true);}
         else {psnButton.SetActive(false);}
     }
@@ -68,19 +71,22 @@ public class OrderDrink : MonoBehaviour
         ChangeAmount();
     }
 
+    // Updates wine sprites according to which booleans within psnArray are set to true
     private void UpdateWine()
     {
         if (victim != null)
         {
-            foreach (bool poison in psnArray)
+            for (int i = 0; i <= psnArray.Length - 1; i++)
             {
-                foreach (Transform wine in wines)
+                if (psnArray[i])
                 {
-                    if (poison)
-                    {
-                        wine.gameObject.GetComponent<Image>().sprite = psnWine;
-                    }
-                    else {wine.gameObject.GetComponent<Image>().sprite = normalWine;}
+                    Debug.Log("This has poison");
+                    wines.GetChild(i).GetComponent<Image>().sprite = psnWine;
+                }
+
+                else
+                {
+                    wines.GetChild(i).GetComponent<Image>().sprite = normalWine;
                 }
             }
         }
@@ -118,7 +124,6 @@ public class OrderDrink : MonoBehaviour
                 psnArray[k] = true;
 
             }
-            UpdateWine();
             psnButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "Poison One Drink \n (No Cost)";
             
         }
@@ -132,26 +137,31 @@ public class OrderDrink : MonoBehaviour
                     psnArray[j] = true;
                 }
             }
-            UpdateWine();
             psnButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "Poison Two Drinks \n (Costs One Heart)";
         }
+        
+        UpdateWine();
+    }
+
+    public void Order()
+    {
+        /*This function runs fine on server side (even though you can't see psn(0-3) changing),
+        but only changes psnArray in the local instance of victim, and not victim in ALL instances*/
         
         victim.psn0 = psnArray[0];
         victim.psn1 = psnArray[1];
         victim.psn2 = psnArray[2];
         victim.psn3 = psnArray[3];
-        
-    }
-
-    public void Order()
-    {
         victim.SyncPsn();
+        
         victim.orderVictim = true;
 
         if (takeHealth)
         {
             playerFunctions.CmdPoison(false);
         }
+        
+        playerFunctions.RemoveDrinkScroll();
 
         CloseMenu();
     }

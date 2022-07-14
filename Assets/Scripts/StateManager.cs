@@ -24,13 +24,13 @@ public class StateManager : NetworkBehaviour
     public int turn;
 
     [Command(requiresAuthority = false)]
-    public void removeActivePlayer()
+    public void RemoveActivePlayer()
     {
         activePlayers -= 1;
     }
     
     [Command(requiresAuthority = false)]
-    public void SetCurrentPlayer()
+    public void NextPlayer()
     {
         if (playerScript.isEncouraged)
         {
@@ -58,17 +58,20 @@ public class StateManager : NetworkBehaviour
     public void NextEncourage()
     {
         //Function called by PlayerFunctions to trigger encourage of next player
+        //Add Authority
         if (turn < players.Count - 1)
         {NetworkServer.spawned[players[turn + 1]].gameObject.GetComponent<PlayerManager>().isEncouraged = true;}
         else
         {NetworkServer.spawned[players[0]].GetComponent<PlayerManager>().isEncouraged = true;}
     }
 
+    [Command(requiresAuthority = false)]
     public void NextEject()
     {
+        //Add Authority
         if (turn < players.Count - 1)
-        {NetworkServer.spawned[players[turn + 1]].gameObject.GetComponent<PlayerFunctions>().CmdDie();}
+        {NetworkServer.spawned[players[turn + 1]].gameObject.GetComponent<PlayerManager>().Eject();}
         else
-        {NetworkServer.spawned[players[0]].gameObject.GetComponent<PlayerFunctions>().CmdDie();}
+        {NetworkServer.spawned[players[0]].gameObject.GetComponent<PlayerManager>().Eject();}
     }
 }

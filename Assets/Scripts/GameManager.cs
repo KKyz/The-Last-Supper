@@ -19,11 +19,13 @@ public class GameManager : NetworkManager
         {
             if (!stateManager.players.Contains(newPlayer.GetComponent<NetworkIdentity>().netId))
             {
-                newPlayer.name = "Player: " + UnityEngine.Random.Range(0, 999).ToString();
+                newPlayer.name = "Player: " + Random.Range(0, 999);
                 stateManager.players.Add(newPlayer.GetComponent<NetworkIdentity>().netId);
                 stateManager.activePlayers += 1;
             }
         }
+        
+        StartCoroutine(PostJoinCall());
 
         if (stateManager.players.Count == 1)
         {
@@ -39,7 +41,7 @@ public class GameManager : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        stateManager.removeActivePlayer();
+        stateManager.RemoveActivePlayer();
     }
 
     public override void OnStartServer()
@@ -58,5 +60,13 @@ public class GameManager : NetworkManager
         stateManager.currentPlayer = NetworkClient.spawned[stateManager.players[0]].gameObject;
         stateManager.playerScript = stateManager.currentPlayer.GetComponent<PlayerManager>();
         Debug.Log(stateManager.currentPlayer.name);
+    }
+
+    private IEnumerator PostJoinCall()
+    {
+        for (int i = 0; i <= 5; i++)
+        {yield return 0;}
+
+        mealManager.UpdatePieceCounters();
     }
 }

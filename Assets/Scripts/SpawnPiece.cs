@@ -14,6 +14,7 @@ public class SpawnPiece : NetworkBehaviour
     private Quaternion newRandRot;
     public int normalCount, psnCount, scrollCount;
     public float[] scrollProbability;
+    public Sprite chalkBoard;
     public GameObject[] currentPiece;
 
     public void Start()
@@ -29,23 +30,29 @@ public class SpawnPiece : NetworkBehaviour
         
         foreach (Transform child in transform)
         {
-            if(child.CompareTag("PiecePos"))
+            if(child.CompareTag("PiecePos") || child.CompareTag("FoodPiece"))
             {
                 piecePos.Add(child.transform.position);
-                pieceRot.Add(child.transform.rotation);    
+                pieceRot.Add(child.transform.rotation);
+            }
+
+            if (child.CompareTag("PiecePos"))
+            {
                 Destroy(child.gameObject);
             }
         }
     }
-    
+
     private void RpcInitPlate(int normalPiece, int psnPiece, int scrollPiece)
     {
         if (!isServer)
         {return;}
 
-        //Until i = normalPiece, keep adding pieces with "normal tag"
-        //Until i = psnPiece, keep adding pieces with "normal tag"
-        //Until i = scrollPiece keep adding scroll pieces
+        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().ShowChalk(chalkBoard);
+
+        //In mode 0; Until i = normalPiece, keep adding pieces with "normal tag"
+        //In mode 1; Until i = psnPiece, keep adding pieces with "normal tag"
+        //In mode 2; Until i = scrollPiece keep adding scroll pieces
         //Code will check what the percentage of scroll pieces should be
         
         for (int i = normalPiece; i > 0; i--)
@@ -57,7 +64,7 @@ public class SpawnPiece : NetworkBehaviour
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
             newPiece.GetComponent<FoodPiece>().SetType(0, null);
-            newPiece.transform.SetParent(transform);
+            newPiece.transform.SetParent(transform, true);
         }
 
         for (int i = psnPiece; i > 0; i--)
@@ -69,7 +76,7 @@ public class SpawnPiece : NetworkBehaviour
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
             newPiece.GetComponent<FoodPiece>().SetType(1, null);
-            newPiece.transform.SetParent(transform);
+            newPiece.transform.SetParent(transform, true);
         }
 
         for (int i = scrollPiece - 1; i >= 0; i--)
@@ -81,10 +88,13 @@ public class SpawnPiece : NetworkBehaviour
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
             newPiece.GetComponent<FoodPiece>().SetType(2, scrollProbability);
-            newPiece.transform.SetParent(transform);
+            newPiece.transform.SetParent(transform, true);
         }
     }
 
+    /*This function runs on server side, and the pieces moved should sync w/ network transform component
+    But doesn't sync to clients. Why?*/
+    
     [Command(requiresAuthority = false)]
     public void Shuffle()
     {
@@ -96,10 +106,10 @@ public class SpawnPiece : NetworkBehaviour
         {
             if (child.CompareTag("FoodPiece"))
             {
-                newRandRot = randRot[Random.Range(0, randRot.Count)];
-                newRandPos = randPos[Random.Range(0, randPos.Count)];
-                child.transform.position = newRandPos;
-                child.transform.rotation = newRandRot;
+                newRandRot = randRot[Random.Range(0, randRot.Count - 1)];
+                newRandPos = randPos[Random.Range(0, randPos.Count - 1)];
+                child.position = newRandPos;
+                child.rotation = newRandRot;
                 randPos.Remove(newRandPos);
                 randRot.Remove(newRandRot);
 

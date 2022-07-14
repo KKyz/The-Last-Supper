@@ -8,8 +8,8 @@ public class FoodPiece : NetworkBehaviour
     [SyncVar]
     public string type;
     
-    [HideInInspector]
-    public bool isSelectable, isRecommended;
+    [SyncVar]
+    public GameObject recommendFlag;
 
     [Server]
     public void SetType(int mode, float[] scrollProb)
@@ -89,15 +89,10 @@ public class FoodPiece : NetworkBehaviour
         }     
     }
 
-    [Server]
+    [Command(requiresAuthority = false)]
     public void FakePsn()
     {
+        //Add authority
         type = "FakePoison";
-    }
-
-    void Start()
-    {
-        isSelectable = false;
-        isRecommended = false;
     }
 }
