@@ -158,7 +158,7 @@ public class OrderDrink : MonoBehaviour
 
         if (takeHealth)
         {
-            playerFunctions.CmdPoison(false);
+            playerFunctions.Poison(false);
         }
         
         playerFunctions.RemoveDrinkScroll();

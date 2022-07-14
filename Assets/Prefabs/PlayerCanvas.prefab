@@ -476,7 +476,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdEncourage
+        m_MethodName: Swap
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -798,7 +798,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: RpcResetActions
+        m_MethodName: ResetActions
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -829,7 +829,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1963652116038901306}
-  - component: {fileID: 7001518266949174057}
   - component: {fileID: 408031047081873020}
   m_Layer: 0
   m_Name: HealthBar
@@ -860,57 +859,6 @@ RectTransform:
   m_AnchoredPosition: {x: 505, y: -275}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &7001518266949174057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1289666899086079187}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Navigation:
-    m_Mode: 0
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 0
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 0
-  m_TargetGraphic: {fileID: 5573742353162360230}
-  m_FillRect: {fileID: 6522045814968966896}
-  m_HandleRect: {fileID: 0}
-  m_Direction: 0
-  m_MinValue: 0
-  m_MaxValue: 3
-  m_WholeNumbers: 1
-  m_Value: 3
-  m_OnValueChanged:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!114 &408031047081873020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -923,36 +871,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc65ab0790f1b384f98ff0e4333ff1c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gradient:
-    serializedVersion: 2
-    key0: {r: 0.45662355, g: 0, b: 1, a: 1}
-    key1: {r: 1, g: 0, b: 0, a: 1}
-    key2: {r: 1, g: 0.9606118, b: 0, a: 0}
-    key3: {r: 0.28234482, g: 1, b: 0, a: 0}
-    key4: {r: 0.28234482, g: 1, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 27949
-    ctime2: 50886
-    ctime3: 65535
-    ctime4: 65535
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 1
-    m_NumColorKeys: 4
-    m_NumAlphaKeys: 2
-  fill: {fileID: 5573742353162360230}
+  barLeftBottomStretches:
+  - {x: -178.7551, y: 129.1844}
+  - {x: -223.6532, y: 129.1844}
+  - {x: -272.4031, y: 129.1844}
+  - {x: -321.753, y: 129.1844}
+  barRightTopStretches:
+  - {x: -269.8064, y: 106.8157}
+  - {x: -122.9744, y: 106.8157}
+  - {x: 36.45396, y: 106.8157}
+  - {x: 197.8445, y: 106.8157}
+  barGradient:
+  - {r: 0.454902, g: 0, b: 1, a: 0}
+  - {r: 1, g: 0, b: 0, a: 0}
+  - {r: 1, g: 0.9607844, b: 0, a: 0}
+  - {r: 0.28235295, g: 1, b: 0, a: 0}
 --- !u!1 &1359789944113219805
 GameObject:
   m_ObjectHideFlags: 0
@@ -1549,7 +1482,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -154, y: 335}
+  m_AnchoredPosition: {x: -154, y: 372}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &489659809175823897
@@ -2024,7 +1957,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdEncourage
+        m_MethodName: Encourage
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2170,7 +2103,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdEat
+        m_MethodName: Eat
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2748,7 +2681,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdConfirmSmell
+        m_MethodName: ConfirmSmell
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2894,7 +2827,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdSkip
+        m_MethodName: Skip
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3392,7 +3325,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdRecommend
+        m_MethodName: Recommend
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3538,7 +3471,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdQuake
+        m_MethodName: Quake
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3593,9 +3526,9 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -62, y: 118}
-  m_SizeDelta: {x: 526.9225, y: -22.3687}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -90.366425, y: 80.697556}
+  m_SizeDelta: {x: 410.7964, y: -190.0497}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3052989854974919988
 CanvasRenderer:
@@ -3670,9 +3603,9 @@ RectTransform:
   m_Father: {fileID: 4155133632722578585}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1094.4556, y: -1033.9991}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 181.0728, y: 33.894}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4778370502124010130
@@ -3756,19 +3689,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6817456744988942413}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4131714695531162901}
-        m_TargetAssemblyTypeName: EnableDisableScrollButtons, Assembly-CSharp
-        m_MethodName: ToggleButtons
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!225 &2981395711193509043
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3816,9 +3737,9 @@ RectTransform:
   m_Father: {fileID: 3034935686955612571}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 1247.9614, y: -50}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1575.923, y: 266.455}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4215206261852500024
@@ -4295,7 +4216,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdOrderDrink
+        m_MethodName: OrderDrink
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -4352,9 +4273,9 @@ RectTransform:
   m_Father: {fileID: 4155133632722578585}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 864.5947, y: -1033.9991}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 181.0728, y: 33.894}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2215039536180680390
@@ -4438,19 +4359,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3809835300737322372}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 4131714695531162901}
-        m_TargetAssemblyTypeName: EnableDisableScrollButtons, Assembly-CSharp
-        m_MethodName: ToggleButtons
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 1
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 1
-        m_CallState: 2
+      m_Calls: []
 --- !u!225 &7567940226880558083
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4941,7 +4850,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdEncourage
+        m_MethodName: FakePoison
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5173,7 +5082,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -197, y: 62}
+  m_AnchoredPosition: {x: -197, y: 64}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9057029116890912706
@@ -5660,7 +5569,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdSlap
+        m_MethodName: Slap
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5806,7 +5715,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 269979441813457103}
         m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
-        m_MethodName: CmdSmell
+        m_MethodName: Smell
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -5939,7 +5848,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -43.155212, y: 0}
+  m_AnchoredPosition: {x: -43.154907, y: 0}
   m_SizeDelta: {x: 400, y: 78.708}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &7282689255841182757

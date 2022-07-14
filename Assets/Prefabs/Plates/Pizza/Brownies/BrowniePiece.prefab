@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7854427739756915804}
   - component: {fileID: 2527765009952077520}
   - component: {fileID: -7452840094960056898}
-  - component: {fileID: 7536156806179939280}
+  - component: {fileID: -3927335058200204742}
   m_Layer: 0
   m_Name: BrowniePiece
   m_TagString: FoodPiece
@@ -110,10 +110,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7d4980e22067c44ad3994bfa153c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   type: 
-  isSelectable: 0
-  isRecommended: 0
-  recSign: {fileID: 8617076803369267631, guid: 1f65f40ba6cee8642b6e059e356a7408, type: 3}
+  recommendFlag: {fileID: 0}
 --- !u!114 &-7452840094960056898
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -131,7 +131,7 @@ MonoBehaviour:
   visible: 0
   m_AssetId: ddb9140e1236dd94a8eac5fd1bbe5893
   hasSpawned: 0
---- !u!114 &7536156806179939280
+--- !u!114 &-3927335058200204742
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6399384744527095782}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 734b48bea0b204338958ee3d885e11f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
@@ -165,4 +165,3 @@ MonoBehaviour:
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  target: {fileID: 2525988890905768601, guid: c2f925a9fbee68340b24423b9c981ea0, type: 3}

@@ -62,6 +62,6 @@ public class PlayerManager : NetworkBehaviour
 
     public void Eject()
     {
-        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().CmdDie();
+        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().Die();
     }
 }

@@ -40,7 +40,7 @@ public class PlayerFunctions : NetworkBehaviour
         mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
         healthBar = GameObject.Find("HealthBar").GetComponent<ShowHealth>();
-        smellConfirm = transform.GetChild(2).gameObject;
+        smellConfirm = transform.Find("SmellConfirm").gameObject;
 
         currentState = "Idle";
         player = null;
@@ -67,21 +67,14 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
     }
-
-    //[Command]
-    public void CmdStartAction()
+    
+    [Client]
+    private void StartAction()
     {
         buttonToggle.ToggleButtons(3);
     }
-
-    //[Command]
-    public void CmdCancelAction()
-    {
-        buttonToggle.ToggleButtons(2);
-    }
-
-    //[Command]
-    public void CmdPoison(bool splash)
+    
+    public void Poison(bool splash)
     {
         if (player.health >= 1)
         {
@@ -94,9 +87,8 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
     }
-
-    //[Command]
-    public void CmdHealth()
+    
+    public void Health()
     {
         if (player.health < 3)
         {
@@ -104,9 +96,9 @@ public class PlayerFunctions : NetworkBehaviour
             healthBar.SetHealth(player.health);
         }
     }
-
-    //[Command]
-    public void CmdQuake()
+    
+    [Client]
+    public void Quake()
     {
         plate = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
         plate.Shuffle();
@@ -114,35 +106,35 @@ public class PlayerFunctions : NetworkBehaviour
         playerScrolls.AddScrollAmount(-1, 3);
         player.scrollCount += 1;
     }
-
-    //[Command]
-    public void CmdSlap()
+    
+    [Client]
+    public void Slap()
     {
-        RpcResetActions();
+        ResetActions();
         stateManager.NextPlayer();
         playerScrolls.AddScrollAmount(-1, 0);
         player.scrollCount += 1;
     }
-
-    //[Command]
-    public void CmdSkip()
+    
+    [Client]
+    public void Skip()
     {
         player.orderVictim = false;
-        RpcResetActions();
+        ResetActions();
         stateManager.NextPlayer();
         playerScrolls.AddScrollAmount(-1, 1);
         player.scrollCount += 1;
     }
-
-    //[Command]
-    public void CmdSmell()
+    
+    [Client]
+    public void Smell()
     {
         currentState = "Smelling";
-        CmdStartAction();
+        StartAction();
     }
-
-    //[Command]
-    public void CmdConfirmSmell()
+    
+    [Client]
+    public void ConfirmSmell()
     {
         foreach (GameObject piece in smellTargets)
         {
@@ -162,32 +154,35 @@ public class PlayerFunctions : NetworkBehaviour
         playerScrolls.AddScrollAmount(-1, 2);
         player.scrollCount += 1;
         currentState = "Idle";
-        CmdCancelAction();
+        ResetActions();
     }
 
-    public void CmdFakePoison()
+    [Client]
+    public void FakePoison()
     {
         currentState = "Poisoning";
-        CmdStartAction();
+        StartAction();
     }
 
-    public void CmdSwap()
+    [Client]
+    public void Swap()
     {
         currentState = "Swapping";
-        CmdStartAction();
+        StartAction();
     }
 
-    public void CmdEject()
+    [Client]
+    public void Eject()
     {
         stateManager.NextEject();
-        RpcResetActions();
+        ResetActions();
         stateManager.NextPlayer();
         playerScrolls.AddScrollAmount(-1, 5);
         player.scrollCount += 1;
     }
-
-
-    public void CmdOrderDrink()
+    
+    [Client]
+    public void OrderDrink()
     {
         openDrinkMenu = Instantiate(drinkMenu, transform.position, Quaternion.identity);
         openDrinkMenu.GetComponent<SpawnMenu>().SlideInMenu();
@@ -195,52 +190,54 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.ToggleButtons(6);
     }
 
+    [Client]
     public void RemoveDrinkScroll()
     {
         playerScrolls.AddScrollAmount(-1, 4);
         player.scrollCount += 1;
     }
-
-
-    private void CmdReceiveDrink()
+    
+    [Client]
+    private void ReceiveDrink()
     {
         newDrinkPlate = Instantiate(drinkPlate, transform.position, Quaternion.identity);
         newDrinkPlate.GetComponent<SpawnMenu>().SlideInMenu();
         newDrinkPlate.transform.SetParent(transform);
         buttonToggle.ToggleButtons(5);
     }
-
-    //[Command]
-    public void CmdEat()
+    
+    [Client]
+    public void Eat()
     {
         currentState = "Eating";
-        CmdStartAction();
+        StartAction();
     }
 
-    //[Command]
-    public void CmdRecommend()
+    [Client]
+    public void Recommend()
     {
         currentState = "Recommending";
-        CmdStartAction();
+        StartAction();
     }
 
-    //[Command]
-    public void CmdEncourage()
+    [Client]
+    public void Encourage()
     {
         stateManager.NextEncourage();
-        RpcResetActions();
+        ResetActions();
         stateManager.NextPlayer();
         playerScrolls.AddScrollAmount(-1, 5);
         player.scrollCount += 1;
     }
 
-    public void CmdDie()
+    [Client]
+    public void Die()
     {
-        RpcResetActions();
+        ResetActions();
         buttonToggle.ToggleButtons(6);
         stateManager.RemoveActivePlayer();
         newReceipt = Instantiate(receipt, transform.position, Quaternion.identity);
-        newReceipt.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "You Lose";
+        newReceipt.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Lose";
         newReceipt.GetComponent<ShowStats>().LoadStats(player);
         newReceipt.transform.SetParent(transform);
         
@@ -248,12 +245,13 @@ public class PlayerFunctions : NetworkBehaviour
         {stateManager.NextPlayer();}
     }
 
-    private void CmdWin()
+    [Client]
+    private void Win()
     {
-        RpcResetActions();
+        ResetActions();
         buttonToggle.ToggleButtons(6);
         newReceipt = Instantiate(receipt, transform.position, Quaternion.identity);
-        newReceipt.transform.GetChild(3).GetComponent<TextMeshProUGUI>().text = "You Win";
+        newReceipt.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Win";
         newReceipt.GetComponent<ShowStats>().LoadStats(player);
         newReceipt.transform.SetParent(transform);
     }
@@ -269,11 +267,12 @@ public class PlayerFunctions : NetworkBehaviour
         chalkContainer.GetComponent<SpawnMenu>().SlideInMenu();
     }
 
-    public void RpcResetActions()
+    [Client]
+    public void ResetActions()
     {
         currentState = "Idle";
         player.orderVictim = false;
-        CmdCancelAction();
+        buttonToggle.ToggleButtons(2);
 
         if (openDrinkMenu != null)
         {
@@ -303,7 +302,7 @@ public class PlayerFunctions : NetworkBehaviour
             smellConfirm.SetActive(false);
         }
     }
-
+    
     private IEnumerator DespawnBillboard(GameObject billboard)
     {
         Vector3 startPos = billboard.transform.position;
@@ -326,7 +325,7 @@ public class PlayerFunctions : NetworkBehaviour
         yield return 0;
     }
 
-    /* The next set of functions: RpcSpawnBillboard, RpcDespawnBillboard,  CmdCreateRecommend, CmdRemoveRecommend
+    /* The next set of functions: RpcSpawnBillboard, RpcDespawnBillboard,  CreateRecommend, RemoveRecommend
      are all created to manage recommend flags, but they don't work correctly on server side*/
     
     [ClientRpc]
@@ -403,44 +402,44 @@ public class PlayerFunctions : NetworkBehaviour
         {
             if (player.health <= 0 && newReceipt == null)
             {
-                CmdDie();
+                Die();
             }
 
             if (stateManager.activePlayers == 1 && newReceipt == null && stateManager.gameCanEnd && player.health > 0)
             {
-                CmdWin();
+                Win();
             }
 
             if (player.actionable)
             {
                 if (Input.GetKeyDown("1"))
                 {
-                    CmdPoison(true);
+                    Poison(true);
                 }
 
                 if (Input.GetKeyDown("2"))
                 {
-                    CmdHealth();
+                    Health();
                 }
 
                 if (Input.GetKeyDown("3"))
                 {
-                    CmdFakePoison();
+                    FakePoison();
                 }
 
                 if (Input.GetKeyDown("4"))
                 {
-                    CmdSwap();
+                    Swap();
                 }
 
                 if (Input.GetKeyDown("5"))
                 {
-                    CmdEject();
+                    Eject();
                 }
 
                 if (Input.GetKeyDown("6"))
                 {
-                    CmdOrderDrink();
+                    OrderDrink();
                 }
 
                 if (Input.GetKeyDown("7"))
@@ -451,12 +450,12 @@ public class PlayerFunctions : NetworkBehaviour
 
                 if (Input.GetKeyDown("8"))
                 {
-                    CmdSmell();
+                    Smell();
                 }
 
                 if (player.orderVictim && newDrinkPlate == null)
                 {
-                    CmdReceiveDrink();
+                    ReceiveDrink();
                 }
 
                 if (Input.GetMouseButtonDown(0))
@@ -509,12 +508,12 @@ public class PlayerFunctions : NetworkBehaviour
 
                                 if (foodType == "Poison")
                                 {
-                                    CmdPoison(true);
+                                    Poison(true);
                                 }
 
                                 if (foodType == "Health")
                                 {
-                                    CmdHealth();
+                                    Health();
                                 }
 
                                 if (foodType == "Normal")
@@ -530,15 +529,14 @@ public class PlayerFunctions : NetworkBehaviour
 
                                 if (player.piecesEaten >= 10)
                                 {
-                                    CmdHealth();
+                                    Health();
                                     player.piecesEaten = 0;
                                 }
 
                                 DestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;
                                 currentState = "Idle";
-                                CmdCancelAction();
-                                RpcResetActions();
+                                ResetActions();
                                 stateManager.NextPlayer();
                             }
 
@@ -584,7 +582,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                                 currentState = "Idle";
                                 player.hasRecommended = true;
-                                CmdCancelAction();
+                                ResetActions();
                             }
 
                             else if (currentState == "Smelling")
@@ -634,7 +632,7 @@ public class PlayerFunctions : NetworkBehaviour
                             {
                                 piece.transform.GetComponent<FoodPiece>().FakePsn();
                                 currentState = "Idle";
-                                CmdCancelAction();
+                                ResetActions();
                             }
 
                             else if (currentState == "Swapping")

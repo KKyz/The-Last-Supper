@@ -20,9 +20,9 @@ public class SpawnPiece : NetworkBehaviour
     public void Start()
     {  
         RefreshPieceList();
-        RpcInitPlate(normalCount, psnCount, scrollCount);    
+        InitPlate(normalCount, psnCount, scrollCount);    
     }
-
+    
     private void RefreshPieceList()
     {
         piecePos.Clear();
@@ -43,7 +43,7 @@ public class SpawnPiece : NetworkBehaviour
         }
     }
 
-    private void RpcInitPlate(int normalPiece, int psnPiece, int scrollPiece)
+    private void InitPlate(int normalPiece, int psnPiece, int scrollPiece)
     {
         if (!isServer)
         {return;}

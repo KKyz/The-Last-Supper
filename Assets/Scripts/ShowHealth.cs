@@ -5,19 +5,24 @@ using UnityEngine.UI;
 
 public class ShowHealth : MonoBehaviour
 {
-    private Slider healthSlider;
-    public Gradient gradient;
-    public Image fill;
+    private Transform bar;
+    public Vector2[] barLeftBottomStretches = new Vector2[4];
+    public Vector2[] barRightTopStretches = new Vector2[4];
+    public Color[] barGradient = new Color[4]; 
+    private Image fill;
+    private RectTransform stretch;
 
     public void Start()
     {
-        healthSlider = transform.GetComponent<Slider>();
-        fill.color = gradient.Evaluate(1f);
+        bar = transform.Find("Fill").transform;
+        fill = bar.GetComponent<Image>();
+        stretch = bar.GetComponent<RectTransform>();
         SetHealth(2);
     }
     public void SetHealth(int health)
     {
-        healthSlider.value = health;
-        fill.color = gradient.Evaluate(healthSlider.normalizedValue);
+        stretch.offsetMin = barLeftBottomStretches[health];
+        stretch.offsetMax = barRightTopStretches[health];
+        fill.color = barGradient[health];
     }
 }

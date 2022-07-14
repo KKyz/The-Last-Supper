@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5633068461734399023}
   - component: {fileID: 15843291917915811}
   - component: {fileID: 7306776977498346224}
-  - component: {fileID: -3106614361631261648}
+  - component: {fileID: 4207795008844711219}
   m_Layer: 0
   m_Name: PepperoniSlice
   m_TagString: FoodPiece
@@ -113,8 +113,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   type: 
-  isSelectable: 0
-  isRecommended: 0
+  recommendFlag: {fileID: 0}
 --- !u!114 &7306776977498346224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -132,7 +131,7 @@ MonoBehaviour:
   visible: 0
   m_AssetId: bf12b37e17f7be847bd81624e4336c98
   hasSpawned: 0
---- !u!114 &-3106614361631261648
+--- !u!114 &4207795008844711219
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -141,7 +140,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8926991000629053333}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 734b48bea0b204338958ee3d885e11f0, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
@@ -166,4 +165,3 @@ MonoBehaviour:
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  target: {fileID: 8136041450091477233, guid: a199bc8679c54be41a1a4ebea8fd0655, type: 3}

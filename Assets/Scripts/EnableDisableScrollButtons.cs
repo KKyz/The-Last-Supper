@@ -12,8 +12,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     private PlayerFunctions playerFunctions;
 
     public GameObject slapButton, cancelButton, recommendButton, skipButton;
-    public Transform actionButtons;
-    public Transform scrollButtons;
+    public Transform actionButtons, scrollButtons;
     
     public int menuMode;
 

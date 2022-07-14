@@ -15,9 +15,9 @@ public class TakeDrink : MonoBehaviour
     {
         if (playerF.player.psnArray[i])
         {
-            playerF.CmdPoison(true);
+            playerF.Poison(true);
         }
-        playerF.RpcResetActions();
+        playerF.ResetActions();
         gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 }

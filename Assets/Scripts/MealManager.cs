@@ -12,15 +12,16 @@ public class MealManager : NetworkBehaviour
 
     public TextMeshProUGUI normCounter;
 
+    public List<GameObject> courses = new List<GameObject>();
+    
+    private GameObject currentPlate;
+    
     void Start()
     {
         stateManager = gameObject.GetComponent<StateManager>();
         normCounter = GameObject.Find("NormCounter").GetComponent<TextMeshProUGUI>();
     }
 
-    public List<GameObject> courses = new List<GameObject>();
-    private GameObject currentPlate;
-    
     public IEnumerator CheckNPieces()
     {
         //Checks # of normal pieces (used to swap plates)
