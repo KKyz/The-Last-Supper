@@ -54,6 +54,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             }
 
             cancelButton.SetActive(false);
+            playerFunctions.infoText.GetComponent<InfoText>().CloseInfoText();
         }
 
         // Opens Actions Menu
@@ -73,6 +74,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             }
 
             cancelButton.SetActive(false);
+            playerFunctions.infoText.GetComponent<InfoText>().CloseInfoText();
         }
 
         //Enables Cancel Button

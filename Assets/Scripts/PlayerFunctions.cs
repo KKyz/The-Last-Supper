@@ -22,14 +22,16 @@ public class PlayerFunctions : NetworkBehaviour
 
     //[HideInInspector]
     public MealManager mealManager;
+    
+    [HideInInspector]
+    public TextMeshProUGUI infoText;
 
-    public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt, chalkContainer, vomitSplash;
+    public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt, chalkContainer, vomitSplash, scrollInfo;
     public string currentState;
 
+    
     private EnableDisableScrollButtons buttonToggle;
-
-    private GameObject currentRecommend, smellTarget, smellConfirm, newDrinkPlate, newReceipt, openDrinkMenu, openChalk;
-
+    private GameObject currentRecommend, smellTarget, smellConfirm, newDrinkPlate, newReceipt, openDrinkMenu, openChalk, openInfo;
     private ShowHealth healthBar;
     private string pieceType;
     private List<GameObject> smellTargets = new List<GameObject>();
@@ -39,8 +41,9 @@ public class PlayerFunctions : NetworkBehaviour
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
-        healthBar = GameObject.Find("HealthBar").GetComponent<ShowHealth>();
+        healthBar = transform.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.Find("SmellConfirm").gameObject;
+        infoText = transform.Find("Info").GetComponent<TextMeshProUGUI>();
 
         currentState = "Idle";
         player = null;
@@ -67,13 +70,22 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
     }
-    
+
+    [Client]
+    public void ShowInfoText(string info)
+    {
+        infoText.gameObject.SetActive(true);
+        infoText.text = info;
+    }
+
     [Client]
     private void StartAction()
     {
         buttonToggle.ToggleButtons(3);
+        //Camera.zoomIn
     }
     
+    [Client]
     public void Poison(bool splash)
     {
         if (player.health >= 1)
@@ -88,6 +100,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
     }
     
+    [Client]
     public void Health()
     {
         if (player.health < 3)
@@ -131,6 +144,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Smelling";
         StartAction();
+        ShowInfoText("Select up to three pieces to reveal");
     }
     
     [Client]
@@ -162,6 +176,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Poisoning";
         StartAction();
+        ShowInfoText("Select a piece to dummy-out");
     }
 
     [Client]
@@ -169,6 +184,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Swapping";
         StartAction();
+        ShowInfoText("Select two pieces to swap around");
     }
 
     [Client]
@@ -204,6 +220,7 @@ public class PlayerFunctions : NetworkBehaviour
         newDrinkPlate.GetComponent<SpawnMenu>().SlideInMenu();
         newDrinkPlate.transform.SetParent(transform);
         buttonToggle.ToggleButtons(5);
+        ShowInfoText("Select a glass to drink from");
     }
     
     [Client]
@@ -211,6 +228,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Eating";
         StartAction();
+        ShowInfoText("Select a piece to eat (eating will end your turn)");
     }
 
     [Client]
@@ -218,6 +236,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Recommending";
         StartAction();
+        ShowInfoText("Select a piece to recommend");
     }
 
     [Client]
@@ -228,6 +247,20 @@ public class PlayerFunctions : NetworkBehaviour
         stateManager.NextPlayer();
         playerScrolls.AddScrollAmount(-1, 5);
         player.scrollCount += 1;
+    }
+
+    [Client]
+    public void DisplayScrollInfo(Sprite scrollImage, string scrollName, string scrollDesc)
+    {
+        if (openInfo == null)
+        {
+            openInfo = Instantiate(scrollInfo, transform.position, Quaternion.identity);
+            openInfo.transform.SetParent(transform);
+            
+            openInfo.transform.Find("ScrollIcon").GetComponent<Image>().sprite = scrollImage;
+            openInfo.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = scrollName;
+            openInfo.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = scrollDesc;
+        }
     }
 
     [Client]
@@ -273,6 +306,12 @@ public class PlayerFunctions : NetworkBehaviour
         currentState = "Idle";
         player.orderVictim = false;
         buttonToggle.ToggleButtons(2);
+        //Camera.ZoomOut()
+
+        if (infoText.gameObject.activeInHierarchy)
+        {
+            infoText.GetComponent<InfoText>().CloseInfoText();
+        }
 
         if (openDrinkMenu != null)
         {
@@ -282,6 +321,11 @@ public class PlayerFunctions : NetworkBehaviour
         if (newDrinkPlate != null)
         {
             newDrinkPlate.GetComponent<SpawnMenu>().SlideOutMenu();
+        }
+
+        if (openInfo != null)
+        {
+            openInfo.GetComponent<SpawnMenu>().SlideOutMenu();
         }
 
         foreach (GameObject targetPiece in smellTargets)
