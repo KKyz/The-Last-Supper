@@ -15,13 +15,21 @@ public class StateManager : NetworkBehaviour
     [SyncVar]
     public int activePlayers;
 
-    [SyncVar] 
-    public bool gameCanEnd;
+    [SyncVar] public bool gameCanEnd;
     
     public readonly SyncList<uint> players = new SyncList<uint>();
+    
+    public static StateManager instance;
+    //public readonly SyncDictionary<uint, PlayerManager> spawnedPlayers = new SyncDictionary<uint, PlayerManager>();
+    public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new Dictionary<uint, PlayerManager>();
 
     [SyncVar]
     public int turn;
+
+    public void Start()
+    {
+        instance = this;
+    }
 
     [Command(requiresAuthority = false)]
     public void RemoveActivePlayer()

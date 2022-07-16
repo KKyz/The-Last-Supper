@@ -6,6 +6,7 @@ using Mirror;
 
 public class PlayerManager : NetworkBehaviour
 {
+    
     public int health, scrollCount, courseCount, pieceCount, timer, piecesEaten;
 
     public bool actionable;
@@ -13,7 +14,7 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar] 
     public bool isEncouraged, hasRecommended, orderVictim;
 
-    [SyncVar] 
+    [SyncVar(hook=nameof(SyncPsn))] 
     public bool psn0, psn1, psn2, psn3;
 
     public bool[] psnArray = new bool[4];
@@ -47,13 +48,15 @@ public class PlayerManager : NetworkBehaviour
         {
             playerCam.SetActive(false);
         }
+                
+        // We are assuming this is applied to all clients
+        StateManager.instance.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
     }
     
     
-    public void SyncPsn()
+    public void SyncPsn(bool oldValue, bool newValue)
     {
         /*Shouldn't this function run on both server and specific client? (Is TargetRpc required?)*/
-        
         psnArray[0] = psn0;
         psnArray[1] = psn1;
         psnArray[2] = psn2;

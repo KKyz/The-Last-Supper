@@ -12,6 +12,7 @@ public class OrderDrink : MonoBehaviour
     private PlayerFunctions playerFunctions;
     private PlayerManager victim;
     private bool takeHealth;
+    [ShowInInspector]
     private bool[] psnArray = new bool[4];
     private GameObject psnButton, orderButton;
     private int buttonCount;
@@ -42,8 +43,15 @@ public class OrderDrink : MonoBehaviour
         
         foreach (uint playerID in stateManager.players)
         {
-            GameObject player = NetworkServer.spawned[playerID].gameObject;
-            if (player != stateManager.currentPlayer)
+            Debug.Log(playerID);
+
+            foreach (uint id in NetworkServer.spawned.Keys)
+            {
+                Debug.Log("id->"+id);
+            }
+            
+            PlayerManager player = StateManager.instance.spawnedPlayers[playerID];
+            if (player.gameObject != stateManager.currentPlayer)
             {
                 victims.Add(player.GetComponent<PlayerManager>());
                 buttons.GetChild(buttonCount).gameObject.SetActive(true);
@@ -145,14 +153,11 @@ public class OrderDrink : MonoBehaviour
 
     public void Order()
     {
-        /*This function runs fine on server side (even though you can't see psn(0-3) changing),
-        but only changes psnArray in the local instance of victim, and not victim in ALL instances*/
-        
         victim.psn0 = psnArray[0];
         victim.psn1 = psnArray[1];
         victim.psn2 = psnArray[2];
         victim.psn3 = psnArray[3];
-        victim.SyncPsn();
+        //victim.SyncPsn();
         
         victim.orderVictim = true;
 

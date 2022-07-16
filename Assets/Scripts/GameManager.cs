@@ -13,9 +13,18 @@ public class GameManager : NetworkManager
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         base.OnServerAddPlayer(conn);
+
+        // PlayerManager player = conn.identity.GetComponent<PlayerManager>();
+        // player.name = "Player: " + Random.Range(0, 999);
+        // stateManager.players.Add(player.GetComponent<NetworkIdentity>().netId);
+        // stateManager.activePlayers += 1;
+        //         
+        // spawnedPlayers.Add(player.GetComponent<NetworkIdentity>().netId, player.GetComponent<PlayerManager>());
+        
+        
         //Adds new player to players list when joined
-        GameObject[] newPlayers = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject newPlayer in newPlayers)
+        GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject newPlayer in allPlayers)
         {
             if (!stateManager.players.Contains(newPlayer.GetComponent<NetworkIdentity>().netId))
             {
@@ -24,6 +33,8 @@ public class GameManager : NetworkManager
                 stateManager.activePlayers += 1;
             }
         }
+
+        Debug.Log(StateManager.instance.spawnedPlayers);
         
         StartCoroutine(PostJoinCall());
 
