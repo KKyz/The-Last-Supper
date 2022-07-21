@@ -23,6 +23,7 @@ public class PlayerManager : NetworkBehaviour
     public GameObject recommendedPiece;
     
     private GameObject playerCam;
+    private StateManager stateManager;
 
     public void Start()
     {
@@ -44,13 +45,13 @@ public class PlayerManager : NetworkBehaviour
         }
 
         playerCam = transform.Find("Camera").gameObject;
+        stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
+        stateManager.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
+        
         if (!isLocalPlayer)
         {
             playerCam.SetActive(false);
         }
-                
-        // We are assuming this is applied to all clients
-        StateManager.instance.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
     }
     
     

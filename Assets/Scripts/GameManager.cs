@@ -14,14 +14,6 @@ public class GameManager : NetworkManager
     {
         base.OnServerAddPlayer(conn);
 
-        // PlayerManager player = conn.identity.GetComponent<PlayerManager>();
-        // player.name = "Player: " + Random.Range(0, 999);
-        // stateManager.players.Add(player.GetComponent<NetworkIdentity>().netId);
-        // stateManager.activePlayers += 1;
-        //         
-        // spawnedPlayers.Add(player.GetComponent<NetworkIdentity>().netId, player.GetComponent<PlayerManager>());
-        
-        
         //Adds new player to players list when joined
         GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject newPlayer in allPlayers)
@@ -30,12 +22,11 @@ public class GameManager : NetworkManager
             {
                 newPlayer.name = "Player: " + Random.Range(0, 999);
                 stateManager.players.Add(newPlayer.GetComponent<NetworkIdentity>().netId);
+                stateManager.playerNames.Add(newPlayer.name);
                 stateManager.activePlayers += 1;
             }
         }
 
-        Debug.Log(StateManager.instance.spawnedPlayers);
-        
         StartCoroutine(PostJoinCall());
 
         if (stateManager.players.Count == 1)
@@ -52,7 +43,7 @@ public class GameManager : NetworkManager
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        stateManager.RemoveActivePlayer();
+        stateManager.CmdRemoveActivePlayer();
     }
 
     public override void OnStartServer()
@@ -70,7 +61,6 @@ public class GameManager : NetworkManager
         stateManager.turn = 0;
         stateManager.currentPlayer = NetworkClient.spawned[stateManager.players[0]].gameObject;
         stateManager.playerScript = stateManager.currentPlayer.GetComponent<PlayerManager>();
-        Debug.Log(stateManager.currentPlayer.name);
     }
 
     private IEnumerator PostJoinCall()
@@ -79,5 +69,6 @@ public class GameManager : NetworkManager
         {yield return 0;}
 
         mealManager.UpdatePieceCounters();
+        stateManager.RpcRefreshPlayerNames();
     }
 }

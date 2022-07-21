@@ -18,27 +18,29 @@ public class StateManager : NetworkBehaviour
     [SyncVar] public bool gameCanEnd;
     
     public readonly SyncList<uint> players = new SyncList<uint>();
-    
-    public static StateManager instance;
-    //public readonly SyncDictionary<uint, PlayerManager> spawnedPlayers = new SyncDictionary<uint, PlayerManager>();
+    public readonly SyncList<string> playerNames = new SyncList<string>();
     public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new Dictionary<uint, PlayerManager>();
 
     [SyncVar]
     public int turn;
 
-    public void Start()
+    [ClientRpc]
+    public void RpcRefreshPlayerNames()
     {
-        instance = this;
+        foreach (uint playerID in players)
+        {
+            NetworkClient.spawned[playerID].gameObject.name = playerNames[players.IndexOf(playerID)];
+        }
     }
 
     [Command(requiresAuthority = false)]
-    public void RemoveActivePlayer()
+    public void CmdRemoveActivePlayer()
     {
         activePlayers -= 1;
     }
     
     [Command(requiresAuthority = false)]
-    public void NextPlayer()
+    public void CmdNextPlayer()
     {
         if (playerScript.isEncouraged)
         {
@@ -63,7 +65,7 @@ public class StateManager : NetworkBehaviour
     }
     
     [Command(requiresAuthority = false)]
-    public void NextEncourage()
+    public void CmdNextEncourage()
     {
         //Function called by PlayerFunctions to trigger encourage of next player
         //Add Authority
@@ -74,12 +76,22 @@ public class StateManager : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void NextEject()
+    public void CmdNextEject()
     {
         //Add Authority
         if (turn < players.Count - 1)
         {NetworkServer.spawned[players[turn + 1]].gameObject.GetComponent<PlayerManager>().Eject();}
         else
         {NetworkServer.spawned[players[0]].gameObject.GetComponent<PlayerManager>().Eject();}
+    }
+    
+    [Command(requiresAuthority = false)]
+    public void CmdSyncOrder(bool[] psnArray, PlayerManager victim)
+    {
+        victim.psn0 = psnArray[0];
+        victim.psn1 = psnArray[1]; 
+        victim.psn2 = psnArray[2];
+        victim.psn3 = psnArray[3];
+        victim.orderVictim = true;
     }
 }

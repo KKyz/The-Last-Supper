@@ -8,7 +8,7 @@ public class TweenTest : MonoBehaviour
 {
     void Start()
     {
-        StartCoroutine(SpawnButtons(gameObject));
+        StartCoroutine(DespawnButtons(gameObject));
     }
     
     public IEnumerator SpawnButtons(GameObject buttons)
@@ -17,7 +17,6 @@ public class TweenTest : MonoBehaviour
         
         if (buttons.transform.childCount > 2)
         {
-            Debug.Log("Spawn multiple " + buttons.name);
             foreach (Transform button in buttons.transform)
             {
                 if (button.gameObject.activeInHierarchy)
@@ -58,7 +57,8 @@ public class TweenTest : MonoBehaviour
                     Vector3 startPos = button.position;
                     Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 100), 0);
                     yield return new WaitForSeconds(0.2f);
-                    //LeanTween.alpha(button.gameObject, 0, 0.1f);
+                    CanvasGroup buttonCG = button.GetComponent<CanvasGroup>();
+                    LeanTween.alphaCanvas(buttonCG, 0, 0.1f);
                     LeanTween.move(button.gameObject, goalPos, 0.2f);
                 }
             }
@@ -78,7 +78,8 @@ public class TweenTest : MonoBehaviour
                 Vector3 startPos = buttons.transform.position;
                 Vector3 goalPos = new Vector3(startPos.x, (startPos.y - 100), 0);
                 yield return new WaitForSeconds(0.2f);
-                LeanTween.alpha(buttons.gameObject, 0, 0.5f);
+                CanvasGroup buttonCG = buttons.GetComponent<CanvasGroup>();
+                LeanTween.alphaCanvas(buttonCG, 0, 0.1f);
                 LeanTween.move(buttons.gameObject, goalPos, 0.2f);
             }
 

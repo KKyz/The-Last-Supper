@@ -124,7 +124,7 @@ public class PlayerFunctions : NetworkBehaviour
     public void Slap()
     {
         ResetActions();
-        stateManager.NextPlayer();
+        stateManager.CmdNextPlayer();
         playerScrolls.AddScrollAmount(-1, 0);
         player.scrollCount += 1;
     }
@@ -134,7 +134,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         player.orderVictim = false;
         ResetActions();
-        stateManager.NextPlayer();
+        stateManager.CmdNextPlayer();
         playerScrolls.AddScrollAmount(-1, 1);
         player.scrollCount += 1;
     }
@@ -190,9 +190,9 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Eject()
     {
-        stateManager.NextEject();
+        stateManager.CmdNextEject();
         ResetActions();
-        stateManager.NextPlayer();
+        stateManager.CmdNextPlayer();
         playerScrolls.AddScrollAmount(-1, 5);
         player.scrollCount += 1;
     }
@@ -242,9 +242,9 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Encourage()
     {
-        stateManager.NextEncourage();
+        stateManager.CmdNextEncourage();
         ResetActions();
-        stateManager.NextPlayer();
+        stateManager.CmdNextPlayer();
         playerScrolls.AddScrollAmount(-1, 5);
         player.scrollCount += 1;
     }
@@ -268,14 +268,14 @@ public class PlayerFunctions : NetworkBehaviour
     {
         ResetActions();
         buttonToggle.ToggleButtons(6);
-        stateManager.RemoveActivePlayer();
+        stateManager.CmdRemoveActivePlayer();
         newReceipt = Instantiate(receipt, transform.position, Quaternion.identity);
         newReceipt.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Lose";
         newReceipt.GetComponent<ShowStats>().LoadStats(player);
         newReceipt.transform.SetParent(transform);
         
         if (stateManager.activePlayers > 1)
-        {stateManager.NextPlayer();}
+        {stateManager.CmdNextPlayer();}
     }
 
     [Client]
@@ -429,7 +429,7 @@ public class PlayerFunctions : NetworkBehaviour
             buttonToggle.ToggleButtons(2);
         }
 
-        else if (openChalk != null)
+        else if (openChalk != null && buttonToggle.menuMode != 6)
         {
             player.actionable = false;
             buttonToggle.ToggleButtons(6);
@@ -581,7 +581,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 player.pieceCount += 1;
                                 currentState = "Idle";
                                 ResetActions();
-                                stateManager.NextPlayer();
+                                stateManager.CmdNextPlayer();
                             }
 
                             else if (currentState == "Recommending")

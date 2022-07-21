@@ -5,7 +5,7 @@ using Mirror.Examples.Chat;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OrderDrink : MonoBehaviour
+public class OrderDrink : NetworkBehaviour
 {
     public Sprite psnWine, normalWine;
     private Transform buttons, wines;
@@ -35,22 +35,13 @@ public class OrderDrink : MonoBehaviour
         buttonToggle =  buttonToggle = GameObject.Find("PlayerCanvas").GetComponent<EnableDisableScrollButtons>();
 
         if (stateManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
-        {psnButton.SetActive(true);}
-        else {psnButton.SetActive(false);}
-
-        /* This for loop doesn't work on client end as the client somehow cannot see stateManager.players,
-         despite it being perfectly visible in both server and clients' inspector of StateManager*/
+        {
+            psnButton.SetActive(true);
+        }
         
         foreach (uint playerID in stateManager.players)
         {
-            Debug.Log(playerID);
-
-            foreach (uint id in NetworkServer.spawned.Keys)
-            {
-                Debug.Log("id->"+id);
-            }
-            
-            PlayerManager player = StateManager.instance.spawnedPlayers[playerID];
+            PlayerManager player = stateManager.spawnedPlayers[playerID];
             if (player.gameObject != stateManager.currentPlayer)
             {
                 victims.Add(player.GetComponent<PlayerManager>());
@@ -88,7 +79,6 @@ public class OrderDrink : MonoBehaviour
             {
                 if (psnArray[i])
                 {
-                    Debug.Log("This has poison");
                     wines.GetChild(i).GetComponent<Image>().sprite = psnWine;
                 }
 
@@ -150,17 +140,9 @@ public class OrderDrink : MonoBehaviour
         
         UpdateWine();
     }
-
+    
     public void Order()
     {
-        victim.psn0 = psnArray[0];
-        victim.psn1 = psnArray[1];
-        victim.psn2 = psnArray[2];
-        victim.psn3 = psnArray[3];
-        //victim.SyncPsn();
-        
-        victim.orderVictim = true;
-
         if (takeHealth)
         {
             playerFunctions.Poison(false);
@@ -168,6 +150,8 @@ public class OrderDrink : MonoBehaviour
         
         playerFunctions.RemoveDrinkScroll();
 
+        stateManager.CmdSyncOrder(psnArray, victim);
+        
         CloseMenu();
     }
 }

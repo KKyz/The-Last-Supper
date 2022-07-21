@@ -1232,7 +1232,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1726764215508047849
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1614,6 +1614,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03c69448baa56aa42b9819463752d7fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   psnWine: {fileID: 21300000, guid: b5dcae05c84148b4faf1ced8f87a07d4, type: 3}
   normalWine: {fileID: 21300000, guid: caf5c0b135bc0b14bad0a7e69a83356a, type: 3}
 --- !u!114 &4540474421226913438
