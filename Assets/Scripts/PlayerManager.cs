@@ -7,7 +7,10 @@ using Mirror;
 public class PlayerManager : NetworkBehaviour
 {
     
-    public int health, scrollCount, courseCount, pieceCount, timer, piecesEaten;
+    public int scrollCount, courseCount, pieceCount, timer, piecesEaten;
+
+    [SyncVar]
+    public int health;
 
     public bool actionable;
 
@@ -19,10 +22,13 @@ public class PlayerManager : NetworkBehaviour
 
     public bool[] psnArray = new bool[4];
     
-    [SyncVar]
+    [SyncVar(hook=nameof(SyncRecommended))]
     public GameObject recommendedPiece;
+
+    public GameObject currentRecommend;
     
     private GameObject playerCam;
+    private PlayerFunctions playerCanvas;
     private StateManager stateManager;
 
     public void Start()
@@ -45,6 +51,7 @@ public class PlayerManager : NetworkBehaviour
         }
 
         playerCam = transform.Find("Camera").gameObject;
+        playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         stateManager.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
         
@@ -63,9 +70,54 @@ public class PlayerManager : NetworkBehaviour
         psnArray[2] = psn2;
         psnArray[3] = psn3;
     }
+    
+    [Command(requiresAuthority = false)]
+    public void CmdCreateRecommend(GameObject piece)
+    {
+        if (piece == recommendedPiece)
+        {
+            recommendedPiece = null;
+        }
+        else
+        {
+            recommendedPiece = piece;
+        }
+    }
+
+    public void SyncRecommended(GameObject oldValue, GameObject newValue)
+    {
+        if (oldValue == null)
+        {
+            Debug.Log("PlayerManager: " + netId);
+            
+            //If the piece doesn't have any flags already, create one
+            Vector3 pTrans = recommendedPiece.transform.position;
+            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            currentRecommend.transform.SetParent(recommendedPiece.transform);
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend));
+        }
+        
+        else if (newValue == null)
+        {
+            //If destroying pre-existing recommend
+            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommend));
+            currentRecommend = null;
+        }
+        
+        else
+        {
+            //Replace flag with a new one at a different piece
+            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommend));
+            Vector3 pTrans = recommendedPiece.transform.position;
+            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            currentRecommend.transform.SetParent(recommendedPiece.transform);
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend));
+        }
+        hasRecommended = true;
+    }
 
     public void Eject()
     {
-        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().Die();
+        playerCanvas.Die();
     }
 }

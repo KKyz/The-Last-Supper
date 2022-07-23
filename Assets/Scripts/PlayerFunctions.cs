@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using TMPro;
 using Unity.Mathematics;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class PlayerFunctions : NetworkBehaviour
@@ -25,16 +26,17 @@ public class PlayerFunctions : NetworkBehaviour
     
     [HideInInspector]
     public TextMeshProUGUI infoText;
-
-    public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt, chalkContainer, vomitSplash, scrollInfo;
+    
+    public GameObject drinkMenu, drinkPlate, recommendFlag, typeFlag, receipt, chalkContainer, vomitSplash, scrollInfo, swapFlag;
     public string currentState;
 
     
     private EnableDisableScrollButtons buttonToggle;
-    private GameObject currentRecommend, smellTarget, smellConfirm, newDrinkPlate, newReceipt, openDrinkMenu, openChalk, openInfo;
+    private GameObject smellTarget, smellConfirm, swapConfirm, newDrinkPlate, newReceipt, openDrinkMenu, openChalk, openInfo;
     private ShowHealth healthBar;
     private string pieceType;
     private List<GameObject> smellTargets = new List<GameObject>();
+    public List<GameObject> swapTargets = new List<GameObject>();
 
     void Start()
     {
@@ -43,6 +45,7 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
         healthBar = transform.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.Find("SmellConfirm").gameObject;
+        swapConfirm = transform.Find("SwapConfirm").gameObject;
         infoText = transform.Find("Info").GetComponent<TextMeshProUGUI>();
 
         currentState = "Idle";
@@ -51,6 +54,7 @@ public class PlayerFunctions : NetworkBehaviour
         chalkContainer.SetActive(false);
         smellConfirm.SetActive(false);
         smellTargets.Clear();
+        swapTargets.Clear();
 
         StartCoroutine(PostStartCall());
     }
@@ -85,7 +89,7 @@ public class PlayerFunctions : NetworkBehaviour
         //Camera.zoomIn
     }
     
-    [Client]
+    
     public void Poison(bool splash)
     {
         if (player.health >= 1)
@@ -100,7 +104,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
     }
     
-    [Client]
+    
     public void Health()
     {
         if (player.health < 3)
@@ -162,8 +166,7 @@ public class PlayerFunctions : NetworkBehaviour
                 }
             }
         }
-
-        smellTargets.Clear();
+        
         smellConfirm.SetActive(false);
         playerScrolls.AddScrollAmount(-1, 2);
         player.scrollCount += 1;
@@ -185,6 +188,13 @@ public class PlayerFunctions : NetworkBehaviour
         currentState = "Swapping";
         StartAction();
         ShowInfoText("Select two pieces to swap around");
+    }
+
+    [Command(requiresAuthority = false)]
+    public void ConfirmSwap()
+    {
+        //Add Authority
+        (swapTargets[0].GetComponent<FoodPiece>().type, swapTargets[1].GetComponent<FoodPiece>().type) = (swapTargets[1].GetComponent<FoodPiece>().type, swapTargets[0].GetComponent<FoodPiece>().type);
     }
 
     [Client]
@@ -332,22 +342,35 @@ public class PlayerFunctions : NetworkBehaviour
         {
             foreach (Transform flag in targetPiece.transform)
             {
-                if (flag.CompareTag("TypeFlag"))
+                if (flag.CompareTag("TypeFlag") && flag.name != "PlantedFlag")
                 {
                     Destroy(flag.gameObject);
-                    NetworkServer.Destroy(flag.gameObject);
+                }
+            }
+        }
+        
+        foreach (GameObject targetPiece in swapTargets)
+        {
+            foreach (Transform flag in targetPiece.transform)
+            {
+                if (flag.CompareTag("SwapFlag"))
+                {
+                    Destroy(flag.gameObject);
                 }
             }
         }
 
         smellTargets.Clear();
+        swapTargets.Clear();
+        StartCoroutine(buttonToggle.ButtonDisable(swapConfirm.transform));
+        StartCoroutine(buttonToggle.ButtonDisable(smellConfirm.transform));
         if (smellConfirm.activeInHierarchy)
         {
             smellConfirm.SetActive(false);
         }
     }
     
-    private IEnumerator DespawnBillboard(GameObject billboard)
+    public IEnumerator DespawnBillboard(GameObject billboard)
     {
         Vector3 startPos = billboard.transform.position;
         Vector3 goalPos = new Vector3(startPos.x, (startPos.y + 1f), startPos.z);
@@ -357,7 +380,7 @@ public class PlayerFunctions : NetworkBehaviour
         NetworkServer.Destroy(billboard);
     }
 
-    private IEnumerator SpawnBillboard(GameObject billboard)
+    public IEnumerator SpawnBillboard(GameObject billboard)
     {
         billboard.transform.LookAt(Camera.main.transform.position);
         Vector3 goalPos = billboard.transform.position;
@@ -371,51 +394,11 @@ public class PlayerFunctions : NetworkBehaviour
 
     /* The next set of functions: RpcSpawnBillboard, RpcDespawnBillboard,  CreateRecommend, RemoveRecommend
      are all created to manage recommend flags, but they don't work correctly on server side*/
-    
-    [ClientRpc]
-    public void RpcSpawnBillboard(GameObject billboard)
-    {
-        //Use this method to call SpawnBillboard on ALL clients rather than just locally
-        StartCoroutine(SpawnBillboard(billboard));
-    }
-
-    [Command(requiresAuthority = false)]
-    public void RpcDespawnBillboard(GameObject billboard)
-    {
-        //Use this method to call SpawnBillboard on ALL clients rather than just locally
-        StartCoroutine(DespawnBillboard(billboard));
-    }
-
-    [Command(requiresAuthority = false)]
-    private void CmdCreateRecommend(Transform piece)
-    {
-        //Add Authority to this function
-        //Spawns piece, assigns flag to piece, creates transition
-        //This function doesn't set the same position for flag in client and server for some reason
-        NetworkServer.Spawn(currentRecommend);
-        currentRecommend.transform.SetParent(piece, true);
-        piece.GetComponent<FoodPiece>().recommendFlag = currentRecommend;
-        RpcSpawnBillboard(currentRecommend);
-    }
-
-    [Command(requiresAuthority = false)]
-    private void CmdRemoveRecommend(Transform piece)
-    {
-        //Add Authority to this function
-        //DespawnsPiece, strips piece's assigned flag
-        RpcDespawnBillboard(piece.transform.GetComponent<FoodPiece>().recommendFlag);
-        piece.transform.GetComponent<FoodPiece>().recommendFlag = null;
-    }
 
     [Command(requiresAuthority = false)]
     private void DestroyPiece(GameObject piece)
     {
         //Add Authority to this function
-        if (piece.GetComponent<FoodPiece>().recommendFlag != null)
-        {
-            NetworkServer.Destroy(piece.GetComponent<FoodPiece>().recommendFlag);
-        }
-
         NetworkServer.Destroy(piece);
         StartCoroutine(mealManager.CheckNPieces());
     }
@@ -586,45 +569,8 @@ public class PlayerFunctions : NetworkBehaviour
 
                             else if (currentState == "Recommending")
                             {
-                                if (player.recommendedPiece == null)
-                                {
-                                    //If the piece doesn't have any flags already, create one
-                                    if (piece.transform.GetComponent<FoodPiece>().recommendFlag == null)
-                                    {
-                                        currentRecommend = Instantiate(recommendFlag,
-                                            new Vector3(piece.transform.position.x + 0.75f,
-                                                piece.transform.position.y + 1f, piece.transform.position.z),
-                                            Quaternion.identity);
-                                        CmdCreateRecommend(piece.transform);
-                                        player.recommendedPiece = piece.transform.gameObject;
-                                    }
-
-                                }
-
-                                //In case of deleting a flag
-                                else
-                                {
-                                    //Just destroy flag
-                                    if (piece.transform.gameObject == player.recommendedPiece)
-                                    {
-                                        CmdRemoveRecommend(piece.transform);
-                                        player.recommendedPiece = null;
-                                    }
-
-                                    //Replace flag with a new one at a different piece
-                                    else
-                                    {
-                                        CmdRemoveRecommend(piece.transform);
-                                        currentRecommend = Instantiate(recommendFlag,
-                                            new Vector3(piece.transform.position.x + 0.75f,
-                                                piece.transform.position.y + 1f, piece.transform.position.z),
-                                            Quaternion.identity);
-                                        CmdCreateRecommend(piece.transform);
-                                        player.recommendedPiece = piece.transform.gameObject;
-                                    }
-                                }
-
-                                currentState = "Idle";
+                                player.CmdCreateRecommend(piece.transform.gameObject);
+                                Debug.Log("PlayerFunction: " + player.netId);
                                 player.hasRecommended = true;
                                 ResetActions();
                             }
@@ -635,10 +581,8 @@ public class PlayerFunctions : NetworkBehaviour
                                 {
                                     if (smellTargets.Count <= 2)
                                     {
-                                        smellTarget = Instantiate(typeFlag,
-                                            new Vector3(piece.transform.position.x + 0.75f,
-                                                piece.transform.position.y + 1f, piece.transform.position.z),
-                                            Quaternion.identity);
+                                        Vector3 pTrans = piece.transform.position;
+                                        smellTarget = Instantiate(typeFlag, new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
                                         StopCoroutine(DespawnBillboard(smellTarget));
                                         StartCoroutine(SpawnBillboard(smellTarget));
                                         smellTarget.transform.LookAt(Camera.main.transform.position);
@@ -648,7 +592,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                                     if (smellTargets.Count >= 1)
                                     {
-                                        smellConfirm.SetActive(true);
+                                        StartCoroutine(buttonToggle.ButtonEnable(smellConfirm.transform));
                                     }
                                 }
 
@@ -667,7 +611,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                                     if (smellTargets.Count <= 0)
                                     {
-                                        smellConfirm.SetActive(false);
+                                        StartCoroutine(buttonToggle.ButtonDisable(smellConfirm.transform));
                                     }
                                 }
                             }
@@ -675,33 +619,41 @@ public class PlayerFunctions : NetworkBehaviour
                             else if (currentState == "Poisoning")
                             {
                                 piece.transform.GetComponent<FoodPiece>().FakePsn();
-                                currentState = "Idle";
                                 ResetActions();
                             }
 
                             else if (currentState == "Swapping")
                             {
-                                //string stringHold;
-                                //string piece1Type = null;
-                                //string piece2Type = null;
-                                //
-                                // if (piece1Type == null)
-                                // {
-                                //     piece1Type = piece.transform.GetComponent<FoodPiece>().type;
-                                // }
-                                //
-                                // else if (piece2Type == null)
-                                // {
-                                //     piece2Type = piece.transform.GetComponent<FoodPiece>().type;
-                                // }
-                                //
-                                // while (piece1Type != null || piece2Type != null)
-                                // {
-                                //     if (piece1Type == null)
-                                //     {
-                                //         piece1Type = piece.transform;
-                                //     }
-                                // }
+                                if (!swapTargets.Contains(piece.transform.gameObject))
+                                {
+                                    if (swapTargets.Count < 2)
+                                    {
+                                        Vector3 pTrans = piece.transform.position;
+                                        GameObject newSwapFlag = Instantiate(swapFlag, new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+                                        StartCoroutine(SpawnBillboard(newSwapFlag));
+                                        newSwapFlag.transform.SetParent(piece.transform);
+                                        swapTargets.Add(piece.transform.gameObject);
+                                    }
+                                    
+                                    if (swapTargets.Count == 2)
+                                    {
+                                        StartCoroutine(buttonToggle.ButtonEnable(swapConfirm.transform));
+                                    }
+                                }
+
+                                else
+                                {
+                                    foreach (Transform flag in piece.transform)
+                                    {
+                                        if (flag.CompareTag("SwapFlag"))
+                                        {
+                                            StartCoroutine(DespawnBillboard(flag.gameObject));
+                                        }
+                                    }
+                                    
+                                    swapTargets.Remove(piece.transform.gameObject);
+                                    StartCoroutine(buttonToggle.ButtonDisable(swapConfirm.transform));
+                                }
                             }
 
                             else if (currentState != "Idle")

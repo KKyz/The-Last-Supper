@@ -8,9 +8,6 @@ public class FoodPiece : NetworkBehaviour
     [SyncVar]
     public string type;
     
-    [SyncVar]
-    public GameObject recommendFlag;
-
     [Server]
     public void SetType(int mode, float[] scrollProb)
     {

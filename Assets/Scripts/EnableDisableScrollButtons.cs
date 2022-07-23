@@ -40,7 +40,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         playerScrollArray = playerFunctions.playerScrolls;
     }
 
-    private IEnumerator ButtonEnable(Transform button)
+    public IEnumerator ButtonEnable(Transform button)
     {
         //If parent object of buttons (e.g. ActionButtons, ScrollButtons)
         if (button.childCount > 1)
@@ -57,6 +57,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 
                 if (buttonChild.gameObject.activeInHierarchy)
                 {
+                    buttonChild.GetComponent<Button>().interactable = false;
+                    
                     //Sets Fade-In
                     CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
                     buttonCanvas.alpha = 0f;
@@ -69,6 +71,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                     LeanTween.moveX(buttonChild.gameObject, goalPos.x, enableTime - 0.1f);
                     
                     yield return new WaitForSeconds(enableTime);
+                    buttonChild.GetComponent<Button>().interactable = true;
                 }
             }
 
@@ -95,7 +98,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         }
     }
 
-    private IEnumerator ButtonDisable(Transform button)
+    public IEnumerator ButtonDisable(Transform button)
     {
         if (button.childCount > 1)
         {
@@ -107,6 +110,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             {
                 if (buttonChild.gameObject.activeInHierarchy)
                 {
+                    buttonChild.GetComponent<Button>().interactable = false;
+                    
                     //Fade-Out
                     CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
                     LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
@@ -119,8 +124,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                     //Reset positions and disable
                     yield return new WaitForSeconds(disableTime);
                     buttonChild.position = startPos;
+                    buttonChild.GetComponent<Button>().interactable = true;
                     buttonChild.gameObject.SetActive(false);
-                    
                 }
             }
             
@@ -131,6 +136,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         {
             if (button.gameObject.activeInHierarchy)
             {
+                button.GetComponent<Button>().interactable = false;
+                
                 //Fade-Out
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
                 LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
@@ -143,6 +150,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 //Reset positions and disable
                 yield return new WaitForSeconds(disableTime);
                 button.position = startPos;
+                button.GetComponent<Button>().interactable = true;
                 button.gameObject.SetActive(false);
             }
         }

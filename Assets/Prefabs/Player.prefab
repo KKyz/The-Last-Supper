@@ -116,12 +116,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  health: 0
   scrollCount: 0
   courseCount: 0
   pieceCount: 0
   timer: 0
   piecesEaten: 0
+  health: 0
   actionable: 0
   isEncouraged: 0
   hasRecommended: 0
@@ -132,6 +132,7 @@ MonoBehaviour:
   psn3: 0
   psnArray: 00000000
   recommendedPiece: {fileID: 0}
+  currentRecommend: {fileID: 0}
 --- !u!114 &5485326638378441017
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,16 +148,20 @@ MonoBehaviour:
   playerScrolls:
   - amount: 1
     name: Slap
-  - amount: 1
+  - amount: 0
     name: Skip
   - amount: 1
     name: Smell
-  - amount: 1
+  - amount: 0
     name: Quake
   - amount: 1
     name: Order
   - amount: 1
     name: Encourage
+  - amount: 1
+    name: Swap
+  - amount: 1
+    name: Fake
 --- !u!114 &5026244676830656758
 MonoBehaviour:
   m_ObjectHideFlags: 0
