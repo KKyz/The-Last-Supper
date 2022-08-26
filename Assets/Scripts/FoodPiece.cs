@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using kcp2k;
 using UnityEngine;
 using Mirror;
 
@@ -7,7 +8,7 @@ public class FoodPiece : NetworkBehaviour
 {
     [SyncVar]
     public string type;
-    
+
     [Server]
     public void SetType(int mode, float[] scrollProb)
     {
@@ -49,39 +50,49 @@ public class FoodPiece : NetworkBehaviour
             //Setting random.range as float as dividing integer by integer results in rounding to 0
 
             float prob = (float)Random.Range(0, 100)/100;
-            if (prob <= accScrollProb[0])
-            {
-                type = "Order";
-            }
-
-            else if (prob <= accScrollProb[1])
-            {
-                type = "Quake";
-            }
-
-            else if (prob <= accScrollProb[2])
-            {
-                type = "Smell";
-            }
-
-            else if (prob <= accScrollProb[3])
+            if (prob < accScrollProb[0])
             {
                 type = "Health";
             }
 
-            else if (prob <= accScrollProb[4])
+            else if (prob < accScrollProb[1])
+            {
+                type = "Quake";
+            }
+
+            else if (prob < accScrollProb[2])
+            {
+                type = "Smell";
+            }
+
+            else if (prob < accScrollProb[3])
+            {
+                type = "Order";
+            }
+
+            else if (prob < accScrollProb[4])
             {
                 type = "Slap";
             }
 
-            else if (prob <= accScrollProb[5])
+            else if (prob < accScrollProb[5])
             {
                 type = "Skip";
             }
 
-            else if (prob <= accScrollProb[6])
+            else if (prob < accScrollProb[6])
             {
                 type = "Encourage";
+            }
+            
+            else if (prob < accScrollProb[7])
+            {
+                type = "Swap";
+            }
+            
+            else if (prob <= accScrollProb[8])
+            {
+                type = "Fake";
             }
         }     
     }

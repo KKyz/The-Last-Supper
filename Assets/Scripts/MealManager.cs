@@ -6,20 +6,32 @@ using TMPro;
 
 public class MealManager : NetworkBehaviour
 {
-    [SyncVar] public int course, nPieces;
-
+    [SyncVar] 
+    public int nPieces;
+    public MealContainer mealContainer;
+    
+    private TextMeshProUGUI normCounter;
     private StateManager stateManager;
-
-    public TextMeshProUGUI normCounter;
-
-    public List<GameObject> courses = new List<GameObject>();
-    
+    private MusicManager musicManager;
+    private Color normTop, normBottom;
+    private readonly Stack<GameObject> currentCourses = new();
     private GameObject currentPlate;
-    
-    void Start()
+    private bool firstPlate;
+
+    public void StartOnLoad()
     {
-        stateManager = gameObject.GetComponent<StateManager>();
+        stateManager = GetComponent<StateManager>();
+        musicManager = GetComponent<MusicManager>();
         normCounter = GameObject.Find("NormCounter").GetComponent<TextMeshProUGUI>();
+        normTop = normCounter.colorGradient.topLeft;
+        normBottom = normCounter.colorGradient.bottomRight;
+
+        foreach (GameObject course in mealContainer.meals)
+        {
+            currentCourses.Push(course);
+        }
+
+        firstPlate = true;
     }
 
     public IEnumerator CheckNPieces()
@@ -35,28 +47,60 @@ public class MealManager : NetworkBehaviour
             {nPieces += 1;}
         }
         
-        UpdatePieceCounters();
+        RpcUpdatePieceCounters();
     }
 
     [ClientRpc]
-    public void UpdatePieceCounters()
+    public void RpcUpdatePieceCounters()
     {
-        normCounter.text = nPieces.ToString();
+        var lastTop = Color.red;
+        var lastBottom = Color.red;
+        if (nPieces <= 1)
+        {
+            normCounter.colorGradient = new VertexGradient(lastTop, lastTop, lastBottom, lastBottom);
+        }
+        else
+        {
+            normCounter.colorGradient = new VertexGradient(normTop, normTop, normBottom, normBottom);
+        }
+        
+        normCounter.text = "# Of Empty Pieces Left: " + nPieces;
     }
-    
+
+    [ClientRpc]
+    public void RpcShowChalk(GameObject plate)
+    {
+        GameObject chalk = plate.GetComponent<SpawnPiece>().chalkBoard;
+        PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
+        playerCanvas.ShowChalk(chalk);
+    }
+
+    [ClientRpc]
+    public void RpcLookAtPlate(GameObject plate)
+    {
+        Vector3 platePos = plate.transform.position;
+        GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook(platePos);
+    }
+
+    [ClientRpc]
+    public void RpcPlayCourseBGM(GameObject plate)
+    {
+        AudioClip courseBGM = plate.GetComponent<SpawnPiece>().courseBGM;
+        musicManager.PlayBGM(courseBGM);
+    }
+
     [Command(requiresAuthority = false)]
     public void NextCourse()
     {
         //Add Authority
-        course += 1;
 
-        foreach (uint playerID in stateManager.players)
+        foreach (uint playerID in stateManager.activePlayers)
         {
             GameObject playerObj = NetworkServer.spawned[playerID].gameObject;
             
-            if ( playerObj != null)
+            if (playerObj != null)
             {
-                playerObj.GetComponent<PlayerManager>().courseCount = course + 1;
+                playerObj.GetComponent<PlayerManager>().courseCount += 1;
             }
         }
 
@@ -65,17 +109,18 @@ public class MealManager : NetworkBehaviour
             Destroy(currentPlate);
         }
 
-        if (course < 3)
+        if (currentCourses.Count > 1 && !firstPlate)
         {
-            currentPlate = Instantiate(courses[course], transform.position, Quaternion.identity);
+            currentCourses.Pop();
         }
-        else
-        {
-            currentPlate = Instantiate(courses[2], transform.position, Quaternion.identity);
-        }
-
+        
+        currentPlate = Instantiate(currentCourses.Peek(), transform.position, Quaternion.identity);
+        firstPlate = false;
         NetworkServer.Spawn(currentPlate);
-        currentPlate.transform.SetParent(transform);
+        currentPlate.transform.SetParent(transform, true);
+        RpcShowChalk(currentPlate);
+        //RpcLookAtPlate(currentPlate.transform.position);
+        //RpcPlayCourseBGM(currentPlate);
         /* This function doesn't run on clients*/
         StartCoroutine(CheckNPieces());
     }

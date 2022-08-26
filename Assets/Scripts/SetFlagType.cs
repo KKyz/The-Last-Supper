@@ -12,12 +12,13 @@ public class SetFlagType : MonoBehaviour
         currentFlag = gameObject.GetComponent<SpriteRenderer>().sprite;
     }
 
-    public IEnumerator SetFlag(string type)
+    public IEnumerator SetFlag()
     {
         transform.name = "PlantedFlag";
         LeanTween.alpha(gameObject, 0, 0.7f);
         yield return new WaitForSeconds(0.71f);
 
+        string type = transform.parent.GetComponent<FoodPiece>().type;
         if (type == "Poison" || type == "FakePoison")
         {
             currentFlag = flags[0];

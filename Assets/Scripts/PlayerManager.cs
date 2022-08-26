@@ -3,19 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using TMPro;
 
 public class PlayerManager : NetworkBehaviour
 {
     
-    public int scrollCount, courseCount, pieceCount, timer, piecesEaten;
-
-    [SyncVar]
+    public int scrollCount, courseCount, pieceCount, nPiecesEaten;
+    
     public int health;
 
     public bool actionable;
 
     [SyncVar] 
-    public bool isEncouraged, hasRecommended, orderVictim;
+    public bool isEncouraged, hasRecommended, hasTalked, orderVictim;
+    
+    public float accumulatedTime;
 
     [SyncVar(hook=nameof(SyncPsn))] 
     public bool psn0, psn1, psn2, psn3;
@@ -37,9 +39,10 @@ public class PlayerManager : NetworkBehaviour
         scrollCount = 0;
         courseCount = 1;
         pieceCount = 0;
-        piecesEaten = 0;
-        timer = 0;
+        nPiecesEaten = 0;
+        accumulatedTime = 0;
         actionable = false;
+        hasTalked = false;
         isEncouraged = false;
         hasRecommended = false;
         orderVictim = false;
@@ -59,18 +62,18 @@ public class PlayerManager : NetworkBehaviour
         {
             playerCam.SetActive(false);
         }
+        
+        PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
     }
-    
-    
+
     public void SyncPsn(bool oldValue, bool newValue)
     {
-        /*Shouldn't this function run on both server and specific client? (Is TargetRpc required?)*/
         psnArray[0] = psn0;
         psnArray[1] = psn1;
         psnArray[2] = psn2;
         psnArray[3] = psn3;
     }
-    
+
     [Command(requiresAuthority = false)]
     public void CmdCreateRecommend(GameObject piece)
     {
@@ -92,9 +95,9 @@ public class PlayerManager : NetworkBehaviour
             
             //If the piece doesn't have any flags already, create one
             Vector3 pTrans = recommendedPiece.transform.position;
-            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
-            currentRecommend.transform.SetParent(recommendedPiece.transform);
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend));
+            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = transform.name;
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
         }
         
         else if (newValue == null)
@@ -109,9 +112,10 @@ public class PlayerManager : NetworkBehaviour
             //Replace flag with a new one at a different piece
             StartCoroutine(playerCanvas.DespawnBillboard(currentRecommend));
             Vector3 pTrans = recommendedPiece.transform.position;
-            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
             currentRecommend.transform.SetParent(recommendedPiece.transform);
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend));
+            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = transform.name;
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
         }
         hasRecommended = true;
     }

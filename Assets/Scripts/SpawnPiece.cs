@@ -5,22 +5,28 @@ using Mirror;
 
 public class SpawnPiece : NetworkBehaviour
 {
+    public int normalCount, psnCount, scrollCount;
+    public float[] scrollProbability;
+    public GameObject chalkBoard;
+    public AudioClip courseBGM;
+    public GameObject[] currentPiece;
+    
     private List<Vector3> piecePos = new List<Vector3>();
     private List<Quaternion> pieceRot = new List<Quaternion>();
-    private  List<Vector3> randPos = new List<Vector3>();
-    private  List<Quaternion> randRot = new List<Quaternion>();
+    private List<Vector3> randPos = new List<Vector3>();
+    private List<Quaternion> randRot = new List<Quaternion>();
     private GameObject newPiece;
     private Vector3 newRandPos;
     private Quaternion newRandRot;
-    public int normalCount, psnCount, scrollCount;
-    public float[] scrollProbability;
-    public Sprite chalkBoard;
-    public GameObject[] currentPiece;
 
     public void Start()
-    {  
+    {
         RefreshPieceList();
-        InitPlate(normalCount, psnCount, scrollCount);    
+        
+        if (isServer)
+        {
+            InitPlate(normalCount, psnCount, scrollCount);
+        }
     }
     
     private void RefreshPieceList()
@@ -30,10 +36,10 @@ public class SpawnPiece : NetworkBehaviour
         
         foreach (Transform child in transform)
         {
-            if(child.CompareTag("PiecePos") || child.CompareTag("FoodPiece"))
+            if((child.CompareTag("PiecePos") || child.CompareTag("FoodPiece")) && isServer)
             {
-                piecePos.Add(child.transform.position);
-                pieceRot.Add(child.transform.rotation);
+                piecePos.Add(child.position);
+                pieceRot.Add(child.rotation);
             }
 
             if (child.CompareTag("PiecePos"))
@@ -42,14 +48,9 @@ public class SpawnPiece : NetworkBehaviour
             }
         }
     }
-
+    
     private void InitPlate(int normalPiece, int psnPiece, int scrollPiece)
     {
-        if (!isServer)
-        {return;}
-
-        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().ShowChalk(chalkBoard);
-
         //In mode 0; Until i = normalPiece, keep adding pieces with "normal tag"
         //In mode 1; Until i = psnPiece, keep adding pieces with "normal tag"
         //In mode 2; Until i = scrollPiece keep adding scroll pieces
@@ -90,11 +91,21 @@ public class SpawnPiece : NetworkBehaviour
             newPiece.GetComponent<FoodPiece>().SetType(2, scrollProbability);
             newPiece.transform.SetParent(transform, true);
         }
+        
+        RpcUpdatePieceParent();
     }
 
-    /*This function runs on server side, and the pieces moved should sync w/ network transform component
-    But doesn't sync to clients. Why?*/
-    
+    [ClientRpc]
+    public void RpcUpdatePieceParent()
+    {
+        foreach (GameObject obj in GameObject.FindGameObjectsWithTag("FoodPiece"))
+        {
+            obj.transform.SetParent(transform, true);
+        }
+        
+        transform.SetParent(GameObject.Find("StateManager").transform, true);
+    }
+
     [Command(requiresAuthority = false)]
     public void Shuffle()
     {
@@ -113,10 +124,13 @@ public class SpawnPiece : NetworkBehaviour
                 randPos.Remove(newRandPos);
                 randRot.Remove(newRandRot);
 
-                foreach (Transform grandchild in child) 
-                {
-                    Destroy(grandchild.gameObject);
-                    NetworkServer.Destroy(grandchild.gameObject);
+                foreach (Transform grandchild in child)
+                { 
+                    if (grandchild.CompareTag("Recommend") || grandchild.CompareTag("TypeFlag"))
+                    {
+                        Destroy(grandchild.gameObject);
+                        NetworkServer.Destroy(grandchild.gameObject);
+                    }
                 }
             }
         }

@@ -17,7 +17,7 @@ public class TakeDrink : MonoBehaviour
         {
             playerF.Poison(true);
         }
-        playerF.ResetActions();
+        playerF.ResetActions(true);
         gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 }

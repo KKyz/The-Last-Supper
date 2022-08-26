@@ -12,12 +12,10 @@ public class StateManager : NetworkBehaviour
     [SyncVar]
     public PlayerManager playerScript;
 
-    [SyncVar]
-    public int activePlayers;
-
-    [SyncVar] public bool gameCanEnd;
+    [SyncVar] 
+    public bool gameCanEnd;
     
-    public readonly SyncList<uint> players = new SyncList<uint>();
+    public readonly SyncList<uint> activePlayers = new SyncList<uint>();
     public readonly SyncList<string> playerNames = new SyncList<string>();
     public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new Dictionary<uint, PlayerManager>();
 
@@ -27,16 +25,17 @@ public class StateManager : NetworkBehaviour
     [ClientRpc]
     public void RpcRefreshPlayerNames()
     {
-        foreach (uint playerID in players)
+        foreach (uint playerID in activePlayers)
         {
-            NetworkClient.spawned[playerID].gameObject.name = playerNames[players.IndexOf(playerID)];
+            NetworkClient.spawned[playerID].gameObject.name = playerNames[activePlayers.IndexOf(playerID)];
         }
-    }
+    }   
 
     [Command(requiresAuthority = false)]
-    public void CmdRemoveActivePlayer()
+    public void CmdRemovePlayer(uint playerID)
     {
-        activePlayers -= 1;
+        activePlayers.Remove(playerID);
+        playerNames.Remove(NetworkClient.spawned[playerID].gameObject.name);
     }
     
     [Command(requiresAuthority = false)]
@@ -49,7 +48,7 @@ public class StateManager : NetworkBehaviour
 
         else
         {
-            if (turn < players.Count - 1)
+            if (turn < activePlayers.Count - 1)
             {
                 turn += 1;
             }
@@ -60,7 +59,7 @@ public class StateManager : NetworkBehaviour
             }
         }
         
-        currentPlayer = NetworkClient.spawned[players[turn]].gameObject;
+        currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
         playerScript = currentPlayer.GetComponent<PlayerManager>();
     }
     
@@ -69,20 +68,20 @@ public class StateManager : NetworkBehaviour
     {
         //Function called by PlayerFunctions to trigger encourage of next player
         //Add Authority
-        if (turn < players.Count - 1)
-        {NetworkServer.spawned[players[turn + 1]].gameObject.GetComponent<PlayerManager>().isEncouraged = true;}
+        if (turn < activePlayers.Count - 1)
+        {NetworkServer.spawned[activePlayers[turn + 1]].gameObject.GetComponent<PlayerManager>().isEncouraged = true;}
         else
-        {NetworkServer.spawned[players[0]].GetComponent<PlayerManager>().isEncouraged = true;}
+        {NetworkServer.spawned[activePlayers[0]].GetComponent<PlayerManager>().isEncouraged = true;}
     }
 
     [Command(requiresAuthority = false)]
     public void CmdNextEject()
     {
         //Add Authority
-        if (turn < players.Count - 1)
-        {NetworkServer.spawned[players[turn + 1]].gameObject.GetComponent<PlayerManager>().Eject();}
+        if (turn < activePlayers.Count - 1)
+        {NetworkServer.spawned[activePlayers[turn + 1]].gameObject.GetComponent<PlayerManager>().Eject();}
         else
-        {NetworkServer.spawned[players[0]].gameObject.GetComponent<PlayerManager>().Eject();}
+        {NetworkServer.spawned[activePlayers[0]].gameObject.GetComponent<PlayerManager>().Eject();}
     }
     
     [Command(requiresAuthority = false)]

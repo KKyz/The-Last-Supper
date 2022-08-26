@@ -1,8 +1,11 @@
 using System.Collections;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using UnityEngine;
 using Mirror;
+using UnityEngine.SceneManagement;
+using Random = UnityEngine.Random;
 
 public class GameManager : NetworkManager
 {
@@ -18,40 +21,70 @@ public class GameManager : NetworkManager
         GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
         foreach (GameObject newPlayer in allPlayers)
         {
-            if (!stateManager.players.Contains(newPlayer.GetComponent<NetworkIdentity>().netId))
+            if (!stateManager.activePlayers.Contains(newPlayer.GetComponent<NetworkIdentity>().netId))
             {
-                newPlayer.name = "Player: " + Random.Range(0, 999);
-                stateManager.players.Add(newPlayer.GetComponent<NetworkIdentity>().netId);
+                if (PlayerPrefs.GetString("PlayerName") != null)
+                {
+                    newPlayer.name = PlayerPrefs.GetString("PlayerName");
+                }
+                else
+                {
+                    newPlayer.name = "Player " + Random.Range(0, 99);
+                }
+                
+                stateManager.activePlayers.Add(newPlayer.GetComponent<NetworkIdentity>().netId);
                 stateManager.playerNames.Add(newPlayer.name);
-                stateManager.activePlayers += 1;
             }
         }
 
         StartCoroutine(PostJoinCall());
+        StartCoroutine(PostStartCall());
 
-        if (stateManager.players.Count == 1)
-        {
-            mealManager.course = -1;
-            mealManager.NextCourse();  
-        }
-
-        if (stateManager.players.Count >= 2)
+        if (stateManager.activePlayers.Count >= 2)
         {
             stateManager.gameCanEnd = true;
         }
     }
 
-    public override void OnServerDisconnect(NetworkConnection conn)
+    public override void OnClientConnect()
     {
-        stateManager.CmdRemoveActivePlayer();
+        base.OnClientConnect();
+
+        Debug.Log("I connected to a server!");
+        
+        autoCreatePlayer = true; // set the autoCreateFlag for the Network Manager (clients and host)
+    }
+    
+    public void myStartHost()
+    {
+        StartHost(); // manually start host
     }
 
-    public override void OnStartServer()
+    public void myJoinGame()
     {
-        //Initial operations when server begins
-        stateManager.gameCanEnd = false;
+        StartClient(); // manually start client
+    }
 
-        StartCoroutine(PostStartCall());
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        stateManager.CmdRemovePlayer(conn.identity.netId);
+        NetworkServer.Destroy(NetworkClient.spawned[conn.identity.netId].gameObject);
+    }
+
+    public override void OnServerChangeScene(string newSceneName)
+    {
+        DontDestroyOnLoad(stateManager);
+    }
+
+    public override void OnServerSceneChanged(string newSceneName)
+    {
+        if (newSceneName != "StartMenu")
+        {
+            //Initial operations when server begins
+            mealManager.StartOnLoad();
+            mealManager.NextCourse();
+            stateManager.gameCanEnd = false;
+        }
     }
 
     private IEnumerator PostStartCall()
@@ -59,7 +92,7 @@ public class GameManager : NetworkManager
         yield return 0;
 
         stateManager.turn = 0;
-        stateManager.currentPlayer = NetworkClient.spawned[stateManager.players[0]].gameObject;
+        stateManager.currentPlayer = NetworkClient.spawned[stateManager.activePlayers[0]].gameObject;
         stateManager.playerScript = stateManager.currentPlayer.GetComponent<PlayerManager>();
     }
 
@@ -68,7 +101,9 @@ public class GameManager : NetworkManager
         for (int i = 0; i <= 5; i++)
         {yield return 0;}
 
-        mealManager.UpdatePieceCounters();
+        mealManager.RpcUpdatePieceCounters();
         stateManager.RpcRefreshPlayerNames();
+        
+        //GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>().RpcUpdatePieceParent();
     }
 }

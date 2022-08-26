@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEditor.Experimental.GraphView;
+using UnityEngine.SearchService;
 using UnityEngine.UI;
 
 public class EnableDisableScrollButtons : NetworkBehaviour
@@ -13,8 +14,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
     private PlayerFunctions playerFunctions;
 
-    private GameObject slapButton, recommendButton, skipButton;
-    private Transform actionButtons, scrollButtons, cancelButton;
+    private GameObject slapButton, recommendButton, talkButton, outTalkButton, outRecommendButton, skipButton;
+    private Transform actionButtons, scrollButtons, outsideButtons, cancelButton;
     
     public int menuMode;
     public float disableTime, enableTime;
@@ -22,11 +23,15 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     void Start()
     {
         playerFunctions = gameObject.GetComponent<PlayerFunctions>();
-        slapButton = transform.Find("SlapButton").gameObject;
         actionButtons = transform.Find("ActionButtons").transform;
         scrollButtons = transform.Find("ScrollButtons").transform;
+        outsideButtons = transform.Find("OutsideButtons").transform;
         cancelButton = transform.Find("CancelButton").transform;
+        slapButton = outsideButtons.Find("SlapButton").gameObject;
         recommendButton = actionButtons.Find("RecommendButton").gameObject;
+        talkButton = actionButtons.Find("TalkButton").gameObject;
+        outRecommendButton = outsideButtons.Find("RecommendButton").gameObject;
+        outTalkButton = outsideButtons.Find("TalkButton").gameObject;
         skipButton = scrollButtons.Find("SkipButton").gameObject;
 
         StartCoroutine(PostStartCall());
@@ -45,37 +50,26 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         //If parent object of buttons (e.g. ActionButtons, ScrollButtons)
         if (button.childCount > 1)
         {
-            HorizontalLayoutGroup horiLayout = button.GetComponent<HorizontalLayoutGroup>();
-            horiLayout.enabled = false;
-            
             foreach (Transform buttonChild in button)
             {
                 if (!buttonChild.CompareTag("ConditionButton"))
                 {
                     buttonChild.gameObject.SetActive(true);
                 }
-                
+
                 if (buttonChild.gameObject.activeInHierarchy)
                 {
                     buttonChild.GetComponent<Button>().interactable = false;
                     
                     //Sets Fade-In
                     CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
-                    buttonCanvas.alpha = 0f;
                     LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
 
-                    //Slide-In From Left
-                    Vector3 goalPos = buttonChild.position;
-                    Vector3 startPos = new Vector3((goalPos.x - 300), goalPos.y, 0);
-                    buttonChild.position = startPos;
-                    LeanTween.moveX(buttonChild.gameObject, goalPos.x, enableTime - 0.1f);
-                    
                     yield return new WaitForSeconds(enableTime);
                     buttonChild.GetComponent<Button>().interactable = true;
+                    buttonChild.GetComponent<AwakePos>().UpdatePos(buttonChild.position);
                 }
             }
-
-            horiLayout.enabled = true;
         }
         
         else
@@ -86,14 +80,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
                 //Fade-In
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
-                buttonCanvas.alpha = 0f;
                 LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
-
-                //Slide-In From Left
-                Vector3 goalPos = button.position;
-                Vector3 startPos = new Vector3((goalPos.x - 300), goalPos.y, 0);
-                button.position = startPos;
-                LeanTween.moveX(button.gameObject, goalPos.x, enableTime - 0.1f);
             }
         }
     }
@@ -102,9 +89,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     {
         if (button.childCount > 1)
         {
-            HorizontalLayoutGroup horiLayout = button.GetComponent<HorizontalLayoutGroup>();
-            horiLayout.enabled = false;
-            
             //If parent object of buttons (e.g. ActionButtons, ScrollButtons)
             foreach (Transform buttonChild in button)
             {
@@ -116,20 +100,18 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                     CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
                     LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
                     
-                    //Move Downwards
-                    Vector3 startPos = buttonChild.position;
-                    float goalPos = startPos.y - 100;
-                    LeanTween.moveY(buttonChild.gameObject, goalPos, disableTime - 0.1f);
-                    
-                    //Reset positions and disable
                     yield return new WaitForSeconds(disableTime);
-                    buttonChild.position = startPos;
+                }
+            }
+
+            foreach (Transform buttonChild in button)
+            {
+                if (buttonChild.gameObject.activeInHierarchy)
+                {
                     buttonChild.GetComponent<Button>().interactable = true;
                     buttonChild.gameObject.SetActive(false);
                 }
             }
-            
-            horiLayout.enabled = true;
         }
         
         else
@@ -142,14 +124,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
                 LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
 
-                //Move Downwards
-                Vector3 startPos = button.position;
-                float goalPos = startPos.y - 100;
-                LeanTween.moveY(button.gameObject, goalPos, disableTime - 0.1f);
-
                 //Reset positions and disable
                 yield return new WaitForSeconds(disableTime);
-                button.position = startPos;
                 button.GetComponent<Button>().interactable = true;
                 button.gameObject.SetActive(false);
             }
@@ -160,11 +136,13 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
+        Debug.Log("button mode is: " + menuMode);
 
         // Opens Scrolls Menu
         if (isActive == 1)
         {
-
+            StartCoroutine(ButtonDisable(outsideButtons));
+            
             StartCoroutine(ButtonEnable(scrollButtons));
 
             StartCoroutine(ButtonDisable(actionButtons));
@@ -177,6 +155,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         // Opens Actions Menu
         else if (isActive == 2)
         {
+            StartCoroutine(ButtonDisable(outsideButtons));
 
             StartCoroutine(ButtonDisable(scrollButtons));
 
@@ -190,6 +169,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         //Enables Cancel Button
         else if (isActive == 3)
         {
+            StartCoroutine(ButtonDisable(outsideButtons));
             
             StartCoroutine(ButtonDisable(scrollButtons));
 
@@ -199,10 +179,12 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             
         }
 
-        //Disables everything (except for Slap)
+        //Disables everything (except for Slap, recommend, and Talk)
 
         else if (isActive == 4)
         {
+            StartCoroutine(ButtonEnable(outsideButtons));
+            
             StartCoroutine(ButtonDisable(scrollButtons));
 
             StartCoroutine(ButtonDisable(actionButtons));
@@ -214,6 +196,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
         else if (isActive == 5)
         {
+            StartCoroutine(ButtonDisable(outsideButtons));
+            
             StartCoroutine(ButtonDisable(scrollButtons));
 
             StartCoroutine(ButtonDisable(actionButtons));
@@ -225,6 +209,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
         else if (isActive == 6)
         {
+            StartCoroutine(ButtonDisable(outsideButtons));
+            
             StartCoroutine(ButtonDisable(scrollButtons));
 
             StartCoroutine(ButtonDisable(actionButtons));
@@ -246,16 +232,40 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             }           
         }
 
-        if (menuMode == 2 && playerManager != null && !playerManager.hasRecommended && !recommendButton.activeInHierarchy)
-        {recommendButton.SetActive(true);}
+        if (playerManager != null)
+        {
+            if (!playerManager.hasRecommended)
+            {
+                if (menuMode == 2 && !recommendButton.activeInHierarchy)
+                {
+                    recommendButton.SetActive(true);
+                }
+            
+                else if (menuMode == 4 && !outRecommendButton.activeInHierarchy)
+                {
+                    outRecommendButton.SetActive(true);  
+                }
+            
+            }
+        
+            if (!playerManager.hasTalked)
+            {
+                if (menuMode == 2 && !talkButton.activeInHierarchy)
+                {
+                    talkButton.SetActive(true);
+                }
+            
+                else if (menuMode == 4 && !outTalkButton.activeInHierarchy)
+                {
+                    outTalkButton.SetActive(true);  
+                }
+            
+            }   
+        }
 
         if (menuMode == 4 && playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
         {
-            StartCoroutine(ButtonEnable(slapButton.transform));
-        }
-        else
-        {
-            slapButton.SetActive(false);
+            slapButton.SetActive(true);
         }
 
         if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.activeInHierarchy)

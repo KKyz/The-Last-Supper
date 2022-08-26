@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using Mirror.Examples.Chat;
 using UnityEngine;
@@ -8,45 +9,38 @@ using UnityEngine.UI;
 public class OrderDrink : NetworkBehaviour
 {
     public Sprite psnWine, normalWine;
-    private Transform buttons, wines;
+    private Transform toggles, wines;
     private PlayerFunctions playerFunctions;
     private PlayerManager victim;
     private bool takeHealth;
-    [ShowInInspector]
     private bool[] psnArray = new bool[4];
-    private GameObject psnButton, orderButton;
-    private int buttonCount;
-    private List<PlayerManager> victims = new List<PlayerManager>();
+    private Button psnButton, orderButton;
+    private readonly List<PlayerManager> victims = new();
+    private ToggleGroup playerToggles;
     private StateManager stateManager;
-    private EnableDisableScrollButtons buttonToggle;
 
     public void Start()
     {
         takeHealth = false;
         victim = null;
-        buttonCount = 0;
+        int buttonCount = 0;
         victims.Clear();
-        psnButton = transform.Find("SwitchButton").gameObject;
-        orderButton = transform.Find("OrderButton").gameObject;
-        buttons = transform.Find("Buttons");
+        psnButton = transform.Find("SwitchButton").GetComponent<Button>();
+        toggles = transform.Find("Players");
+        playerToggles = toggles.GetComponent<ToggleGroup>();
+        orderButton = transform.Find("OrderButton").GetComponent<Button>();
         wines = transform.Find("Wines");
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
-        buttonToggle =  buttonToggle = GameObject.Find("PlayerCanvas").GetComponent<EnableDisableScrollButtons>();
 
-        if (stateManager.currentPlayer.GetComponent<PlayerManager>().health == 2)
-        {
-            psnButton.SetActive(true);
-        }
-        
-        foreach (uint playerID in stateManager.players)
+        foreach (uint playerID in stateManager.activePlayers)
         {
             PlayerManager player = stateManager.spawnedPlayers[playerID];
             if (player.gameObject != stateManager.currentPlayer)
             {
                 victims.Add(player.GetComponent<PlayerManager>());
-                buttons.GetChild(buttonCount).gameObject.SetActive(true);
-                buttons.GetChild(buttonCount).GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = player.name;
+                toggles.GetChild(buttonCount).gameObject.SetActive(true);
+                toggles.GetChild(buttonCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name;
                 buttonCount += 1;
             }
         }
@@ -55,17 +49,18 @@ public class OrderDrink : NetworkBehaviour
     public void Update()
     {
         if (victim != null)
-        {orderButton.SetActive(true);}
-        else {orderButton.SetActive(false);}
+        {orderButton.interactable = true;}
+        else {orderButton.interactable = false;}
 
         if (victim != null && stateManager.currentPlayer.GetComponent<PlayerManager>().health >= 2)
-        {psnButton.SetActive(true);}
-        else {psnButton.SetActive(false);}
+        {psnButton.interactable = true;}
+        else {psnButton.interactable = false;}
     }
 
-    public void SelectVictim(int vicNum)
+    public void SelectVictim()
     {
-        victim = victims[vicNum];
+        Toggle playerToggle = playerToggles.ActiveToggles().FirstOrDefault();
+        victim = victims[playerToggle.transform.GetSiblingIndex()];
         takeHealth = true;
         ChangeAmount();
     }
@@ -93,7 +88,6 @@ public class OrderDrink : NetworkBehaviour
     public void CloseMenu()
     {
         victims.Clear();
-        buttonToggle.ToggleButtons(2);
         gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 
