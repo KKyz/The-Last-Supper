@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
 using UnityEngine;
 
 public class CameraActions : MonoBehaviour
@@ -23,11 +24,20 @@ public class CameraActions : MonoBehaviour
         zoomOutPos = playerCam.position;
         playerCam.LookAt(centerPos);
     }
-
-    public void UpdateCameraLook(Vector3 platePos)
+    
+    public void UpdateCameraLook()
     {
+        Vector3 platePos = GameObject.FindWithTag("Plate").transform.position;
         centerPos = new Vector3(platePos.x + 1f, platePos.y + 2.5f, platePos.z);
         playerCam.LookAt(centerPos); 
+    }
+
+    public void Update()
+    {
+        if (Input.GetKeyDown("z"))
+        {
+            UpdateCameraLook();
+        }
     }
 
     public void ZoomIn()

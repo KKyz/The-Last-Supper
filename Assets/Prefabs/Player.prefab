@@ -107,11 +107,12 @@ MonoBehaviour:
   scrollCount: 0
   courseCount: 0
   pieceCount: 0
-  piecesEaten: 0
+  nPiecesEaten: 0
   health: 0
   actionable: 0
   isEncouraged: 0
   hasRecommended: 0
+  hasTalked: 0
   orderVictim: 0
   accumulatedTime: 0
   psn0: 0
@@ -136,20 +137,39 @@ MonoBehaviour:
   playerScrolls:
   - amount: 1
     name: Slap
+    description: Slap the current player to cancel their turn! (Can only be activated
+      if your turn isn't active)
+    scroll: {fileID: 21300000, guid: f7198a9abe80269419a56f3c9d6a0472, type: 3}
   - amount: 1
     name: Skip
+    description: Activating skips your turn.
+    scroll: {fileID: 21300000, guid: ff4ecc95785ec0b43b634824a3a4536d, type: 3}
   - amount: 1
     name: Smell
+    description: Allows you to reveal up to 3 pieces
+    scroll: {fileID: 21300000, guid: 5a5ef060a11b74a4ea2722d9286bfb44, type: 3}
   - amount: 1
     name: Quake
+    description: Activating causes an earthquake to trigger, shuffling all remaining
+      pieces.
+    scroll: {fileID: 21300000, guid: 22c3b9ec89c810149a172708ec54c242, type: 3}
   - amount: 1
     name: Order
+    description: Order 4 drinks to a player, of which one (or two) of them can be
+      poisonous.
+    scroll: {fileID: 21300000, guid: 2bb9e2b040d757f468915b057c2ce1cb, type: 3}
   - amount: 1
     name: Encourage
+    description: Taunts the next player, forcing them to take two turns
+    scroll: {fileID: 21300000, guid: ff4ecc95785ec0b43b634824a3a4536d, type: 3}
   - amount: 1
     name: Swap
+    description: Swap the types of two pieces
+    scroll: {fileID: 21300000, guid: 22e2ff5418331134d8677a17106154a8, type: 3}
   - amount: 1
     name: Fake
+    description: Tag a piece as poisoned, turning it into a decoy.
+    scroll: {fileID: 21300000, guid: f7198a9abe80269419a56f3c9d6a0472, type: 3}
 --- !u!114 &5026244676830656758
 MonoBehaviour:
   m_ObjectHideFlags: 0

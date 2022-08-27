@@ -7,7 +7,8 @@ using TMPro;
 
 public class PlayerManager : NetworkBehaviour
 {
-    
+
+    [HideInInspector]
     public int scrollCount, courseCount, pieceCount, nPiecesEaten;
     
     public int health;
@@ -22,11 +23,13 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar(hook=nameof(SyncPsn))] 
     public bool psn0, psn1, psn2, psn3;
 
+    [HideInInspector]
     public bool[] psnArray = new bool[4];
     
     [SyncVar(hook=nameof(SyncRecommended))]
     public GameObject recommendedPiece;
 
+    [HideInInspector]
     public GameObject currentRecommend;
     
     private GameObject playerCam;

@@ -1,20 +1,23 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using Random = UnityEngine.Random;
 
 public class SpawnPiece : NetworkBehaviour
 {
     public int normalCount, psnCount, scrollCount;
     public float[] scrollProbability;
-    public GameObject chalkBoard;
+    public Sprite chalkSprite;
+    public string courseName;
     public AudioClip courseBGM;
     public GameObject[] currentPiece;
     
-    private List<Vector3> piecePos = new List<Vector3>();
-    private List<Quaternion> pieceRot = new List<Quaternion>();
-    private List<Vector3> randPos = new List<Vector3>();
-    private List<Quaternion> randRot = new List<Quaternion>();
+    private List<Vector3> piecePos = new();
+    private List<Quaternion> pieceRot = new();
+    private List<Vector3> randPos = new();
+    private List<Quaternion> randRot = new();
     private GameObject newPiece;
     private Vector3 newRandPos;
     private Quaternion newRandRot;

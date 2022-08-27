@@ -23,7 +23,7 @@ public class PlayerFunctions : NetworkBehaviour
     [HideInInspector]
     public TextMeshProUGUI infoText;
     
-    public GameObject drinkMenu, talkMenu, drinkPlate, recommendFlag, typeFlag, fakeFlag, swapFlag, receipt, vomitSplash, healthSplash, smokeSplash, scrollInfo;
+    public GameObject drinkMenu, talkMenu, drinkPlate, chalkBoard, recommendFlag, typeFlag, fakeFlag, swapFlag, receipt, vomitSplash, healthSplash, smokeSplash, scrollInfo;
     public Sprite[] scrollIcons;
     public string[] scrollDesc;
     public string currentState;
@@ -34,6 +34,7 @@ public class PlayerFunctions : NetworkBehaviour
     private CanvasGroup fade;
     private CameraActions camActions;
     private ShowHealth healthBar;
+    //private charAnimator playerAnim;
     private readonly List<GameObject> smellTargets = new();
     private readonly List<Transform> swapTargets = new();
     private bool startCourse;
@@ -74,6 +75,7 @@ public class PlayerFunctions : NetworkBehaviour
                 player = newPlayer.GetComponent<PlayerManager>();
                 camActions = newPlayer.GetComponent<CameraActions>();
                 playerScrolls = newPlayer.GetComponent<ScrollArray>();
+                //playerAnim = newPlayer.GetComponent<charAnimator>();
             }
         }
         
@@ -81,8 +83,7 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (!isServer)
         {
-            GameObject chalk = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>().chalkBoard;
-            ShowChalk(chalk);
+            ShowChalk();
         }
     }
 
@@ -103,16 +104,11 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Client]
-    private void FadeIn(bool disableFade)
+    private void FadeIn()
     {
         fade.gameObject.SetActive(true);
         fade.alpha = 0f;
         LeanTween.alphaCanvas(fade, 1f, 1.5f);
-        
-        if (disableFade)
-        {
-            StartCoroutine(DisableFade());
-        }
     }
 
     [Client]
@@ -148,6 +144,8 @@ public class PlayerFunctions : NetworkBehaviour
             { 
                 GameObject vSplash = Instantiate(vomitSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
                 vSplash.transform.SetParent(transform, false);
+                
+                //playerAnimation.QueueAnimation("Poisoned");
             }
         }
     }
@@ -179,7 +177,8 @@ public class PlayerFunctions : NetworkBehaviour
     
     public IEnumerator QuakeFade()
     {
-        FadeIn(false);
+        //playerAnimation.QueueAnimation("Quake");
+        FadeIn();
         buttonToggle.ToggleButtons(6);
         yield return new WaitForSeconds(2f);
         
@@ -196,6 +195,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Slap()
     {
+        //playerAnimation.QueueAnimation("Slapping");
         ResetActions(true);
         stateManager.CmdNextPlayer();
         playerScrolls.AddScrollAmount(-1, 0);
@@ -205,6 +205,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Skip()
     {
+        //playerAnimation.QueueAnimation("Skip");
         player.orderVictim = false;
         ResetActions(true);
         stateManager.CmdNextPlayer();
@@ -223,6 +224,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ConfirmSmell()
     {
+        //playerAnimation.QueueAnimation("Smell");
         foreach (GameObject piece in smellTargets)
         {
             foreach (Transform flag in piece.transform)
@@ -242,6 +244,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmFake()
     {
+        //playerAnimation.QueueAnimation("Fake");
         if (fakeTarget.transform.parent.GetComponent<FoodPiece>().type == "Normal")
         {
             StartCoroutine(mealManager.CheckNPieces());
@@ -278,6 +281,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmSwap()
     {
+        //playerAnimation.QueueAnimation("Swapping");
         uint playerID = player.transform.GetComponent<NetworkIdentity>().netId;
         Transform[] swapArray = {swapTargets[0], swapTargets[1]};
         CmdSyncSwap(swapTargets[0].GetComponent<FoodPiece>(), swapTargets[1].GetComponent<FoodPiece>(), playerID, swapArray);
@@ -337,6 +341,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void OrderDrink()
     {
+        //playerAnimation.QueueAnimation("OrderDrink");
         openPopup = Instantiate(drinkMenu, new Vector3(0f, 400f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
@@ -354,6 +359,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     private void ReceiveDrink()
     {
+        //playerAnimation.QueueAnimation("Active");
         openPopup = Instantiate(drinkPlate, new Vector3(0f, 400f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
@@ -367,6 +373,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Eat()
     {
+        //playerAnimation.QueueAnimation("Active");
         currentState = "Eating";
         StartAction();
         ShowInfoText("Select a piece to eat (eating will end your turn)");
@@ -375,6 +382,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Recommend()
     {
+        //playerAnimation.QueueAnimation("Active");
         currentState = "Recommending";
         StartAction();
         ShowInfoText("Select a piece to recommend");
@@ -393,6 +401,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Encourage()
     {
+        //playerAnimation.QueueAnimation("Encourage");
         stateManager.CmdNextEncourage();
         ResetActions(true);
         playerScrolls.AddScrollAmount(-1, 5);
@@ -450,14 +459,25 @@ public class PlayerFunctions : NetworkBehaviour
 
     /*This function doesn't work as clientRpc*/
 
-    public void ShowChalk(GameObject chalkBoard)
+    public void ShowChalk()
     {
+        string chalkDescription = ""; 
+        
         Vector3 chalkPos = new Vector3(0f, -40f, 0f);
         openPopup = Instantiate(chalkBoard, chalkPos, quaternion.identity);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         buttonToggle.ToggleButtons(6);
+        
+        SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
+        openPopup.transform.GetComponentInChildren<Image>().sprite = chalkData.chalkSprite;
+        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = chalkData.courseName;
+        chalkDescription += "- " + chalkData.normalCount + " Empty Pieces";
+        chalkDescription += "\n - " + chalkData.psnCount + " Poison Pieces";
+        chalkDescription += "\n - " + chalkData.scrollCount + " Special Pieces";
+        chalkDescription += "\n - " + (chalkData.normalCount +  chalkData.scrollCount + chalkData.scrollCount) +" Total Pieces";
+        openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = chalkDescription;
     }
 
     [Client]
@@ -516,6 +536,7 @@ public class PlayerFunctions : NetworkBehaviour
             if (stateManager.currentPlayer == player.gameObject)
             {
                 buttonToggle.ToggleButtons(2);
+                //playerAnimation.QueueAnimation("Rest");
             }
 
             else

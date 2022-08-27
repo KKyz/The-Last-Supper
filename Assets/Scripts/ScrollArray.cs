@@ -28,6 +28,8 @@ public class ScrollArray : MonoBehaviour
     {
         public int amount;
         public string name;
+        public string description;
+        public Sprite scroll;
     }
 }
 

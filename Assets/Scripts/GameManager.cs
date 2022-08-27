@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using UnityEngine;
 using Mirror;
+using TMPro;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
@@ -12,6 +13,8 @@ public class GameManager : NetworkManager
     public StateManager stateManager;
 
     public MealManager mealManager;
+
+    private Transform playerList;
 
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
@@ -34,6 +37,10 @@ public class GameManager : NetworkManager
                 
                 stateManager.activePlayers.Add(newPlayer.GetComponent<NetworkIdentity>().netId);
                 stateManager.playerNames.Add(newPlayer.name);
+
+                Transform playerNameDisplay = playerList.GetChild(stateManager.playerNames.IndexOf(newPlayer.name));
+                playerNameDisplay.gameObject.SetActive(true);
+                playerNameDisplay.GetComponentInChildren<TextMeshProUGUI>().text = newPlayer.name;
             }
         }
 
@@ -55,20 +62,34 @@ public class GameManager : NetworkManager
         autoCreatePlayer = true; // set the autoCreateFlag for the Network Manager (clients and host)
     }
     
-    public void myStartHost()
+    public new void StartHost()
     {
-        StartHost(); // manually start host
+        base.StartHost();
+        playerList = GameObject.Find("PlayerList").transform;
+        
+        foreach (Transform playerName in playerList)
+        {
+            playerName.gameObject.SetActive(false);
+        }
     }
 
-    public void myJoinGame()
+    public void JoinGame()
     {
         StartClient(); // manually start client
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        stateManager.CmdRemovePlayer(conn.identity.netId);
-        NetworkServer.Destroy(NetworkClient.spawned[conn.identity.netId].gameObject);
+        if (SceneManager.GetActiveScene().name == "StartMenu")
+        {
+            Transform playerNameDisplay = playerList.GetChild(stateManager.playerNames.IndexOf(NetworkClient.spawned[conn.identity.netId].gameObject.name));
+            playerNameDisplay.gameObject.SetActive(false);
+        }
+        else
+        {
+            stateManager.CmdRemovePlayer(conn.identity.netId);
+            NetworkServer.Destroy(NetworkClient.spawned[conn.identity.netId].gameObject);  
+        }
     }
 
     public override void OnServerChangeScene(string newSceneName)

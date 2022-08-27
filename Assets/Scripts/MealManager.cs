@@ -68,18 +68,10 @@ public class MealManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcShowChalk(GameObject plate)
+    public void RpcShowChalk()
     {
-        GameObject chalk = plate.GetComponent<SpawnPiece>().chalkBoard;
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
-        playerCanvas.ShowChalk(chalk);
-    }
-
-    [ClientRpc]
-    public void RpcLookAtPlate(GameObject plate)
-    {
-        Vector3 platePos = plate.transform.position;
-        GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook(platePos);
+        playerCanvas.ShowChalk();
     }
 
     [ClientRpc]
@@ -87,6 +79,12 @@ public class MealManager : NetworkBehaviour
     {
         AudioClip courseBGM = plate.GetComponent<SpawnPiece>().courseBGM;
         musicManager.PlayBGM(courseBGM);
+    }
+
+    [ClientRpc]
+    public void RpcLookAtPlate()
+    {
+        GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook();
     }
 
     [Command(requiresAuthority = false)]
@@ -118,8 +116,8 @@ public class MealManager : NetworkBehaviour
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);
         currentPlate.transform.SetParent(transform, true);
-        RpcShowChalk(currentPlate);
-        //RpcLookAtPlate(currentPlate.transform.position);
+        RpcShowChalk();
+        RpcLookAtPlate();
         //RpcPlayCourseBGM(currentPlate);
         /* This function doesn't run on clients*/
         StartCoroutine(CheckNPieces());
