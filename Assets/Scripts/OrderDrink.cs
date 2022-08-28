@@ -23,7 +23,7 @@ public class OrderDrink : NetworkBehaviour
     {
         takeHealth = false;
         victim = null;
-        int buttonCount = 0;
+        int playerCount = 0;
         victims.Clear();
         psnButton = transform.Find("SwitchButton").GetComponent<Button>();
         toggles = transform.Find("Players");
@@ -39,9 +39,9 @@ public class OrderDrink : NetworkBehaviour
             if (player.gameObject != stateManager.currentPlayer)
             {
                 victims.Add(player.GetComponent<PlayerManager>());
-                toggles.GetChild(buttonCount).gameObject.SetActive(true);
-                toggles.GetChild(buttonCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name;
-                buttonCount += 1;
+                toggles.GetChild(playerCount).gameObject.SetActive(true);
+                toggles.GetChild(playerCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name;
+                playerCount += 1;
             }
         }
     }

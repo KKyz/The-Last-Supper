@@ -82,7 +82,7 @@ public class FoodPiece : NetworkBehaviour
 
             else if (prob < accScrollProb[6])
             {
-                type = "Encourage";
+                type = "Taunt";
             }
             
             else if (prob < accScrollProb[7])
@@ -92,7 +92,7 @@ public class FoodPiece : NetworkBehaviour
             
             else if (prob <= accScrollProb[8])
             {
-                type = "Fake";
+                type = "Decoy";
             }
         }     
     }

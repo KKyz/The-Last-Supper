@@ -1,29 +1,42 @@
 using System.Collections;
 using System.Collections.Generic;
+using Mirror;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class TalkMenu : MonoBehaviour
+public class TalkMenu : NetworkBehaviour
 {
-    private PlayerManager targetPlayer;
-    private List<PlayerManager> players = new();
+    public string message;
+    private uint targetPlayer;
+    private GameObject localPlayer;
+    private List<uint> players = new();
     private StateManager stateManager;
     private Transform playerButtons, talkButtons;
     
     void Start()
     {
-        targetPlayer = null;
+        message = "";
         int playerCount = 0;
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         playerButtons = transform.Find("Players");
         talkButtons = transform.Find("TalkButtons");
         players.Clear();
-        
+
+        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
+        {
+            if (player == isLocalPlayer)
+            {
+                localPlayer = player;
+            }
+        }
+
         foreach (uint playerID in stateManager.activePlayers)
         {
             PlayerManager player = stateManager.spawnedPlayers[playerID];
-            if (player.gameObject != stateManager.currentPlayer)
+            if (player.gameObject != localPlayer)
             {
-                players.Add(player.GetComponent<PlayerManager>());
+                players.Add(player.GetComponent<NetworkIdentity>().netId);
                 playerButtons.GetChild(playerCount).gameObject.SetActive(true);
                 playerButtons.GetChild(playerCount).GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = player.name;
                 playerCount += 1;
@@ -31,10 +44,16 @@ public class TalkMenu : MonoBehaviour
         }
     }
     
-    public void SelectPlayer(int playerNum)
+    public void SelectPlayer()
     {
-        targetPlayer = players[playerNum];
+        Toggle playerToggle = playerToggles.ActiveToggles().FirstOrDefault();
+        targetPlayer = players[playerToggle.transform.GetSiblingIndex()];
         UpdateTalkButtons();
+    }
+
+    public void SelectMessage(Transform button)
+    {
+        message = button.GetComponentInChildren<TextMeshProUGUI>().text;
     }
 
     public void UpdateTalkButtons()
@@ -82,7 +101,9 @@ public class TalkMenu : MonoBehaviour
 
     public void ConfirmTalk()
     {
-        stateManager.currentPlayer.GetComponent<PlayerManager>().hasTalked = true; 
+        stateManager.currentPlayer.GetComponent<PlayerManager>().hasTalked = true;
+        NetworkConnection conn = stateManager.spawnedPlayers[targetPlayer].GetComponent<NetworkIdentity>().connectionToClient;
+        GetComponentInParent<PlayerFunctions>().TargetSendMessage(conn, message, localPlayer.name);
         gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 }

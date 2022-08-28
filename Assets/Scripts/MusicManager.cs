@@ -22,15 +22,18 @@ public class MusicManager : MonoBehaviour
 
     public void PlayBGM(AudioClip courseBGM)
     {
-        if (musicPlayer.clip != null)
+        if (courseBGM != null)
         {
-            StartCoroutine(BGMFadeOut(0.5f));
+            if (musicPlayer.clip != null)
+            {
+                StartCoroutine(BGMFadeOut(0.5f));
+            }
+            //Fade out current audio
+            //Start next audio
+            bgmMixer.SetFloat("BGMParam", 1f);
+            musicPlayer.clip = courseBGM;
+            musicPlayer.Play();
         }
-        //Fade out current audio
-        //Start next audio
-        bgmMixer.SetFloat("BGMParam", 1f);
-        musicPlayer.clip = courseBGM;
-        musicPlayer.Play(); 
     }
     
     public IEnumerator BGMFadeOut(float duration)

@@ -203,8 +203,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -414,8 +414,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -653,7 +653,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6713957857798555720
 CanvasRenderer:
@@ -736,7 +736,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4884346924227362379}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 4296709285017272243}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1516824747970219556
 GameObject:
   m_ObjectHideFlags: 0
@@ -775,7 +787,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 168.0039, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6071532972732323909
 MonoBehaviour:
@@ -1016,6 +1028,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eae1524c6aa641a44bc75acdf89f9e90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  message: 
+  playerName: 
 --- !u!1 &1832853818243213994
 GameObject:
   m_ObjectHideFlags: 0
@@ -1054,7 +1068,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5520923171722575580
 CanvasRenderer:
@@ -1137,7 +1151,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8606404147826749968}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1236385793740821643}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1925879604823064269
 GameObject:
   m_ObjectHideFlags: 0
@@ -1206,8 +1232,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1341,8 +1367,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1595,7 +1621,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 20.998991, y: 136}
+  m_AnchoredPosition: {x: 20.998991, y: 170}
   m_SizeDelta: {x: 520.5861, y: 91.4199}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6159883211814260041
@@ -1781,14 +1807,14 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: OrderDrink, Assembly-CSharp
-        m_MethodName: SelectVictim
-        m_Mode: 1
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectPlayer
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1938,8 +1964,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2221,7 +2247,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 168.0039, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2213544741684991152
 MonoBehaviour:
@@ -2287,7 +2313,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7102088876130897037
 CanvasRenderer:
@@ -2370,7 +2396,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 724785160743833018}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 786483698739932276}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4148835978856869235
 GameObject:
   m_ObjectHideFlags: 0
@@ -2409,7 +2447,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 168.0039, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1483814841939513960
 MonoBehaviour:
@@ -2475,7 +2513,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2057851189845041790
 CanvasRenderer:
@@ -2558,7 +2596,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8301726249698054744}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 3245319721126169720}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4735022939549045623
 GameObject:
   m_ObjectHideFlags: 0
@@ -2596,8 +2646,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -166, y: -51.9}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -349, y: -11}
+  m_SizeDelta: {x: 100, y: 114}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &9167354185651209251
 MonoBehaviour:
@@ -2617,7 +2667,7 @@ MonoBehaviour:
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
-  m_Spacing: 78.84
+  m_Spacing: 148.97
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
@@ -2663,7 +2713,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5526512274342558202
 CanvasRenderer:
@@ -2746,7 +2796,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1574081053217605353}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 7399837131872437780}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &4959693327591822778
 GameObject:
   m_ObjectHideFlags: 0
@@ -2815,8 +2877,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3051,7 +3113,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -249, y: 55}
+  m_AnchoredPosition: {x: -249, y: 105}
   m_SizeDelta: {x: 253.1799, y: 34.3797}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3923409406988093827
@@ -3297,8 +3359,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -3402,7 +3464,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6326757082624518688
 CanvasRenderer:
@@ -3485,7 +3547,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2401349163145747031}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 1079940557278317545}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6597403091445225730
 GameObject:
   m_ObjectHideFlags: 0
@@ -3784,10 +3858,10 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: OrderDrink, Assembly-CSharp
-        m_MethodName: SelectVictim
-        m_Mode: 1
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectPlayer
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3835,7 +3909,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1111367696376967459
 CanvasRenderer:
@@ -3918,7 +3992,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3226792459068073976}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 4458738856126605445}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6807624212121858481
 GameObject:
   m_ObjectHideFlags: 0
@@ -3957,7 +4043,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8946094598430788911
 CanvasRenderer:
@@ -4040,7 +4126,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1853471322791638221}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 761995960445071077}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6874507562782711941
 GameObject:
   m_ObjectHideFlags: 0
@@ -4287,8 +4385,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4392,7 +4490,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 108.2248, y: 24.351}
+  m_SizeDelta: {x: 207.0161, y: 47.5677}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3590909200687479170
 CanvasRenderer:
@@ -4475,7 +4573,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3766609401106178129}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectMessage
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 4187827601470934190}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &8039114687887584181
 GameObject:
   m_ObjectHideFlags: 0
@@ -4514,7 +4624,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 133, y: 47}
+  m_AnchoredPosition: {x: 133, y: 97}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6445533507399048587
@@ -4802,8 +4912,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Button
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
-  m_sharedMaterial: {fileID: -6336106691825693119, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
+  m_sharedMaterial: {fileID: -3217283483308362125, guid: 55ac49bc8be1b9d41a668be8e42ff61f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4955,14 +5065,14 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: OrderDrink, Assembly-CSharp
-        m_MethodName: SelectVictim
-        m_Mode: 1
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: SelectPlayer
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0

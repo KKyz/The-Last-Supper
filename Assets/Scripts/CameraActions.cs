@@ -6,8 +6,6 @@ using UnityEngine;
 
 public class CameraActions : MonoBehaviour
 {
-    public float magnitude;
-    
     private Transform center, playerCam;
     private Vector3 zoomOutPos, centerPos;
 
@@ -50,5 +48,22 @@ public class CameraActions : MonoBehaviour
     public void ZoomOut()
     {
         LeanTween.move(playerCam.gameObject, zoomOutPos, 1f).setEaseOutSine();
+    }
+
+    public IEnumerator ShakeCamera(float shakeDuration, float shakeAmount, float decreaseFactor)
+    {
+        if (shakeDuration > 0)
+        {
+            playerCam.localPosition = zoomOutPos + UnityEngine.Random.insideUnitSphere * shakeAmount;
+			
+            shakeDuration -= Time.deltaTime * decreaseFactor;
+        }
+        else
+        {
+            shakeDuration = 0f;
+            playerCam.localPosition = zoomOutPos;
+        }
+
+        yield return null;
     }
 }

@@ -24,13 +24,11 @@ public class PlayerFunctions : NetworkBehaviour
     public TextMeshProUGUI infoText;
     
     public GameObject drinkMenu, talkMenu, drinkPlate, chalkBoard, recommendFlag, typeFlag, fakeFlag, swapFlag, receipt, vomitSplash, healthSplash, smokeSplash, scrollInfo;
-    public Sprite[] scrollIcons;
-    public string[] scrollDesc;
     public string currentState;
     public bool countTime;
 
     private EnableDisableScrollButtons buttonToggle;
-    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget;
+    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
     private CanvasGroup fade;
     private CameraActions camActions;
     private ShowHealth healthBar;
@@ -47,6 +45,7 @@ public class PlayerFunctions : NetworkBehaviour
         healthBar = transform.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.Find("SmellConfirm").gameObject;
         swapConfirm = transform.Find("SwapConfirm").gameObject;
+        chatPanel = transform.Find("ChatLog").Find("Panel").gameObject;
         fakeConfirm = transform.Find("FakeConfirm").gameObject;
         fade = transform.Find("Fade").GetComponent<CanvasGroup>();
         infoText = transform.Find("Info").GetComponent<TextMeshProUGUI>();
@@ -80,6 +79,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
         
         countTime = true;
+        playerScrolls.ResetScrollAmount();
 
         if (!isServer)
         {
@@ -88,11 +88,11 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Client]
-    public void ShowInfoText(string info)
+    private void ShowInfoText(string info)
     {
         infoText.gameObject.SetActive(true);
         infoText.text = info;
-        //infoText.GetComponent<CanvasGroup>().alpha = 0f;
+        infoText.GetComponent<CanvasGroup>().alpha = 0f;
         LeanTween.alpha(infoText.gameObject, 1f, 0.5f).setLoopPingPong();
     }
 
@@ -178,6 +178,7 @@ public class PlayerFunctions : NetworkBehaviour
     public IEnumerator QuakeFade()
     {
         //playerAnimation.QueueAnimation("Quake");
+        StartCoroutine(camActions.ShakeCamera(1f, 0.7f, 1f));
         FadeIn();
         buttonToggle.ToggleButtons(6);
         yield return new WaitForSeconds(2f);
@@ -185,7 +186,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (stateManager.currentPlayer == player.gameObject)
         {
             GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>().Shuffle();
-            playerScrolls.AddScrollAmount(-1, 3);
+            playerScrolls.RemoveScrollAmount("Quake");
             player.scrollCount += 1;
         }
         
@@ -198,7 +199,7 @@ public class PlayerFunctions : NetworkBehaviour
         //playerAnimation.QueueAnimation("Slapping");
         ResetActions(true);
         stateManager.CmdNextPlayer();
-        playerScrolls.AddScrollAmount(-1, 0);
+        playerScrolls.RemoveScrollAmount("Slap");
         player.scrollCount += 1;
     }
     
@@ -209,7 +210,7 @@ public class PlayerFunctions : NetworkBehaviour
         player.orderVictim = false;
         ResetActions(true);
         stateManager.CmdNextPlayer();
-        playerScrolls.AddScrollAmount(-1, 1);
+        playerScrolls.RemoveScrollAmount("Skip");
         player.scrollCount += 1;
     }
     
@@ -237,7 +238,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
         
         StartCoroutine(buttonToggle.ButtonDisable(smellConfirm.transform));
-        playerScrolls.AddScrollAmount(-1, 2);
+        playerScrolls.RemoveScrollAmount("Smell");
         player.scrollCount += 1;
         ResetActions(true);
     }
@@ -258,7 +259,7 @@ public class PlayerFunctions : NetworkBehaviour
                 StartCoroutine(flag.GetComponent<SetFlagType>().SetFlag());
             }
         }
-        playerScrolls.AddScrollAmount(-1, 7);
+        playerScrolls.RemoveScrollAmount("Decoy");
         player.scrollCount += 1;
         ResetActions(true);
     }
@@ -298,7 +299,7 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
 
-        playerScrolls.AddScrollAmount(-1, 6);
+        playerScrolls.RemoveScrollAmount("Swap");
         player.scrollCount += 1;
         ResetActions(true);
     }
@@ -327,15 +328,17 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
     }
+    
+    [TargetRpc]
+    public void TargetSendMessage(NetworkConnection target, string message, string senderName)
+    {
+        chatPanel.GetComponentInChildren<TextMeshProUGUI>().text += "\n" + senderName + ": " + message;
+    }
 
     [Client]
     private void Eject()
     {
         stateManager.CmdNextEject();
-        ResetActions(true);
-        stateManager.CmdNextPlayer();
-        playerScrolls.AddScrollAmount(-1, 5);
-        player.scrollCount += 1;
     }
     
     [Client]
@@ -352,7 +355,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void RemoveDrinkScroll()
     {
-        playerScrolls.AddScrollAmount(-1, 4);
+        playerScrolls.RemoveScrollAmount("Order");
         player.scrollCount += 1;
     }
     
@@ -404,12 +407,12 @@ public class PlayerFunctions : NetworkBehaviour
         //playerAnimation.QueueAnimation("Encourage");
         stateManager.CmdNextEncourage();
         ResetActions(true);
-        playerScrolls.AddScrollAmount(-1, 5);
+        playerScrolls.RemoveScrollAmount("Taunt");
         player.scrollCount += 1;
     }
 
     [Client]
-    public void ShowScrollInfo(Sprite scrollImage, string scrollName, string scrollDes)
+    public void ShowScrollInfo(string pieceType)
     {
         openPopup = Instantiate(scrollInfo, new Vector3(0f, 400f, 0f), quaternion.identity);
 
@@ -417,9 +420,9 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         
-        openPopup.transform.Find("Icon").GetComponent<Image>().sprite = scrollImage;
-        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("You've got a " + scrollName + " scroll!");
-        openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = scrollDes;
+        openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
+        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("You've got a " + pieceType + " scroll!");
+        openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = playerScrolls.GetDescription(pieceType);
         buttonToggle.ToggleButtons(6);
 
        // StartCoroutine(HideMiniScrollInfo());
@@ -697,74 +700,32 @@ public class PlayerFunctions : NetworkBehaviour
                             if (currentState == "Eating")
                             {
 
-                                string foodType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
+                                string pieceType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
 
-                                if (foodType == "Slap")
-                                {
-                                    ShowScrollInfo(scrollIcons[0], foodType, scrollDesc[0]);
-                                    playerScrolls.AddScrollAmount(1, 0);
-                                }
-
-                                if (foodType == "Skip")
-                                {
-                                    ShowScrollInfo(scrollIcons[1], foodType, scrollDesc[1]);
-                                    playerScrolls.AddScrollAmount(1, 1);
-                                }
-
-                                if (foodType == "Smell")
-                                {
-                                    ShowScrollInfo(scrollIcons[2], foodType, scrollDesc[2]);
-                                    playerScrolls.AddScrollAmount(1, 2);
-                                }
-
-                                if (foodType == "Quake")
-                                {
-                                    ShowScrollInfo(scrollIcons[3], foodType, scrollDesc[3]);
-                                    playerScrolls.AddScrollAmount(1, 3);
-                                }
-
-                                if (foodType == "Order")
-                                {
-                                    ShowScrollInfo(scrollIcons[4], foodType, scrollDesc[4]);
-                                    playerScrolls.AddScrollAmount(1, 4);
-                                }
-
-                                if (foodType == "Encourage")
-                                {
-                                    ShowScrollInfo(scrollIcons[5], "Taunt", scrollDesc[5]);
-                                    playerScrolls.AddScrollAmount(1, 5);
-                                }
-
-                                if (foodType == "Swap")
-                                {
-                                    ShowScrollInfo(scrollIcons[6], foodType, scrollDesc[6]);
-                                    playerScrolls.AddScrollAmount(1, 6);
-                                }
-
-                                if (foodType == "Fake")
-                                {
-                                    ShowScrollInfo(scrollIcons[7], "Decoy", scrollDesc[7]);
-                                    playerScrolls.AddScrollAmount(1, 7);
-                                }
-
-                                if (foodType == "FakePoison")
+                                if (pieceType == "FakePoison")
                                 {
                                     FakeSplash();
                                 }
 
-                                if (foodType == "Poison")
+                                else if (pieceType == "Poison")
                                 {
                                     Poison(true);
                                 }
 
-                                if (foodType == "Health")
+                                else if (pieceType == "Health")
                                 {
                                     Health();
                                 }
 
-                                if (foodType == "Normal")
+                                else if (pieceType == "Normal")
                                 {
                                     mealManager.nPieces -= 1;
+                                }
+
+                                else
+                                {
+                                    ShowScrollInfo(pieceType);
+                                    playerScrolls.AddScrollAmount(pieceType); 
                                 }
 
                                 if (mealManager.nPieces <= 0)
