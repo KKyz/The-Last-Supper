@@ -2,21 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Audio;
 using TMPro;
 
 public class SettingsMenu : MonoBehaviour
 {
+    public AudioMixer bgmMixer, sfxMixer;
+    
     Resolution[] resolutions;
 
     private TMP_Dropdown resolutionDropdown;
     private TMP_InputField nameInput;
+
+    private Slider bgmSlider, sfxSlider;
     //public Toggle minScrollBtn;
 
     void Start()
     {
         nameInput = GameObject.Find("NameInput").GetComponent<TMP_InputField>();
-        nameInput.text = PlayerPrefs.GetString("PlayerName");
+        nameInput.text = PlayerPrefs.GetString("PlayerName", "Player" + Random.Range(0, 99));
         resolutionDropdown = GameObject.Find("Resolutions").GetComponent<TMP_Dropdown>();
+        bgmSlider = GameObject.Find("BGMSlider").GetComponent<Slider>();
+        sfxSlider = GameObject.Find("SFXSlider").GetComponent<Slider>();
         resolutions = Screen.resolutions;
         resolutionDropdown.ClearOptions();
         List<string> options = new List<string>();
@@ -36,12 +43,25 @@ public class SettingsMenu : MonoBehaviour
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
-
+        sfxSlider.value = PlayerPrefs.GetFloat("SFXVolPref", 1f);
+        bgmSlider.value = PlayerPrefs.GetFloat("BGMVolPref", 0.5f);
     }
 
-    public void SaveUsername()
+    public void SavePlayerName()
     {
         PlayerPrefs.SetString("PlayerName", nameInput.text);
+    }
+
+    public void BgmVolume (float sliderValue)
+    {
+        bgmMixer.SetFloat("BGMVolume", Mathf.Log10(sliderValue) * 20);
+        PlayerPrefs.SetFloat("BGMVolPref", sliderValue);
+    }
+
+    public void SfxVolume (float sliderValue)
+    {
+        sfxMixer.SetFloat("SFXVolume", Mathf.Log10(sliderValue) * 20);
+        PlayerPrefs.SetFloat("SFXVolPref", sliderValue);
     }
     
     public void ToggleMinScroll()

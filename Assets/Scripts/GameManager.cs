@@ -28,7 +28,7 @@ public class GameManager : NetworkManager
             {
                 if (PlayerPrefs.GetString("PlayerName") != null)
                 {
-                    newPlayer.name = PlayerPrefs.GetString("PlayerName");
+                    newPlayer.name = PlayerPrefs.GetString("PlayerName", "player" + Random.Range(0, 99));
                 }
                 else
                 {

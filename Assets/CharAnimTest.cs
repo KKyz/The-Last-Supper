@@ -14,19 +14,24 @@ public class CharAnimTest : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown("1"))
+        if (Input.GetKeyDown("z"))
         {
-            charAnimator.Play("Clerk1|defaultsittingpose");
+            charAnimator.SetTrigger("EatTr");
         }
         
-        if (Input.GetKeyDown("2"))
+        if (Input.GetKeyDown("x"))
         {
-            charAnimator.Play("Clerk1|active");
+            charAnimator.SetTrigger("PoisonTr");
         }
         
-        if (Input.GetKeyDown("3"))
+        if (Input.GetKeyDown("c"))
         {
-            charAnimator.Play("Clerk1|Poison");  
+            charAnimator.SetTrigger("TauntTr");
+        }
+        
+        if (Input.GetKeyDown("v"))
+        {
+            charAnimator.SetTrigger("OrderTr");
         }
     }
 }

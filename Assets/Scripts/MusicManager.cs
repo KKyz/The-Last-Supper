@@ -6,9 +6,8 @@ using UnityEngine.SceneManagement;
 
 public class MusicManager : MonoBehaviour
 {
-    public AudioClip titleBGM;
+    public AudioClip titleBGM, winBGM, loseBGM, resultsBGM;
     private AudioSource musicPlayer;
-    public AudioMixer bgmMixer;
     void Start()
     {
         musicPlayer = GetComponent<AudioSource>();
@@ -22,34 +21,48 @@ public class MusicManager : MonoBehaviour
 
     public void PlayBGM(AudioClip courseBGM)
     {
-        if (courseBGM != null)
+        if (musicPlayer.clip != null)
         {
-            if (musicPlayer.clip != null)
-            {
-                StartCoroutine(BGMFadeOut(0.5f));
-            }
-            //Fade out current audio
-            //Start next audio
-            bgmMixer.SetFloat("BGMParam", 1f);
-            musicPlayer.clip = courseBGM;
-            musicPlayer.Play();
+            StartCoroutine(BGMFadeOut(musicPlayer, 0.5f, courseBGM));
         }
     }
     
-    public IEnumerator BGMFadeOut(float duration)
+    public IEnumerator PlayResultBGM(bool hasWon)
     {
-        float currentTime = 0;
-        float currentVol;
-        bgmMixer.GetFloat("BGMParam", out currentVol);
-        currentVol = Mathf.Pow(10, currentVol / 20);
-        float targetValue = Mathf.Clamp(0, 0.0001f, 1);
-        while (currentTime < duration)
+        if (hasWon)
         {
-            currentTime += Time.deltaTime;
-            float newVol = Mathf.Lerp(currentVol, targetValue, currentTime / duration);
-            bgmMixer.SetFloat("BGMParam", Mathf.Log10(newVol) * 20);
+            musicPlayer.clip = winBGM;
+            musicPlayer.Play();
+        }
+
+        else
+        {
+            musicPlayer.clip = loseBGM;
+            musicPlayer.Play();
+        }
+        
+        yield return new WaitForSeconds(2f);
+        
+        musicPlayer.clip = resultsBGM;
+        musicPlayer.Play();
+    }
+    
+    public IEnumerator BGMFadeOut (AudioSource audioSource, float fadeTime, AudioClip nextBGM) 
+    {
+        float startVolume = audioSource.volume;
+ 
+        while (audioSource.volume > 0) {
+            audioSource.volume -= startVolume * Time.deltaTime / fadeTime;
+ 
             yield return null;
         }
-        yield break;
+ 
+        audioSource.Stop ();
+        audioSource.volume = startVolume;
+
+        yield return new WaitForSeconds(0.3f);
+        
+        musicPlayer.clip = nextBGM;
+        musicPlayer.Play();
     }
 }

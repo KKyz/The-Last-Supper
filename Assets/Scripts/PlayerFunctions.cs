@@ -21,6 +21,9 @@ public class PlayerFunctions : NetworkBehaviour
     public MealManager mealManager;
     
     [HideInInspector]
+    public MusicManager musicManager;
+    
+    [HideInInspector]
     public TextMeshProUGUI infoText;
     
     public GameObject drinkMenu, talkMenu, drinkPlate, chalkBoard, recommendFlag, typeFlag, fakeFlag, swapFlag, receipt, vomitSplash, healthSplash, smokeSplash, scrollInfo;
@@ -32,7 +35,7 @@ public class PlayerFunctions : NetworkBehaviour
     private CanvasGroup fade;
     private CameraActions camActions;
     private ShowHealth healthBar;
-    //private charAnimator playerAnim;
+    private Animator playerAnim;
     private readonly List<GameObject> smellTargets = new();
     private readonly List<Transform> swapTargets = new();
     private bool startCourse;
@@ -41,6 +44,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
+        musicManager = GameObject.Find("StateManager").GetComponent<MusicManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
         healthBar = transform.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.Find("SmellConfirm").gameObject;
@@ -74,7 +78,7 @@ public class PlayerFunctions : NetworkBehaviour
                 player = newPlayer.GetComponent<PlayerManager>();
                 camActions = newPlayer.GetComponent<CameraActions>();
                 playerScrolls = newPlayer.GetComponent<ScrollArray>();
-                //playerAnim = newPlayer.GetComponent<charAnimator>();
+                playerAnim = newPlayer.GetComponentInChildren<Animator>();
             }
         }
         
@@ -145,7 +149,7 @@ public class PlayerFunctions : NetworkBehaviour
                 GameObject vSplash = Instantiate(vomitSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
                 vSplash.transform.SetParent(transform, false);
                 
-                //playerAnimation.QueueAnimation("Poisoned");
+                playerAnim.SetTrigger("PoisonTr");
             }
         }
     }
@@ -177,7 +181,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public IEnumerator QuakeFade()
     {
-        //playerAnimation.QueueAnimation("Quake");
+        playerAnim.SetTrigger("QuakeTr");
         StartCoroutine(camActions.ShakeCamera(1f, 0.7f, 1f));
         FadeIn();
         buttonToggle.ToggleButtons(6);
@@ -196,7 +200,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Slap()
     {
-        //playerAnimation.QueueAnimation("Slapping");
+        playerAnim.SetTrigger("SlapTr");
         ResetActions(true);
         stateManager.CmdNextPlayer();
         playerScrolls.RemoveScrollAmount("Slap");
@@ -206,7 +210,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Skip()
     {
-        //playerAnimation.QueueAnimation("Skip");
+        playerAnim.SetTrigger("SkipTr");
         player.orderVictim = false;
         ResetActions(true);
         stateManager.CmdNextPlayer();
@@ -225,7 +229,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ConfirmSmell()
     {
-        //playerAnimation.QueueAnimation("Smell");
+        playerAnim.SetTrigger("SmellTr");
         foreach (GameObject piece in smellTargets)
         {
             foreach (Transform flag in piece.transform)
@@ -245,7 +249,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmFake()
     {
-        //playerAnimation.QueueAnimation("Fake");
+        playerAnim.SetTrigger("DecoyTr");
         if (fakeTarget.transform.parent.GetComponent<FoodPiece>().type == "Normal")
         {
             StartCoroutine(mealManager.CheckNPieces());
@@ -282,7 +286,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmSwap()
     {
-        //playerAnimation.QueueAnimation("Swapping");
+        playerAnim.SetTrigger("SwapTr");
         uint playerID = player.transform.GetComponent<NetworkIdentity>().netId;
         Transform[] swapArray = {swapTargets[0], swapTargets[1]};
         CmdSyncSwap(swapTargets[0].GetComponent<FoodPiece>(), swapTargets[1].GetComponent<FoodPiece>(), playerID, swapArray);
@@ -344,7 +348,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void OrderDrink()
     {
-        //playerAnimation.QueueAnimation("OrderDrink");
+        playerAnim.SetTrigger("OrderTr");
         openPopup = Instantiate(drinkMenu, new Vector3(0f, 400f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
@@ -362,7 +366,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     private void ReceiveDrink()
     {
-        //playerAnimation.QueueAnimation("Active");
+        playerAnim.SetTrigger("ActiveTr");
         openPopup = Instantiate(drinkPlate, new Vector3(0f, 400f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
@@ -376,7 +380,6 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Eat()
     {
-        //playerAnimation.QueueAnimation("Active");
         currentState = "Eating";
         StartAction();
         ShowInfoText("Select a piece to eat (eating will end your turn)");
@@ -385,7 +388,6 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Recommend()
     {
-        //playerAnimation.QueueAnimation("Active");
         currentState = "Recommending";
         StartAction();
         ShowInfoText("Select a piece to recommend");
@@ -404,7 +406,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Encourage()
     {
-        //playerAnimation.QueueAnimation("Encourage");
+        playerAnim.SetTrigger("TauntTr");
         stateManager.CmdNextEncourage();
         ResetActions(true);
         playerScrolls.RemoveScrollAmount("Taunt");
@@ -440,6 +442,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         buttonToggle.ToggleButtons(6);
         countTime = false;
+        StartCoroutine(musicManager.PlayResultBGM(false));
 
         if (stateManager.activePlayers.Count > 1)
         {stateManager.CmdNextPlayer();}
@@ -448,7 +451,6 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     private void Win()
     {
-        Debug.Log("Winter Is Coming");
         ResetActions(true);
         openPopup = Instantiate(receipt, new Vector3(0f, 0f, 0f), quaternion.identity);
         openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Win";
@@ -457,6 +459,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         buttonToggle.ToggleButtons(6);
         countTime = false;
+        StartCoroutine(musicManager.PlayResultBGM(true));
         PlayerPrefs.SetInt("gamesWon", PlayerPrefs.GetInt("gamesWon", 0) + 1);
     }
 
@@ -539,12 +542,13 @@ public class PlayerFunctions : NetworkBehaviour
             if (stateManager.currentPlayer == player.gameObject)
             {
                 buttonToggle.ToggleButtons(2);
-                //playerAnimation.QueueAnimation("Rest");
+                playerAnim.SetTrigger("ActiveTr");
             }
 
             else
             {
                 buttonToggle.ToggleButtons(4);
+                playerAnim.SetTrigger("IdleTr");
             }
         }
 
@@ -614,6 +618,7 @@ public class PlayerFunctions : NetworkBehaviour
                     player.actionable = true;
                     player.hasRecommended = false;
                     player.hasTalked = false;
+                    playerAnim.SetTrigger("ActiveTr");
                 }
 
                 if (!fade.gameObject.activeInHierarchy)

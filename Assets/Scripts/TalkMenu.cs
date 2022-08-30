@@ -4,6 +4,7 @@ using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 public class TalkMenu : NetworkBehaviour
 {
@@ -12,14 +13,15 @@ public class TalkMenu : NetworkBehaviour
     private GameObject localPlayer;
     private List<uint> players = new();
     private StateManager stateManager;
-    private Transform playerButtons, talkButtons;
-    
+    private Transform talkButtons, toggleTransform;
+    private ToggleGroup playerToggles;
+
     void Start()
     {
         message = "";
         int playerCount = 0;
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
-        playerButtons = transform.Find("Players");
+        playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
         talkButtons = transform.Find("TalkButtons");
         players.Clear();
 
@@ -37,8 +39,8 @@ public class TalkMenu : NetworkBehaviour
             if (player.gameObject != localPlayer)
             {
                 players.Add(player.GetComponent<NetworkIdentity>().netId);
-                playerButtons.GetChild(playerCount).gameObject.SetActive(true);
-                playerButtons.GetChild(playerCount).GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = player.name;
+                playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
+                playerToggles.transform.GetChild(playerCount).GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = player.name;
                 playerCount += 1;
             }
         }
@@ -99,11 +101,17 @@ public class TalkMenu : NetworkBehaviour
 
     }
 
+    [Command(requiresAuthority = false)]
+    public void CmdConfirmTalk(string messageToSend, string playerName)
+    {
+        NetworkConnection conn = stateManager.spawnedPlayers[targetPlayer].GetComponent<NetworkIdentity>().connectionToClient;  
+        GetComponentInParent<PlayerFunctions>().TargetSendMessage(conn, messageToSend, playerName);
+    }
+
     public void ConfirmTalk()
     {
         stateManager.currentPlayer.GetComponent<PlayerManager>().hasTalked = true;
-        NetworkConnection conn = stateManager.spawnedPlayers[targetPlayer].GetComponent<NetworkIdentity>().connectionToClient;
-        GetComponentInParent<PlayerFunctions>().TargetSendMessage(conn, message, localPlayer.name);
+        CmdConfirmTalk(message, localPlayer.name);
         gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 }

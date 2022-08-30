@@ -9,11 +9,11 @@ using UnityEngine.UI;
 public class OrderDrink : NetworkBehaviour
 {
     public Sprite psnWine, normalWine;
-    private Transform toggles, wines;
+    private Transform wines;
     private PlayerFunctions playerFunctions;
     private PlayerManager victim;
     private bool takeHealth;
-    private bool[] psnArray = new bool[4];
+    private readonly bool[] psnArray = new bool[4];
     private Button psnButton, orderButton;
     private readonly List<PlayerManager> victims = new();
     private ToggleGroup playerToggles;
@@ -26,8 +26,7 @@ public class OrderDrink : NetworkBehaviour
         int playerCount = 0;
         victims.Clear();
         psnButton = transform.Find("SwitchButton").GetComponent<Button>();
-        toggles = transform.Find("Players");
-        playerToggles = toggles.GetComponent<ToggleGroup>();
+        playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
         orderButton = transform.Find("OrderButton").GetComponent<Button>();
         wines = transform.Find("Wines");
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
@@ -39,8 +38,8 @@ public class OrderDrink : NetworkBehaviour
             if (player.gameObject != stateManager.currentPlayer)
             {
                 victims.Add(player.GetComponent<PlayerManager>());
-                toggles.GetChild(playerCount).gameObject.SetActive(true);
-                toggles.GetChild(playerCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name;
+                playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
+                playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name;
                 playerCount += 1;
             }
         }
