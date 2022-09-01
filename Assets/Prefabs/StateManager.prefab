@@ -12,11 +12,11 @@ GameObject:
   - component: {fileID: 8346021116494286421}
   - component: {fileID: 8346021116494286422}
   - component: {fileID: 3518149696456122340}
+  - component: {fileID: 1778691645}
   - component: {fileID: 1654090796}
   - component: {fileID: 1654090797}
   - component: {fileID: 1654090798}
   - component: {fileID: 1778691644}
-  - component: {fileID: 1778691645}
   m_Layer: 0
   m_Name: StateManager
   m_TagString: Untagged
@@ -90,6 +90,22 @@ MonoBehaviour:
   syncInterval: 0.1
   nPieces: 0
   mealContainer: {fileID: 6314472571344295408, guid: 0b2dc0e859e5c54458e0d157f8b3d34f, type: 3}
+--- !u!114 &1778691645
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8346021116494286423}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e1b3172ba2923e49b938ca2ffb0f71b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  titleBGM: {fileID: 8300000, guid: 0d0529ffb700ea54193294b47a6d12a3, type: 3}
+  winBGM: {fileID: 8300000, guid: e2d53d2897b9b724daf32574a6b8f243, type: 3}
+  loseBGM: {fileID: 8300000, guid: c198e132c5835f44abd9408506e0f34b, type: 3}
+  resultsBGM: {fileID: 8300000, guid: dd270f1494d8de645b3cc44afc263a1f, type: 3}
 --- !u!33 &1654090796
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -270,17 +286,3 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1778691645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8346021116494286423}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8e1b3172ba2923e49b938ca2ffb0f71b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  titleBGM: {fileID: 8300000, guid: 0d0529ffb700ea54193294b47a6d12a3, type: 3}
-  bgmMixer: {fileID: 24100000, guid: 54b7b6a644285464f816c727097fcda4, type: 2}

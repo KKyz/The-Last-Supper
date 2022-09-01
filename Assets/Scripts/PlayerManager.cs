@@ -33,6 +33,7 @@ public class PlayerManager : NetworkBehaviour
     public GameObject currentRecommend;
     
     private GameObject playerCam;
+    private Transform playerModel;
     private PlayerFunctions playerCanvas;
     private StateManager stateManager;
 
@@ -57,6 +58,7 @@ public class PlayerManager : NetworkBehaviour
         }
 
         playerCam = transform.Find("Camera").gameObject;
+        playerModel = transform.Find("PlayerModel");
         playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         stateManager.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
@@ -64,6 +66,7 @@ public class PlayerManager : NetworkBehaviour
         if (!isLocalPlayer)
         {
             playerCam.SetActive(false);
+            playerModel.Find("Clerk1").GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
         }
         
         PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);

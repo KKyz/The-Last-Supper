@@ -11,6 +11,7 @@ public class MusicManager : MonoBehaviour
     void Start()
     {
         musicPlayer = GetComponent<AudioSource>();
+        musicPlayer.loop = true;
 
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("StartMenu"))
         {
@@ -21,7 +22,7 @@ public class MusicManager : MonoBehaviour
 
     public void PlayBGM(AudioClip courseBGM)
     {
-        if (musicPlayer.clip != null)
+        if (musicPlayer.clip != courseBGM)
         {
             StartCoroutine(BGMFadeOut(musicPlayer, 0.5f, courseBGM));
         }
@@ -29,6 +30,7 @@ public class MusicManager : MonoBehaviour
     
     public IEnumerator PlayResultBGM(bool hasWon)
     {
+        musicPlayer.loop = false;
         if (hasWon)
         {
             musicPlayer.clip = winBGM;
