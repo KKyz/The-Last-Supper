@@ -21,6 +21,17 @@ public class StateManager : NetworkBehaviour
 
     [SyncVar]
     public int turn;
+    
+    public void DefaultState()
+    {
+        if (isServer)
+        {
+            turn = 0;
+            currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
+            playerScript = currentPlayer.GetComponent<PlayerManager>();
+            //RpcRefreshPlayerNames();
+        }
+    }
 
     [ClientRpc]
     public void RpcRefreshPlayerNames()
@@ -60,6 +71,7 @@ public class StateManager : NetworkBehaviour
         }
         
         currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
+        
         playerScript = currentPlayer.GetComponent<PlayerManager>();
     }
     

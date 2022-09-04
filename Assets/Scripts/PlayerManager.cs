@@ -8,7 +8,7 @@ using TMPro;
 public class PlayerManager : NetworkBehaviour
 {
 
-    [HideInInspector]
+    //[HideInInspector]
     public int scrollCount, courseCount, pieceCount, nPiecesEaten;
     
     public int health;
@@ -66,7 +66,16 @@ public class PlayerManager : NetworkBehaviour
         if (!isLocalPlayer)
         {
             playerCam.SetActive(false);
-            playerModel.Find("Clerk1").GetComponentInChildren<SkinnedMeshRenderer>().enabled = false;
+        }
+        else
+        {
+            foreach (Transform child in playerModel)
+            {
+                if (child.GetComponent<SkinnedMeshRenderer>() != null)
+                {
+                    child.GetComponent<SkinnedMeshRenderer>().enabled = false;
+                }
+            }
         }
         
         PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);

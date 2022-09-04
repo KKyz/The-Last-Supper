@@ -12,7 +12,7 @@ public class SpawnPiece : NetworkBehaviour
     public Sprite chalkSprite;
     public string courseName;
     public AudioClip courseBGM;
-    public GameObject[] currentPiece;
+    public GameObject[] pieces;
     
     private List<Vector3> piecePos = new();
     private List<Quaternion> pieceRot = new();
@@ -62,8 +62,8 @@ public class SpawnPiece : NetworkBehaviour
         for (int i = normalPiece; i > 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
-            int k = Random.Range(0, currentPiece.Length - 1);
-            newPiece = Instantiate(currentPiece[k], piecePos[j], pieceRot[j]);
+            int k = Random.Range(0, pieces.Length - 1);
+            newPiece = Instantiate(pieces[k], piecePos[j], pieceRot[j]);
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
@@ -74,8 +74,8 @@ public class SpawnPiece : NetworkBehaviour
         for (int i = psnPiece; i > 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
-            int k = Random.Range(0, currentPiece.Length - 1);
-            newPiece = Instantiate(currentPiece[k], piecePos[j], pieceRot[j]);
+            int k = Random.Range(0, pieces.Length - 1);
+            newPiece = Instantiate(pieces[k], piecePos[j], pieceRot[j]);
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
@@ -86,8 +86,8 @@ public class SpawnPiece : NetworkBehaviour
         for (int i = scrollPiece - 1; i >= 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
-            int k = Random.Range(0, currentPiece.Length - 1);
-            newPiece = Instantiate(currentPiece[k], piecePos[j], pieceRot[j]);
+            int k = Random.Range(0, pieces.Length - 1);
+            newPiece = Instantiate(pieces[k], piecePos[j], pieceRot[j]);
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);

@@ -50,6 +50,7 @@ public class MenuAnimations : MonoBehaviour
         {
             CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.alpha = 0f;
+            canvasGroup.interactable = true;
             LeanTween.alphaCanvas(canvasGroup, 1, 0.8f);
         }
     }
@@ -92,6 +93,7 @@ public class MenuAnimations : MonoBehaviour
         {
             CanvasGroup canvasGroup = GetComponent<CanvasGroup>();
             canvasGroup.alpha = 1f;
+            canvasGroup.interactable = false;
             LeanTween.alphaCanvas(canvasGroup, 0, 0.2f);
         }
     }

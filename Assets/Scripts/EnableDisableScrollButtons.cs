@@ -48,8 +48,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
     public void PlaySelectSfx()
     {
-        sfxPlayer.clip = selectSfx;
-        sfxPlayer.Play();  
+        //sfxPlayer.clip = selectSfx;
+        //sfxPlayer.Play();  
     }
 
     public IEnumerator ButtonEnable(Transform button)
@@ -66,13 +66,14 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
                 if (buttonChild.gameObject.activeInHierarchy)
                 {
+                    Debug.LogWarning("Fade-in");
                     buttonChild.GetComponent<Button>().interactable = false;
                     
                     //Sets Fade-In
                     CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
                     LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
-                    sfxPlayer.clip = buttonSfx;
-                    sfxPlayer.Play();
+                    //sfxPlayer.clip = buttonSfx;
+                    //sfxPlayer.Play();
 
                     yield return new WaitForSeconds(enableTime);
                     buttonChild.GetComponent<Button>().interactable = true;
@@ -90,8 +91,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 //Fade-In
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
                 LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
-                sfxPlayer.clip = buttonSfx;
-                sfxPlayer.Play();
+                //sfxPlayer.clip = buttonSfx;
+                //sfxPlayer.Play();
             }
         }
     }
@@ -100,8 +101,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     {
         if (button.childCount > 1)
         {
-            sfxPlayer.clip = cancelSfx;
-            sfxPlayer.Play();
+            //sfxPlayer.clip = cancelSfx;
+           // sfxPlayer.Play();
             //If parent object of buttons (e.g. ActionButtons, ScrollButtons)
             foreach (Transform buttonChild in button)
             {
@@ -136,8 +137,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 //Fade-Out
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
                 LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
-                sfxPlayer.clip = cancelSfx;
-                sfxPlayer.Play();
+                //sfxPlayer.clip = cancelSfx;
+                //sfxPlayer.Play();
 
                 //Reset positions and disable
                 yield return new WaitForSeconds(disableTime);

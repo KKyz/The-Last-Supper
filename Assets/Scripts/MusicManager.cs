@@ -30,20 +30,18 @@ public class MusicManager : MonoBehaviour
     
     public IEnumerator PlayResultBGM(bool hasWon)
     {
-        musicPlayer.loop = false;
+        musicPlayer.Stop();
         if (hasWon)
         {
-            musicPlayer.clip = winBGM;
-            musicPlayer.Play();
+            musicPlayer.PlayOneShot(winBGM);
         }
 
         else
         {
-            musicPlayer.clip = loseBGM;
-            musicPlayer.Play();
+            musicPlayer.PlayOneShot(loseBGM);
         }
         
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(10f);
         
         musicPlayer.clip = resultsBGM;
         musicPlayer.Play();
@@ -62,7 +60,7 @@ public class MusicManager : MonoBehaviour
         audioSource.Stop ();
         audioSource.volume = startVolume;
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.8f);
         
         musicPlayer.clip = nextBGM;
         musicPlayer.Play();

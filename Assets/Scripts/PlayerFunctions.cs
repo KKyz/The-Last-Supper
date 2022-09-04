@@ -58,6 +58,7 @@ public class PlayerFunctions : NetworkBehaviour
         player = null;
         openPopup = null;
         fakeTarget = null;
+        chatPanel.SetActive(false);
         smellTargets.Clear();
         swapTargets.Clear();
         FadeOut();
@@ -148,8 +149,9 @@ public class PlayerFunctions : NetworkBehaviour
             { 
                 GameObject vSplash = Instantiate(vomitSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
                 vSplash.transform.SetParent(transform, false);
-                
+
                 playerAnim.SetTrigger("PoisonTr");
+                StartCoroutine(camActions.ShakeCamera(0.5f, 0.7f, 1f));
             }
         }
     }
@@ -337,8 +339,14 @@ public class PlayerFunctions : NetworkBehaviour
     public void TargetSendMessage(NetworkConnection target, string message, string senderName)
     {
         chatPanel.GetComponentInChildren<TextMeshProUGUI>().text += "\n" + senderName + ": " + message;
+        chatPanel.SetActive(true);
     }
 
+    [Client]
+    public void ToggleChatPanel()
+    {
+        chatPanel.SetActive(!chatPanel.activeSelf);
+    }
     [Client]
     private void Eject()
     {
@@ -349,7 +357,7 @@ public class PlayerFunctions : NetworkBehaviour
     public void OrderDrink()
     {
         playerAnim.SetTrigger("OrderTr");
-        openPopup = Instantiate(drinkMenu, new Vector3(0f, 400f, 0f), quaternion.identity);
+        openPopup = Instantiate(drinkMenu, new Vector3(0f, -40f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -367,7 +375,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void ReceiveDrink()
     {
         playerAnim.SetTrigger("ActiveTr");
-        openPopup = Instantiate(drinkPlate, new Vector3(0f, 400f, 0f), quaternion.identity);
+        openPopup = Instantiate(drinkPlate, new Vector3(0f, -40f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.name = "DrinkMenu";
@@ -396,7 +404,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void SpawnTalkMenu()
     {
-        openPopup = Instantiate(talkMenu, new Vector3(0f, 400f, 0f), quaternion.identity);
+        openPopup = Instantiate(talkMenu, new Vector3(0f, 0f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -416,7 +424,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ShowScrollInfo(string pieceType)
     {
-        openPopup = Instantiate(scrollInfo, new Vector3(0f, 400f, 0f), quaternion.identity);
+        openPopup = Instantiate(scrollInfo, new Vector3(0f, 0f, 0f), quaternion.identity);
 
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
@@ -477,12 +485,12 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.ToggleButtons(6);
         
         SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
-        openPopup.transform.GetComponentInChildren<Image>().sprite = chalkData.chalkSprite;
+        openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
         openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = chalkData.courseName;
         chalkDescription += "- " + chalkData.normalCount + " Empty Pieces";
         chalkDescription += "\n - " + chalkData.psnCount + " Poison Pieces";
         chalkDescription += "\n - " + chalkData.scrollCount + " Special Pieces";
-        chalkDescription += "\n - " + (chalkData.normalCount +  chalkData.scrollCount + chalkData.scrollCount) +" Total Pieces";
+        chalkDescription += "\n - " + (chalkData.normalCount +  chalkData.scrollCount + chalkData.psnCount) +" Total Pieces";
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = chalkDescription;
     }
 

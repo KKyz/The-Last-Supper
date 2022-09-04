@@ -9,6 +9,7 @@ public class MealManager : NetworkBehaviour
     [SyncVar] 
     public int nPieces;
     public MealContainer mealContainer;
+    public GameObject[] restaurants;
     
     private TextMeshProUGUI normCounter;
     private StateManager stateManager;
@@ -32,6 +33,8 @@ public class MealManager : NetworkBehaviour
         }
 
         firstPlate = true;
+        
+        NextCourse();
     }
 
     public IEnumerator CheckNPieces()
@@ -68,28 +71,21 @@ public class MealManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcShowChalk()
+    public void RpcUpdatePlayerEnd()
     {
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.ShowChalk();
-    }
-
-    [ClientRpc]
-    public void RpcPlayCourseBGM(GameObject plate)
-    {
-        AudioClip courseBGM = plate.GetComponent<SpawnPiece>().courseBGM;
+        
+        AudioClip courseBGM = currentPlate.GetComponent<SpawnPiece>().courseBGM;
         musicManager.PlayBGM(courseBGM);
-    }
-
-    [ClientRpc]
-    public void RpcLookAtPlate()
-    {
+        
         GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook();
     }
 
     [Command(requiresAuthority = false)]
     public void NextCourse()
     {
+        Debug.Log("NextCourse");
         //Add Authority
 
         foreach (uint playerID in stateManager.activePlayers)
@@ -116,10 +112,9 @@ public class MealManager : NetworkBehaviour
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);
         currentPlate.transform.SetParent(transform, true);
-        RpcShowChalk();
-        RpcLookAtPlate();
-        //RpcPlayCourseBGM(currentPlate);
+        //RpcUpdatePlayerEnd();
         /* This function doesn't run on clients*/
         StartCoroutine(CheckNPieces());
+        currentPlate.GetComponent<SpawnPiece>().RpcUpdatePieceParent();
     }
 }

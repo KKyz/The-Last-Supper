@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class RetrieveStats : MonoBehaviour
+public class ShowBestStats : MonoBehaviour
 {
-    private TextMeshProUGUI joinCounter, winCounter, maxPiece, maxCourse, timeCounter, maxScrollCounter; 
+    private TextMeshProUGUI joinCounter, winCounter, maxPiece, maxCourse, timeCounter, maxScrollCounter;
     //Get stats to show in menu
     void Start()
     {
