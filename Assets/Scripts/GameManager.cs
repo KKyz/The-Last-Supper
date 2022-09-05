@@ -5,13 +5,14 @@ using System.ComponentModel.Design;
 using UnityEngine;
 using Mirror;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine.Networking.Types;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
 public class GameManager : NetworkManager
 {
-    public GameObject stateManagerObj;
+    public GameObject stateManagerObj, nameInput;
     
     public StateManager stateManager;
     public MealManager mealManager;
@@ -32,14 +33,21 @@ public class GameManager : NetworkManager
     
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
-        base.OnServerAddPlayer(conn);
-
+        base.OnServerConnect(conn);
         //Adds new player to players list when joined
 
-        conn.identity.gameObject.name = PlayerPrefs.GetString("PlayerName", "player" + Random.Range(0, 99));
+        if (PlayerPrefs.GetString("PlayerName") != null || PlayerPrefs.GetString("PlayerName") != "")
+        {
+            conn.identity.gameObject.name = PlayerPrefs.GetString("PlayerName"); 
+        }
+        else
+        {
+            Instantiate(nameInput, GameObject.Find("StartCanvas").transform);
+        }
 
         stateManager.activePlayers.Add(conn.identity.netId);
-        stateManager.playerNames.Add(conn.identity.gameObject.name);
+        stateManager.playerNames.Add(conn.identity.name);
+        Debug.LogWarning("ActivePlayers Count: " + stateManager.activePlayers.Count);
 
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
@@ -52,15 +60,6 @@ public class GameManager : NetworkManager
         }
     }
 
-    public override void OnClientConnect()
-    {
-        base.OnClientConnect();
-
-        Debug.Log("I connected to a server!");
-        
-        autoCreatePlayer = true; // set the autoCreateFlag for the Network Manager (clients and host)
-    }
-    
     public new void StartHost()
     {
         base.StartHost();
@@ -85,9 +84,12 @@ public class GameManager : NetworkManager
         }
         else
         {
-            stateManager.activePlayers.Remove(conn.identity.netId);
-            stateManager.playerNames.Remove(conn.identity.gameObject.name);
-            RefreshPlayerNames();
+            if (stateManager.activePlayers.Count > 0)
+            {
+                stateManager.activePlayers.Remove(conn.identity.netId);
+                stateManager.playerNames.Remove(conn.identity.gameObject.name);
+                RefreshPlayerNames();
+            }
         }
         
         
@@ -114,8 +116,7 @@ public class GameManager : NetworkManager
         {
             if (allPlayersConnected)
             {
-                mealManager.StartOnLoad(); 
-                stateManager.DefaultState();
+                StartCoroutine(PostStartCall());
                 serverReadyToStart = false;
                 allPlayersConnected = false;
             }
@@ -133,12 +134,22 @@ public class GameManager : NetworkManager
         }
     }
 
+    private IEnumerator PostStartCall()
+    {
+        for (int i = 0; i <= 5; i++)
+        {yield return 0;}
+        mealManager.OnStartGame();
+        stateManager.OnStartGame();
+
+    }
+
     public override void OnServerSceneChanged(string newSceneName)
     {
         if (newSceneName != "StartMenu")
         {
             //Initial operations when server 
             serverReadyToStart = true;
+            autoCreatePlayer = true; // set the autoCreateFlag for the Network Manager (clients and host)//
         }
     }
 }

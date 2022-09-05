@@ -10,7 +10,6 @@ public class TalkMenu : NetworkBehaviour
 {
     public string message;
     private uint targetPlayer;
-    private GameObject localPlayer;
     private List<uint> players = new();
     private StateManager stateManager;
     private Transform talkButtons, toggleTransform;
@@ -25,18 +24,10 @@ public class TalkMenu : NetworkBehaviour
         talkButtons = transform.Find("TalkButtons");
         players.Clear();
 
-        foreach (GameObject player in GameObject.FindGameObjectsWithTag("Player"))
-        {
-            if (player == isLocalPlayer)
-            {
-                localPlayer = player;
-            }
-        }
-
         foreach (uint playerID in stateManager.activePlayers)
         {
             PlayerManager player = stateManager.spawnedPlayers[playerID];
-            if (player.gameObject != localPlayer)
+            if (player.gameObject != NetworkClient.localPlayer.gameObject)
             {
                 players.Add(player.GetComponent<NetworkIdentity>().netId);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
@@ -111,7 +102,7 @@ public class TalkMenu : NetworkBehaviour
     public void ConfirmTalk()
     {
         stateManager.currentPlayer.GetComponent<PlayerManager>().hasTalked = true;
-        CmdConfirmTalk(message, localPlayer.name);
+        CmdConfirmTalk(message, NetworkClient.localPlayer.gameObject.name);
         gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 }

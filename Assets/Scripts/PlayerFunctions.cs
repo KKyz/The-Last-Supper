@@ -4,6 +4,7 @@ using UnityEngine;
 using Mirror;
 using TMPro;
 using Unity.Mathematics;
+using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 public class PlayerFunctions : NetworkBehaviour
@@ -311,11 +312,11 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdSyncSwap(FoodPiece target1, FoodPiece target2, uint connectionID, Transform[] targets)
+    public void CmdSyncSwap(FoodPiece target1, FoodPiece target2, uint playerID, Transform[] targets)
     {
         //Add Authority
         (target1.type, target2.type) = (target2.type, target1.type);
-        NetworkConnection conn = stateManager.spawnedPlayers[connectionID].GetComponent<NetworkIdentity>().connectionToClient;
+        NetworkConnection conn = stateManager.spawnedPlayers[playerID].GetComponent<NetworkIdentity>().connectionToClient;
         TargetUpdateFlag(conn, targets);
     }
     
@@ -442,7 +443,7 @@ public class PlayerFunctions : NetworkBehaviour
     public void Die()
     {
         ResetActions(true);
-        stateManager.CmdRemovePlayer(netId);
+        stateManager.CmdRemovePlayer(player.netId);
         openPopup = Instantiate(receipt, new Vector3(0f, 0f, 0f), quaternion.identity);
         openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Lose";
         openPopup.GetComponent<ShowStats>().LoadStats(player);

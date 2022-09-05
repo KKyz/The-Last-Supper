@@ -15,32 +15,23 @@ public class StateManager : NetworkBehaviour
     [SyncVar] 
     public bool gameCanEnd;
     
-    public readonly SyncList<uint> activePlayers = new SyncList<uint>();
-    public readonly SyncList<string> playerNames = new SyncList<string>();
-    public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new Dictionary<uint, PlayerManager>();
+    public readonly SyncList<uint> activePlayers = new();
+    public readonly SyncList<string> playerNames = new ();
+    public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new();
 
     [SyncVar]
     public int turn;
     
-    public void DefaultState()
+    public void OnStartGame()
     {
-        if (isServer)
+        if (isClient)
         {
+            Debug.LogWarning("StateManager in DefaultState");
             turn = 0;
             currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
             playerScript = currentPlayer.GetComponent<PlayerManager>();
-            //RpcRefreshPlayerNames();
         }
     }
-
-    [ClientRpc]
-    public void RpcRefreshPlayerNames()
-    {
-        foreach (uint playerID in activePlayers)
-        {
-            NetworkClient.spawned[playerID].gameObject.name = playerNames[activePlayers.IndexOf(playerID)];
-        }
-    }   
 
     [Command(requiresAuthority = false)]
     public void CmdRemovePlayer(uint playerID)

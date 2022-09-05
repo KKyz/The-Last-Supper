@@ -39,6 +39,12 @@ public class PlayerManager : NetworkBehaviour
 
     public void Start()
     {
+        playerCam = transform.Find("Camera").gameObject;
+        playerCam.SetActive(false);
+    }
+
+    public void OnStartGame()
+    {
         health = 2;
         scrollCount = 0;
         courseCount = 1;
@@ -57,18 +63,16 @@ public class PlayerManager : NetworkBehaviour
             psnArray[i] = false;
         }
 
-        playerCam = transform.Find("Camera").gameObject;
+        
         playerModel = transform.Find("PlayerModel");
         playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         stateManager.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
         
-        if (!isLocalPlayer)
+        if (isLocalPlayer)
         {
-            playerCam.SetActive(false);
-        }
-        else
-        {
+            playerCam.SetActive(true);
+            
             foreach (Transform child in playerModel)
             {
                 if (child.GetComponent<SkinnedMeshRenderer>() != null)
@@ -77,7 +81,7 @@ public class PlayerManager : NetworkBehaviour
                 }
             }
         }
-        
+
         PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
     }
 

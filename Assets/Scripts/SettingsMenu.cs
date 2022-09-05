@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class SettingsMenu : MonoBehaviour
 {
@@ -83,8 +84,16 @@ public class SettingsMenu : MonoBehaviour
         Screen.fullScreen = isFullscreen;
     }
 
+    public void SpawnDeleteConfirm(GameObject popup)
+    {
+        GameObject confirmPopup = Instantiate(popup, transform.position, Quaternion.identity);
+        confirmPopup.transform.SetParent(transform.parent.parent);
+        confirmPopup.GetComponent<SpawnMenu>().SlideInMenu();
+    }
+
     public void DeletePlayerData()
     {
         PlayerPrefs.DeleteAll();
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

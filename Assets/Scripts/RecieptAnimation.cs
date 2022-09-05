@@ -5,11 +5,14 @@ using UnityEngine.UI;
 
 public class RecieptAnimation : MonoBehaviour
 {
+    public AudioClip recieptPrint, recieptRip;
     private GameObject receipt;
+    private AudioSource sfxSource;
     private CanvasGroup exitButton, resultText;
     void Start()
     {
         exitButton = transform.Find("QuitButton").GetComponent<CanvasGroup>();
+        sfxSource = GameObject.Find("PlayerCanvas").GetComponent<AudioSource>();
         receipt = transform.Find("Receipt").gameObject;
         resultText = transform.Find("Banner2").GetComponent<CanvasGroup>();
         
@@ -32,18 +35,17 @@ public class RecieptAnimation : MonoBehaviour
         //"Printing" receipt animation
         yield return new WaitForSeconds(1.2f);
         LeanTween.moveY(receipt, finalPos.y - 300f, 0.7f);
+        sfxSource.PlayOneShot(recieptPrint);
         yield return new WaitForSeconds(1.5f);
         LeanTween.moveY(receipt, finalPos.y - 200f, 0.3f);
+        sfxSource.PlayOneShot(recieptPrint);
         yield return new WaitForSeconds(1.5f);
         LeanTween.moveY(receipt, finalPos.y, 0.7f).setEaseOutSine();
+        sfxSource.PlayOneShot(recieptRip);
         
 
-        //Reveal quit button
+        //Reveal quit button//
         yield return new WaitForSeconds(1f);
         LeanTween.alphaCanvas(exitButton, 1f, 0.5f);
-        
-
-
-
     }
 }

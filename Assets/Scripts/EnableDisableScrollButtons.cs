@@ -23,7 +23,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
     void Start()
     {
-        playerFunctions = gameObject.GetComponent<PlayerFunctions>();
+        playerFunctions = GetComponent<PlayerFunctions>();
+        sfxPlayer = GetComponent<AudioSource>();
         actionButtons = transform.Find("ActionButtons").transform;
         scrollButtons = transform.Find("ScrollButtons").transform;
         outsideButtons = transform.Find("OutsideButtons").transform;
@@ -48,8 +49,12 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
     public void PlaySelectSfx()
     {
-        //sfxPlayer.clip = selectSfx;
-        //sfxPlayer.Play();  
+        sfxPlayer.PlayOneShot(selectSfx); 
+    }
+    
+    public void PlayCancelSfx()
+    {
+        sfxPlayer.PlayOneShot(cancelSfx); 
     }
 
     public IEnumerator ButtonEnable(Transform button)
@@ -66,14 +71,12 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
                 if (buttonChild.gameObject.activeInHierarchy)
                 {
-                    Debug.LogWarning("Fade-in");
                     buttonChild.GetComponent<Button>().interactable = false;
                     
                     //Sets Fade-In
                     CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
-                    LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
-                    //sfxPlayer.clip = buttonSfx;
-                    //sfxPlayer.Play();
+                    LeanTween.alphaCanvas(buttonCanvas, 1f, 0.6f);
+                    sfxPlayer.PlayOneShot(buttonSfx);//
 
                     yield return new WaitForSeconds(enableTime);
                     buttonChild.GetComponent<Button>().interactable = true;
@@ -90,9 +93,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
                 //Fade-In
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
-                LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
-                //sfxPlayer.clip = buttonSfx;
-                //sfxPlayer.Play();
+                LeanTween.alphaCanvas(buttonCanvas, 1f, 0.6f);
+                sfxPlayer.PlayOneShot(buttonSfx);
             }
         }
     }
@@ -101,8 +103,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     {
         if (button.childCount > 1)
         {
-            //sfxPlayer.clip = cancelSfx;
-           // sfxPlayer.Play();
             //If parent object of buttons (e.g. ActionButtons, ScrollButtons)
             foreach (Transform buttonChild in button)
             {
@@ -137,8 +137,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 //Fade-Out
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
                 LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
-                //sfxPlayer.clip = cancelSfx;
-                //sfxPlayer.Play();
 
                 //Reset positions and disable
                 yield return new WaitForSeconds(disableTime);
@@ -148,11 +146,76 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         }
     }
 
+    private void CheckConditions()
+    {
+        if (menuMode == 1)
+        {
+            for (int i = 1; i < scrollButtons.childCount; i++)
+            {
+                if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).gameObject.activeInHierarchy)
+                {
+                    scrollButtons.GetChild(i).gameObject.SetActive(true);
+                }
+            }           
+        }
+
+        if (playerManager != null)
+        {
+            if (!playerManager.hasRecommended)
+            {
+                if (menuMode == 2 && !recommendButton.activeInHierarchy)
+                {
+                    recommendButton.SetActive(true);
+                }
+            
+                else if (menuMode == 4 && !outRecommendButton.activeInHierarchy)
+                {
+                    outRecommendButton.SetActive(true);  
+                }
+            
+            }
+        
+            if (!playerManager.hasTalked)
+            {
+                if (menuMode == 2 && !talkButton.activeInHierarchy)
+                {
+                    talkButton.SetActive(true);
+                }
+            
+                else if (menuMode == 4 && !outTalkButton.activeInHierarchy)
+                {
+                    outTalkButton.SetActive(true);  
+                }
+            
+            }   
+        }
+
+        if (menuMode == 4 && playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
+        {
+            slapButton.SetActive(true);
+        }
+
+        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.activeInHierarchy)
+        {
+            if (menuMode == 1)
+            {
+                skipButton.SetActive(true);
+            }
+
+            if (menuMode == 5)
+            {
+                StartCoroutine(ButtonEnable(skipButton.transform));
+            }
+        }
+    }
+
     [Client]
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
         Debug.Log("button mode is: " + menuMode);
+
+        CheckConditions();
 
         // Opens Scrolls Menu
         if (isActive == 1)
@@ -233,69 +296,5 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
             StartCoroutine(ButtonDisable(cancelButton));
         }
-    }
-
-    void Update()
-    {
-        if (menuMode == 1)
-        {
-            for (int i = 1; i < scrollButtons.childCount; i++)
-            {
-                if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).gameObject.activeInHierarchy)
-                {
-                    scrollButtons.GetChild(i).gameObject.SetActive(true);
-                }
-            }           
-        }
-
-        if (playerManager != null)
-        {
-            if (!playerManager.hasRecommended)
-            {
-                if (menuMode == 2 && !recommendButton.activeInHierarchy)
-                {
-                    recommendButton.SetActive(true);
-                }
-            
-                else if (menuMode == 4 && !outRecommendButton.activeInHierarchy)
-                {
-                    outRecommendButton.SetActive(true);  
-                }
-            
-            }
-        
-            if (!playerManager.hasTalked)
-            {
-                if (menuMode == 2 && !talkButton.activeInHierarchy)
-                {
-                    talkButton.SetActive(true);
-                }
-            
-                else if (menuMode == 4 && !outTalkButton.activeInHierarchy)
-                {
-                    outTalkButton.SetActive(true);  
-                }
-            
-            }   
-        }
-
-        if (menuMode == 4 && playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
-        {
-            slapButton.SetActive(true);
-        }
-
-        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.activeInHierarchy)
-        {
-            if (menuMode == 1)
-            {
-                skipButton.SetActive(true);
-            }
-
-            if (menuMode == 5)
-            {
-                StartCoroutine(ButtonEnable(skipButton.transform));
-            }
-        }
-
     }
 }

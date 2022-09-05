@@ -19,7 +19,7 @@ public class MealManager : NetworkBehaviour
     private GameObject currentPlate;
     private bool firstPlate;
 
-    public void StartOnLoad()
+    public void OnStartGame()
     {
         stateManager = GetComponent<StateManager>();
         musicManager = GetComponent<MusicManager>();
@@ -34,6 +34,7 @@ public class MealManager : NetworkBehaviour
 
         firstPlate = true;
         
+        Debug.LogWarning("NextCourse");
         NextCourse();
     }
 
@@ -85,7 +86,6 @@ public class MealManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void NextCourse()
     {
-        Debug.Log("NextCourse");
         //Add Authority
 
         foreach (uint playerID in stateManager.activePlayers)
