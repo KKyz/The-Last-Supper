@@ -61,12 +61,14 @@ public class StateManager : NetworkBehaviour
             }
         }
         
+        netIdentity.RemoveClientAuthority();
         currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
-        
+        netIdentity.AssignClientAuthority(currentPlayer.GetComponent<NetworkConnection>());
+
         playerScript = currentPlayer.GetComponent<PlayerManager>();
     }
     
-    [Command(requiresAuthority = false)]
+    [Command]
     public void CmdNextEncourage()
     {
         //Function called by PlayerFunctions to trigger encourage of next player
@@ -87,7 +89,7 @@ public class StateManager : NetworkBehaviour
         {NetworkServer.spawned[activePlayers[0]].gameObject.GetComponent<PlayerManager>().Eject();}
     }
     
-    [Command(requiresAuthority = false)]
+    [Command]
     public void CmdSyncOrder(bool[] psnArray, PlayerManager victim)
     {
         victim.psn0 = psnArray[0];

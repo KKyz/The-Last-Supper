@@ -98,8 +98,23 @@ public class PlayerFunctions : NetworkBehaviour
     {
         infoText.gameObject.SetActive(true);
         infoText.text = info;
-        infoText.GetComponent<CanvasGroup>().alpha = 0f;
-        LeanTween.alpha(infoText.gameObject, 1f, 0.5f).setLoopPingPong();
+        StartCoroutine(LoopInfoAnimation());
+
+    }
+
+    private IEnumerator LoopInfoAnimation()
+    {
+        CanvasGroup infoTextCanvas = infoText.GetComponent<CanvasGroup>();
+        infoTextCanvas.alpha = 0f;
+        
+        while (infoText.gameObject.activeInHierarchy)
+        {
+            LeanTween.alphaCanvas(infoTextCanvas, 1f, 0.5f);
+            yield return new WaitForSeconds(0.5f);
+            LeanTween.alphaCanvas(infoTextCanvas, 0f, 0.5f);
+        }
+        
+        LeanTween.alphaCanvas(infoTextCanvas, 0f, 0.5f);
     }
 
     [Client]
@@ -375,7 +390,6 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     private void ReceiveDrink()
     {
-        playerAnim.SetTrigger("ActiveTr");
         openPopup = Instantiate(drinkPlate, new Vector3(0f, -40f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
@@ -628,6 +642,7 @@ public class PlayerFunctions : NetworkBehaviour
                     player.hasRecommended = false;
                     player.hasTalked = false;
                     playerAnim.SetTrigger("ActiveTr");
+                    netIdentity.AssignClientAuthority(player.connectionToServer);
                 }
 
                 if (!fade.gameObject.activeInHierarchy)
@@ -640,6 +655,7 @@ public class PlayerFunctions : NetworkBehaviour
             else if (stateManager.currentPlayer != player.gameObject)
             {
                 player.actionable = false;
+                netIdentity.RemoveClientAuthority();
                 if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy)
                 {
                     buttonToggle.ToggleButtons(4);
@@ -661,7 +677,6 @@ public class PlayerFunctions : NetworkBehaviour
 
             if (player.actionable)
             {
-
                 if (Input.GetKeyDown("1"))
                 {
                     Poison(true);
@@ -713,7 +728,6 @@ public class PlayerFunctions : NetworkBehaviour
                             //Where the player is eating
                             if (currentState == "Eating")
                             {
-
                                 string pieceType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
 
                                 if (pieceType == "FakePoison")
@@ -753,6 +767,7 @@ public class PlayerFunctions : NetworkBehaviour
                                     player.nPiecesEaten = 0;
                                 }
 
+                                playerAnim.SetTrigger("EatTr");
                                 DestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;
                                 currentState = "Idle";

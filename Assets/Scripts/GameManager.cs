@@ -12,7 +12,7 @@ using Random = UnityEngine.Random;
 
 public class GameManager : NetworkManager
 {
-    public GameObject stateManagerObj, nameInput;
+    public GameObject stateManagerObj;
     
     public StateManager stateManager;
     public MealManager mealManager;
@@ -39,10 +39,6 @@ public class GameManager : NetworkManager
         if (PlayerPrefs.GetString("PlayerName") != null || PlayerPrefs.GetString("PlayerName") != "")
         {
             conn.identity.gameObject.name = PlayerPrefs.GetString("PlayerName"); 
-        }
-        else
-        {
-            Instantiate(nameInput, GameObject.Find("StartCanvas").transform);
         }
 
         stateManager.activePlayers.Add(conn.identity.netId);
