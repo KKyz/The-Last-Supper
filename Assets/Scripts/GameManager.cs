@@ -1,24 +1,24 @@
 using System.Collections;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel.Design;
+using System.Linq;
 using UnityEngine;
 using Mirror;
 using TMPro;
-using Unity.Mathematics;
-using UnityEngine.Networking.Types;
 using UnityEngine.SceneManagement;
-using Random = UnityEngine.Random;
 
 public class GameManager : NetworkManager
 {
-    public GameObject stateManagerObj;
-    
-    public StateManager stateManager;
-    public MealManager mealManager;
+    [Header("Lobby")]
+    [Scene] public string menuScene = string.Empty;
+    public int minPlayers = 1;
+    public PlayerLobby playerLobby;
+    public List<PlayerLobby> RoomPlayers { get; } = new();
     private Transform playerList;
-    private bool serverReadyToStart = false;
-    private bool allPlayersConnected;
+
+    [Header("Game")]
+    public GameObject stateManagerObj;
+    private StateManager stateManager;
+    private MealManager mealManager;
 
     private new void Start()
     {
@@ -31,121 +31,129 @@ public class GameManager : NetworkManager
         DontDestroyOnLoad(stateManager);
     }
     
-    public override void OnServerAddPlayer(NetworkConnection conn)
+    public override void OnServerConnect(NetworkConnection conn)
     {
-        base.OnServerConnect(conn);
         //Adds new player to players list when joined
 
-        if (PlayerPrefs.GetString("PlayerName") != null || PlayerPrefs.GetString("PlayerName") != "")
+        if (numPlayers >= maxConnections)
         {
-            conn.identity.gameObject.name = PlayerPrefs.GetString("PlayerName"); 
+            conn.Disconnect();
+            return;
         }
 
-        stateManager.activePlayers.Add(conn.identity.netId);
-        stateManager.playerNames.Add(conn.identity.name);
-        Debug.LogWarning("ActivePlayers Count: " + stateManager.activePlayers.Count);
-
-        if (SceneManager.GetActiveScene().name == "StartMenu")
+        if (SceneManager.GetActiveScene().name != menuScene)
         {
-            RefreshPlayerNames();
+            conn.Disconnect();
+            return;  
         }
+    }
 
-        if (stateManager.activePlayers.Count >= 2)
+    public override void OnServerAddPlayer(NetworkConnection conn)
+    {
+        //If in the menus, the lobby player is instantiated and manually added
+        if (SceneManager.GetActiveScene().name == menuScene)
         {
-            stateManager.gameCanEnd = true;
+            bool isLeader = RoomPlayers.Count == 0;
+            
+            PlayerLobby activePlayerlobby = Instantiate(playerLobby);
+
+            activePlayerlobby.isLeader = isLeader;
+
+            NetworkServer.AddPlayerForConnection(conn, activePlayerlobby.gameObject);
+
+            stateManager.activePlayers.Add(conn.identity.netId);
+            stateManager.playerNames.Add(conn.identity.name);
+            Debug.LogWarning("ActivePlayers Count: " + stateManager.activePlayers.Count);
         }
     }
 
     public new void StartHost()
     {
-        base.StartHost();
-        playerList = GameObject.Find("PlayerList").transform;
-        
-        RefreshPlayerNames();
-        
+        //Add all server spawnable objects
+        spawnPrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs").ToList();
     }
 
-    public void JoinGame()
+    public override void OnStartClient()
     {
-        StartClient(); // manually start client
+        //Add all server spawnable objects
+        GameObject[] spawnablePrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs");
+
+        foreach (GameObject prefab in spawnablePrefabs)
+        {
+            GetComponent<NetworkManager>().spawnPrefabs.Add(prefab);
+        }
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        if (SceneManager.GetActiveScene().name != "StartMenu")
+        // Remove connection from roomPlayers, activePlayers, and activePlayerNames
+        if (conn.identity != null)
         {
-            NetworkServer.Destroy(NetworkClient.spawned[conn.identity.netId].gameObject); 
-            stateManager.activePlayers.Remove(conn.identity.netId);
-            stateManager.playerNames.Remove(conn.identity.gameObject.name);
-        }
-        else
-        {
-            if (stateManager.activePlayers.Count > 0)
-            {
-                stateManager.activePlayers.Remove(conn.identity.netId);
-                stateManager.playerNames.Remove(conn.identity.gameObject.name);
-                RefreshPlayerNames();
-            }
-        }
-        
-        
-    }
+            var player = conn.identity.GetComponent<PlayerLobby>();
 
-    private void RefreshPlayerNames()
-    {
-        foreach (Transform playerName in playerList)
-        {
-            playerName.gameObject.SetActive(false);
+            RoomPlayers.Remove(player);
+
+            UpdateReadyState();
         }
         
-        foreach (var playerName in stateManager.playerNames)
-        {
-            Transform playerNameDisplay = playerList.GetChild(stateManager.playerNames.IndexOf(playerName));
-            playerNameDisplay.gameObject.SetActive(true);
-            playerNameDisplay.GetComponentInChildren<TextMeshProUGUI>().text = playerName;
-        }
-    }
-
-    private void Update()
-    {
-        if (serverReadyToStart)
-        {
-            if (allPlayersConnected)
-            {
-                StartCoroutine(PostStartCall());
-                serverReadyToStart = false;
-                allPlayersConnected = false;
-            }
-            else
-            {
-                foreach (uint id in stateManager.activePlayers)
-                {
-                    allPlayersConnected = stateManager.spawnedPlayers[id].GetComponent<NetworkIdentity>().connectionToClient.isReady;
-                    if (!allPlayersConnected)
-                    {
-                        break;
-                    }
-                }
-            }
-        }
+        base.OnServerDisconnect(conn);
     }
 
     private IEnumerator PostStartCall()
     {
+        //Delayed call to ensure players spawn first before turns or course begins
+        
+        if (stateManager.activePlayers.Count >= minPlayers)
+        {
+            stateManager.gameCanEnd = true;
+        }
+
+        yield return 0;
+        
+        stateManager.OnStartGame();
+        
         for (int i = 0; i <= 5; i++)
         {yield return 0;}
         mealManager.OnStartGame();
-        stateManager.OnStartGame();
-
     }
 
-    public override void OnServerSceneChanged(string newSceneName)
+    public void UpdateReadyState()
     {
-        if (newSceneName != "StartMenu")
+        foreach (PlayerLobby player in RoomPlayers)
         {
-            //Initial operations when server 
-            serverReadyToStart = true;
-            autoCreatePlayer = true; // set the autoCreateFlag for the Network Manager (clients and host)//
+            player.ReadyToStart(IsReadyToStart());
         }
+    }
+
+    private bool IsReadyToStart()
+    {
+        //If all players in lobby have isReady = true, then return true
+        if (numPlayers < minPlayers)
+        {
+            return false;
+        }
+
+        foreach (PlayerLobby player in RoomPlayers)
+        {
+            if (!player.isReady)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    
+    public override void OnStopServer()
+    {
+        //If all players in lobby have isReady = true, then return true
+        RoomPlayers.Clear();
+        stateManager.activePlayers.Clear();
+        stateManager.playerNames.Clear();
+    }
+
+    public void StartGame()
+    {
+        
     }
 }

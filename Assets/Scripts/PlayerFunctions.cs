@@ -30,6 +30,7 @@ public class PlayerFunctions : NetworkBehaviour
     public GameObject drinkMenu, talkMenu, drinkPlate, chalkBoard, recommendFlag, typeFlag, fakeFlag, swapFlag, receipt, vomitSplash, healthSplash, smokeSplash, scrollInfo;
     public string currentState;
     public bool countTime;
+    public AudioClip poisonSfx, healthSfx, popupSfx;
 
     private EnableDisableScrollButtons buttonToggle;
     private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
@@ -37,6 +38,7 @@ public class PlayerFunctions : NetworkBehaviour
     private CameraActions camActions;
     private ShowHealth healthBar;
     private Animator playerAnim;
+    private AudioSource uiAudio;
     private readonly List<GameObject> smellTargets = new();
     private readonly List<Transform> swapTargets = new();
     private bool startCourse;
@@ -47,6 +49,7 @@ public class PlayerFunctions : NetworkBehaviour
         mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
         musicManager = GameObject.Find("StateManager").GetComponent<MusicManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
+        uiAudio = transform.GetComponent<AudioSource>();
         healthBar = transform.Find("HealthBar").GetComponent<ShowHealth>();
         smellConfirm = transform.Find("SmellConfirm").gameObject;
         swapConfirm = transform.Find("SwapConfirm").gameObject;
@@ -85,7 +88,10 @@ public class PlayerFunctions : NetworkBehaviour
         }
         
         countTime = true;
-        playerScrolls.ResetScrollAmount();
+        if (player != null)
+        {
+            playerScrolls.ResetScrollAmount();
+        }
 
         if (!isServer)
         {
@@ -167,6 +173,7 @@ public class PlayerFunctions : NetworkBehaviour
                 vSplash.transform.SetParent(transform, false);
 
                 playerAnim.SetTrigger("PoisonTr");
+                uiAudio.PlayOneShot(poisonSfx);
                 StartCoroutine(camActions.ShakeCamera(0.5f, 0.7f, 1f));
             }
         }
@@ -178,6 +185,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (player.health < 3)
         {
             player.health += 1;
+            uiAudio.PlayOneShot(healthSfx);
             healthBar.SetHealth(player.health);
             
             GameObject hSplash = Instantiate(healthSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
@@ -375,6 +383,7 @@ public class PlayerFunctions : NetworkBehaviour
         playerAnim.SetTrigger("OrderTr");
         openPopup = Instantiate(drinkMenu, new Vector3(0f, -40f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         buttonToggle.ToggleButtons(6);
@@ -392,6 +401,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         openPopup = Instantiate(drinkPlate, new Vector3(0f, -40f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.name = "DrinkMenu";
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -442,6 +452,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup = Instantiate(scrollInfo, new Vector3(0f, 0f, 0f), quaternion.identity);
 
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         
@@ -450,7 +461,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = playerScrolls.GetDescription(pieceType);
         buttonToggle.ToggleButtons(6);
 
-       // StartCoroutine(HideMiniScrollInfo());
+       // StartCoroutine(HideMiniScrollInfo());//
     }
 
     [Client]
@@ -497,6 +508,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        uiAudio.PlayOneShot(popupSfx);
         buttonToggle.ToggleButtons(6);
         
         SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();

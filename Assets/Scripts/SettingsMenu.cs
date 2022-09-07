@@ -21,7 +21,7 @@ public class SettingsMenu : MonoBehaviour
     void Start()
     {
         nameInput = GameObject.Find("NameInput").GetComponent<TMP_InputField>();
-        nameInput.text = PlayerPrefs.GetString("PlayerName", "Player" + Random.Range(0, 99));
+        nameInput.text = PlayerPrefs.GetString("PlayerName");
         resolutionDropdown = GameObject.Find("Resolutions").GetComponent<TMP_Dropdown>();
         bgmSlider = GameObject.Find("BGMSlider").GetComponent<Slider>();
         sfxSlider = GameObject.Find("SFXSlider").GetComponent<Slider>();
@@ -47,12 +47,7 @@ public class SettingsMenu : MonoBehaviour
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolPref", 1f);
         bgmSlider.value = PlayerPrefs.GetFloat("BGMVolPref", 0.5f);
     }
-
-    public void SavePlayerName()
-    {
-        PlayerPrefs.SetString("PlayerName", nameInput.text);
-    }
-
+    
     public void BgmVolume (float sliderValue)
     {
         bgmMixer.SetFloat("BGMVolume", Mathf.Log10(sliderValue) * 20);
@@ -82,13 +77,6 @@ public class SettingsMenu : MonoBehaviour
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
-    }
-
-    public void SpawnDeleteConfirm(GameObject popup)
-    {
-        GameObject confirmPopup = Instantiate(popup, transform.position, Quaternion.identity);
-        confirmPopup.transform.SetParent(transform.parent.parent);
-        confirmPopup.GetComponent<SpawnMenu>().SlideInMenu();
     }
 
     public void DeletePlayerData()

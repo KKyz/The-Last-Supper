@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2420248719740584067}
   - component: {fileID: 2420248719740584066}
   - component: {fileID: 2420248719740585852}
+  - component: {fileID: 1559012290}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -56,7 +57,7 @@ MonoBehaviour:
   maxConnections: 100
   authenticator: {fileID: 0}
   playerPrefab: {fileID: 554996796167789163, guid: 68dc0a21b23ddff40a0117eaf5740521, type: 3}
-  autoCreatePlayer: 1
+  autoCreatePlayer: 0
   playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 1966451691840043423, guid: 6732302ff0020b74b91ff9c1e2b5a712, type: 3}
@@ -70,10 +71,11 @@ MonoBehaviour:
   - {fileID: 6399384744527095782, guid: 3c9e0f7cba54df042aa925bec948f2ba, type: 3}
   - {fileID: 2525988890905768603, guid: e3bce77c05a02af46be4c9e9eadb8f42, type: 3}
   - {fileID: 2525988890905768603, guid: 13f317259b2cc0e41957671f9f9cf4a0, type: 3}
+  - {fileID: 8346021116494286423, guid: 706f43bfaba5e8c4c8880985003bdbdd, type: 3}
+  menuScene: Assets/Scenes/StartMenu.unity
+  minPlayers: 1
+  roomPlayerPrefab: {fileID: 8636755336378118031, guid: c7264fa16d17bf342867655133976847, type: 3}
   stateManagerObj: {fileID: 8346021116494286423, guid: 706f43bfaba5e8c4c8880985003bdbdd, type: 3}
-  nameInput: {fileID: 0}
-  stateManager: {fileID: 0}
-  mealManager: {fileID: 0}
 --- !u!114 &2420248719740585852
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,3 +105,17 @@ MonoBehaviour:
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
+--- !u!114 &1559012290
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2420248719740584065}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6442dc8070ceb41f094e44de0bf87274, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  offsetX: 0
+  offsetY: 0
