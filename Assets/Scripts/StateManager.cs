@@ -15,22 +15,29 @@ public class StateManager : NetworkBehaviour
     [SyncVar] 
     public bool gameCanEnd;
     
+    [SyncVar]
+    public int turn;
+    
     public readonly SyncList<uint> activePlayers = new();
     public readonly SyncList<string> playerNames = new ();
     public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new();
 
-    [SyncVar]
-    public int turn;
-    
     public void OnStartGame()
     {
-        if (isClient)
+        if (isServer)
         {
             Debug.LogWarning("StateManager in DefaultState");
             turn = 0;
             currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
-            playerScript = currentPlayer.GetComponent<PlayerManager>();
+            playerScript = currentPlayer.GetComponent<PlayerManager>(); 
         }
+
+        CurrentPlayerAssigned();
+    }
+
+    public bool CurrentPlayerAssigned()
+    {
+        return currentPlayer != null;
     }
 
     [Command(requiresAuthority = false)]

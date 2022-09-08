@@ -602,8 +602,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1598258137682036068}
   - component: {fileID: 5892212412926239432}
-  - component: {fileID: 4823062054289426750}
-  - component: {fileID: 6662094645940747}
   m_Layer: 5
   m_Name: Guests
   m_TagString: Untagged
@@ -648,52 +646,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animationType: 3
---- !u!114 &4823062054289426750
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3171311474688826315}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 388610da4e3176e4a8688c4bfd43686d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  lobbyUi: {fileID: 0}
-  playerNames:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  playerReadyToggles:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  startGameButton: {fileID: 0}
-  displayName: Loading...
-  isReady: 0
-  isLeader: 0
---- !u!114 &6662094645940747
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3171311474688826315}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  sceneId: 0
-  serverOnly: 0
-  visible: 0
-  m_AssetId: c7264fa16d17bf342867655133976847
-  hasSpawned: 0
 --- !u!1 &3435943545101367371
 GameObject:
   m_ObjectHideFlags: 0

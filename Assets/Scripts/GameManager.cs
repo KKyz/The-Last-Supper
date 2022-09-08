@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +9,14 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkManager
 {
-    [Header("Lobby")]
-    [Scene] public string menuScene = string.Empty;
-    public int minPlayers = 1;
+    [Header("Lobby")] [Scene] public string menuScene = string.Empty;
+    [Scene] public string gameScene = string.Empty;
+    public int minPlayers;
     public PlayerLobby playerLobby;
     public List<PlayerLobby> RoomPlayers { get; } = new();
     private Transform playerList;
 
-    [Header("Game")]
-    public GameObject stateManagerObj;
+    [Header("Game")] public GameObject stateManagerObj;
     private StateManager stateManager;
     private MealManager mealManager;
 
@@ -30,7 +30,7 @@ public class GameManager : NetworkManager
         stateManager.gameCanEnd = false;
         DontDestroyOnLoad(stateManager);
     }
-    
+
     public override void OnServerConnect(NetworkConnection conn)
     {
         //Adds new player to players list when joined
@@ -44,7 +44,7 @@ public class GameManager : NetworkManager
         if (SceneManager.GetActiveScene().name != menuScene)
         {
             conn.Disconnect();
-            return;  
+            return;
         }
     }
 
@@ -54,12 +54,12 @@ public class GameManager : NetworkManager
         if (SceneManager.GetActiveScene().name == menuScene)
         {
             bool isLeader = RoomPlayers.Count == 0;
-            
-            PlayerLobby activePlayerlobby = Instantiate(playerLobby);
 
-            activePlayerlobby.isLeader = isLeader;
+            PlayerLobby activePlayerLobby = Instantiate(playerLobby);
 
-            NetworkServer.AddPlayerForConnection(conn, activePlayerlobby.gameObject);
+            activePlayerLobby.isLeader = isLeader;
+
+            NetworkServer.AddPlayerForConnection(conn, activePlayerLobby.gameObject);
 
             stateManager.activePlayers.Add(conn.identity.netId);
             stateManager.playerNames.Add(conn.identity.name);
@@ -95,26 +95,8 @@ public class GameManager : NetworkManager
 
             UpdateReadyState();
         }
-        
+
         base.OnServerDisconnect(conn);
-    }
-
-    private IEnumerator PostStartCall()
-    {
-        //Delayed call to ensure players spawn first before turns or course begins
-        
-        if (stateManager.activePlayers.Count >= minPlayers)
-        {
-            stateManager.gameCanEnd = true;
-        }
-
-        yield return 0;
-        
-        stateManager.OnStartGame();
-        
-        for (int i = 0; i <= 5; i++)
-        {yield return 0;}
-        mealManager.OnStartGame();
     }
 
     public void UpdateReadyState()
@@ -143,7 +125,7 @@ public class GameManager : NetworkManager
 
         return true;
     }
-    
+
     public override void OnStopServer()
     {
         //If all players in lobby have isReady = true, then return true
@@ -152,8 +134,52 @@ public class GameManager : NetworkManager
         stateManager.playerNames.Clear();
     }
 
+    private void ReplacePlayer(NetworkConnectionToClient conn)
+    {
+        //Void that changes connection's object from room player to game player
+        GameObject roomPlayer = conn.identity.gameObject;
+
+        NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
+
+        Destroy(roomPlayer, 0.1f);
+    }
+
+    //// private IEnumerator FadeToNewScene()
+    // {
+    
+    // }
+
     public void StartGame()
     {
+        ServerChangeScene(gameScene); 
+    }
+    
+    private IEnumerator PostStartCall()
+    {
+        //Delayed call to ensure players spawn first before turns or course begins
+
+        foreach (PlayerLobby player in RoomPlayers)
+        {
+            NetworkConnectionToClient playerConn = player.GetComponent<NetworkConnectionToClient>();
+            ReplacePlayer(playerConn);
+        }
+
+        yield return 0;
         
+        if (stateManager.activePlayers.Count >= minPlayers)
+        {
+            stateManager.gameCanEnd = true;
+        }
+        
+        stateManager.OnStartGame();
+
+        yield return new WaitUntil(stateManager.CurrentPlayerAssigned);
+        
+        mealManager.OnStartGame();
+    }
+
+    public override void OnServerSceneChanged(string newSceneName)
+    {
+        StartCoroutine(PostStartCall());
     }
 }
