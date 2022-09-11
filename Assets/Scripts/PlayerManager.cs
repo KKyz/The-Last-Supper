@@ -37,15 +37,10 @@ public class PlayerManager : NetworkBehaviour
     private PlayerFunctions playerCanvas;
     private StateManager stateManager;
 
-    public void Start()
-    {
-        playerCam = transform.Find("Camera").gameObject;
-        playerCam.SetActive(false);
-    }
-
     public void OnStartGame()
     {
-        health = 2;
+        
+        health = 2;//
         scrollCount = 0;
         courseCount = 1;
         pieceCount = 0;
@@ -68,6 +63,8 @@ public class PlayerManager : NetworkBehaviour
         playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         stateManager.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
+        playerCam = transform.Find("Camera").gameObject;
+        playerCam.SetActive(false);
         
         if (isLocalPlayer)
         {
@@ -83,6 +80,7 @@ public class PlayerManager : NetworkBehaviour
         }
 
         PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
+        playerCanvas.OnStartGame();
     }
 
     public void SyncPsn(bool oldValue, bool newValue)

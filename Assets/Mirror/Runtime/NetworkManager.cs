@@ -340,7 +340,7 @@ namespace Mirror
                 Debug.LogError("Must set the Network Address field in the manager");
                 return;
             }
-            // Debug.Log($"NetworkManager StartClient address:{networkAddress}");
+            Debug.Log($"NetworkManager StartClient address:{networkAddress}");
 
             NetworkClient.Connect(networkAddress);
 
@@ -434,6 +434,8 @@ namespace Mirror
             {
                 FinishStartHost();
             }
+            
+            Debug.Log($"NetworkManager StartHost address:{networkAddress}");
         }
 
         // This may be set true in StartHost and is evaluated in FinishStartHost
@@ -488,8 +490,6 @@ namespace Mirror
 
         void StartHostClient()
         {
-            //Debug.Log("NetworkManager ConnectLocalClient");
-
             if (authenticator != null)
             {
                 authenticator.OnStartClient();

@@ -4,7 +4,6 @@ using UnityEngine;
 using Mirror;
 using TMPro;
 using Unity.Mathematics;
-using UnityEngine.Networking.Types;
 using UnityEngine.UI;
 
 public class PlayerFunctions : NetworkBehaviour
@@ -34,7 +33,7 @@ public class PlayerFunctions : NetworkBehaviour
 
     private EnableDisableScrollButtons buttonToggle;
     private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
-    private CanvasGroup fade;
+    private FadeInOut fade;
     private CameraActions camActions;
     private ShowHealth healthBar;
     private Animator playerAnim;
@@ -43,7 +42,7 @@ public class PlayerFunctions : NetworkBehaviour
     private readonly List<Transform> swapTargets = new();
     private bool startCourse;
 
-    void Start()
+    public void OnStartGame()
     {
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
@@ -55,7 +54,7 @@ public class PlayerFunctions : NetworkBehaviour
         swapConfirm = transform.Find("SwapConfirm").gameObject;
         chatPanel = transform.Find("ChatLog").Find("Panel").gameObject;
         fakeConfirm = transform.Find("FakeConfirm").gameObject;
-        fade = transform.Find("Fade").GetComponent<CanvasGroup>();
+        fade = transform.Find("Fade").GetComponent<FadeInOut>();
         infoText = transform.Find("Info").GetComponent<TextMeshProUGUI>();
 
         currentState = "Idle";
@@ -65,7 +64,7 @@ public class PlayerFunctions : NetworkBehaviour
         chatPanel.SetActive(false);
         smellTargets.Clear();
         swapTargets.Clear();
-        FadeOut();
+        fade.FadeOut(1.5f);
 
         StartCoroutine(PostStartCall());
     }
@@ -131,29 +130,6 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Client]
-    private void FadeIn()
-    {
-        fade.gameObject.SetActive(true);
-        fade.alpha = 0f;
-        LeanTween.alphaCanvas(fade, 1f, 1.5f);
-    }
-
-    [Client]
-    private void FadeOut()
-    {
-        fade.gameObject.SetActive(true);
-        fade.alpha = 1f;
-        LeanTween.alphaCanvas(fade, 0, 1.5f);
-        StartCoroutine(DisableFade());
-    }
-
-    private IEnumerator DisableFade()
-    {
-        yield return new WaitForSeconds(1.7f);
-        fade.gameObject.SetActive(false);
-    }
-
-    [Client]
     public void FakeSplash()
     {
         GameObject sSplash = Instantiate(smokeSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
@@ -209,7 +185,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         playerAnim.SetTrigger("QuakeTr");
         StartCoroutine(camActions.ShakeCamera(1f, 0.7f, 1f));
-        FadeIn();
+        fade.FadeIn(1.5f);
         buttonToggle.ToggleButtons(6);
         yield return new WaitForSeconds(2f);
         
@@ -220,7 +196,7 @@ public class PlayerFunctions : NetworkBehaviour
             player.scrollCount += 1;
         }
         
-        FadeOut();
+        fade.FadeOut(1.5f);
     }
     
     [Client]
@@ -679,12 +655,12 @@ public class PlayerFunctions : NetworkBehaviour
         {
             if (player.health <= 0 && openPopup == null)
             {
-                Die();
+                //Die();
             }
 
             if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health > 0 && openPopup == null)
             {
-                Win();
+                //Win();
             }
 
             if (player.actionable)

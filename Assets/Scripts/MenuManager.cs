@@ -16,6 +16,7 @@ public class MenuManager : MonoBehaviour
     public void Start()
     {
         blur = transform.Find("Blur").gameObject;
+        FadeInOut fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
         uiAudio = GetComponent<AudioSource>();
         startMenu = transform.Find("Start");
         altMenu = transform.Find("Settings");
@@ -27,6 +28,7 @@ public class MenuManager : MonoBehaviour
         Vector3 camStartPos = new Vector3(camGoalPos.x, camGoalPos.y, camGoalPos.z - 30f);
         titleCam.transform.position = camStartPos;
         LeanTween.moveZ(titleCam.gameObject, camGoalPos.z, 0.8f).setEaseOutSine();
+        fade.FadeOut(0.5f);
     }
 
     public void SelectSfx()
@@ -46,12 +48,18 @@ public class MenuManager : MonoBehaviour
         
         foreach (Transform menuObj in subMenu)
         {
-            menuObj.gameObject.SetActive(true);
+            if (menuObj.name != "TableSetUp")
+            {
+                menuObj.gameObject.SetActive(true);
+            }
         }
         
         foreach (Transform menuObj in subMenu)
         {
-            menuObj.GetComponent<MenuAnimations>().EnterAnim();
+            if (menuObj.gameObject.activeInHierarchy)
+            {
+                menuObj.GetComponent<MenuAnimations>().EnterAnim();
+            }
         }
     }
 

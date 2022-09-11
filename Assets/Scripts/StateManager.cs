@@ -19,20 +19,18 @@ public class StateManager : NetworkBehaviour
     public int turn;
     
     public readonly SyncList<uint> activePlayers = new();
-    public readonly SyncList<string> playerNames = new ();
     public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new();
 
     public void OnStartGame()
     {
         if (isServer)
         {
+            currentPlayer = null;
             Debug.LogWarning("StateManager in DefaultState");
             turn = 0;
             currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
             playerScript = currentPlayer.GetComponent<PlayerManager>(); 
         }
-
-        CurrentPlayerAssigned();
     }
 
     public bool CurrentPlayerAssigned()
@@ -44,7 +42,6 @@ public class StateManager : NetworkBehaviour
     public void CmdRemovePlayer(uint playerID)
     {
         activePlayers.Remove(playerID);
-        playerNames.Remove(NetworkClient.spawned[playerID].gameObject.name);
     }
     
     [Command(requiresAuthority = false)]

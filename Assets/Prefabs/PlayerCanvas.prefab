@@ -2597,6 +2597,7 @@ GameObject:
   - component: {fileID: 4074930142345500611}
   - component: {fileID: 2844376342079648820}
   - component: {fileID: 3890581129360351100}
+  - component: {fileID: 1418495204}
   m_Layer: 5
   m_Name: Fade
   m_TagString: Untagged
@@ -2674,6 +2675,18 @@ CanvasGroup:
   m_Interactable: 0
   m_BlocksRaycasts: 0
   m_IgnoreParentGroups: 0
+--- !u!114 &1418495204
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3135739502490630237}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3cee129615e858e4aa8a3b627ad39223, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3316827485558951762
 GameObject:
   m_ObjectHideFlags: 0
@@ -3123,7 +3136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7926033772079452938
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3779,6 +3792,9 @@ MonoBehaviour:
   scrollInfo: {fileID: 4939486906135194192, guid: c9377fe98ed50cd4b9db998b29a731eb, type: 3}
   currentState: 
   countTime: 0
+  poisonSfx: {fileID: 0}
+  healthSfx: {fileID: 0}
+  popupSfx: {fileID: 0}
 --- !u!114 &8698564207709150152
 MonoBehaviour:
   m_ObjectHideFlags: 0

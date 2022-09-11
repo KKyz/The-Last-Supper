@@ -4,25 +4,30 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
+using Telepathy;
 using TMPro;
 using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkManager
 {
-    [Header("Lobby")] [Scene] public string menuScene = string.Empty;
-    [Scene] public string gameScene = string.Empty;
+    [Header("Lobby")]
+    [Scene] public string gameScene;
     public int minPlayers;
     public PlayerLobby playerLobby;
-    public List<PlayerLobby> RoomPlayers { get; } = new();
+    public List<PlayerLobby> roomPlayers = new();
+    public PlayerLobby localRoomPlayer;
     private Transform playerList;
+    private FadeInOut fade;
 
-    [Header("Game")] public GameObject stateManagerObj;
+    [Header("Game")] 
+    public GameObject stateManagerObj;
     private StateManager stateManager;
     private MealManager mealManager;
 
     private new void Start()
     {
         autoCreatePlayer = false;
+        fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
         GameObject stateManagerInstance = Instantiate(stateManagerObj, new Vector3(-2.8f, 3.6f, 0), Quaternion.identity);
         stateManagerInstance.name = "StateManager";
         stateManager = stateManagerInstance.GetComponent<StateManager>();
@@ -35,46 +40,41 @@ public class GameManager : NetworkManager
     {
         //Adds new player to players list when joined
 
-        if (numPlayers >= maxConnections)
+        if ((numPlayers >= maxConnections) || SceneManager.GetActiveScene().name != "StartMenu")
         {
             conn.Disconnect();
-            return;
-        }
-
-        if (SceneManager.GetActiveScene().name != menuScene)
-        {
-            conn.Disconnect();
-            return;
         }
     }
-
+    
     public override void OnServerAddPlayer(NetworkConnection conn)
     {
         //If in the menus, the lobby player is instantiated and manually added
-        if (SceneManager.GetActiveScene().name == menuScene)
+        if (SceneManager.GetActiveScene().name == "StartMenu")
         {
-            bool isLeader = RoomPlayers.Count == 0;
+            bool isLeader = roomPlayers.Count == 0;
 
-            PlayerLobby activePlayerLobby = Instantiate(playerLobby);
+            PlayerLobby newPlayerLobby = Instantiate(playerLobby);
 
-            activePlayerLobby.isLeader = isLeader;
+            newPlayerLobby.isLeader = isLeader;
 
-            NetworkServer.AddPlayerForConnection(conn, activePlayerLobby.gameObject);
+            NetworkServer.AddPlayerForConnection(conn, newPlayerLobby.gameObject);
 
             stateManager.activePlayers.Add(conn.identity.netId);
-            stateManager.playerNames.Add(conn.identity.name);
             Debug.LogWarning("ActivePlayers Count: " + stateManager.activePlayers.Count);
+            newPlayerLobby.TargetFindLocalPlayer(conn);
         }
     }
 
-    public new void StartHost()
+    public override void OnStartHost()
     {
         //Add all server spawnable objects
         spawnPrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs").ToList();
+        
     }
 
     public override void OnStartClient()
     {
+        base.OnStartClient();
         //Add all server spawnable objects
         GameObject[] spawnablePrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs");
 
@@ -84,14 +84,23 @@ public class GameManager : NetworkManager
         }
     }
 
+    public override void OnClientConnect()
+    {
+        base.OnClientConnect();
+        if (SceneManager.GetActiveScene().name == "StartMenu")
+        {
+            NetworkClient.AddPlayer();
+        }
+    }
+
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        // Remove connection from roomPlayers, activePlayers, and activePlayerNames
+        // Remove connection from roomPlayers, activePlayers
         if (conn.identity != null)
         {
             var player = conn.identity.GetComponent<PlayerLobby>();
 
-            RoomPlayers.Remove(player);
+            roomPlayers.Remove(player);
 
             UpdateReadyState();
         }
@@ -101,7 +110,7 @@ public class GameManager : NetworkManager
 
     public void UpdateReadyState()
     {
-        foreach (PlayerLobby player in RoomPlayers)
+        foreach (PlayerLobby player in roomPlayers)
         {
             player.ReadyToStart(IsReadyToStart());
         }
@@ -115,7 +124,7 @@ public class GameManager : NetworkManager
             return false;
         }
 
-        foreach (PlayerLobby player in RoomPlayers)
+        foreach (PlayerLobby player in roomPlayers)
         {
             if (!player.isReady)
             {
@@ -129,42 +138,65 @@ public class GameManager : NetworkManager
     public override void OnStopServer()
     {
         //If all players in lobby have isReady = true, then return true
-        RoomPlayers.Clear();
+        roomPlayers.Clear();
         stateManager.activePlayers.Clear();
-        stateManager.playerNames.Clear();
     }
 
-    private void ReplacePlayer(NetworkConnectionToClient conn)
+    private void ReplacePlayers()
     {
+        Debug.LogWarning("Replace Players: " + roomPlayers.Count);
         //Void that changes connection's object from room player to game player
-        GameObject roomPlayer = conn.identity.gameObject;
+        foreach (PlayerLobby player in roomPlayers)
+        {
+            Debug.LogWarning("Started Post Start");
+            NetworkConnectionToClient conn = player.netIdentity.connectionToClient;
+            int playerIndex = roomPlayers.IndexOf(player);
+            GameObject roomPlayer = conn.identity.gameObject;
 
-        NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
-
-        Destroy(roomPlayer, 0.1f);
+            NetworkClient.Ready();
+            NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
+            conn.identity.gameObject.name = conn.identity.name;
+            conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
+            conn.identity.GetComponent<PlayerManager>().OnStartGame();
+            
+            Destroy(roomPlayer, 0.1f);
+        }
     }
 
-    //// private IEnumerator FadeToNewScene()
-    // {
+    private bool HasChangedRoomToGamePlayers()
+    {
+        foreach (PlayerLobby player in roomPlayers)
+        {
+            if (player.gameObject != playerPrefab)
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
     
-    // }
+    private IEnumerator FadeToNewScene()
+    {
+        fade.FadeIn(1.5f);
+        yield return new WaitForSeconds(1.7f);
+        ServerChangeScene(gameScene); 
+
+    }
 
     public void StartGame()
     {
-        ServerChangeScene(gameScene); 
+        Debug.Log("Start Game: " +roomPlayers.Count);
+        StartCoroutine(FadeToNewScene());
     }
     
     private IEnumerator PostStartCall()
     {
         //Delayed call to ensure players spawn first before turns or course begins
 
-        foreach (PlayerLobby player in RoomPlayers)
-        {
-            NetworkConnectionToClient playerConn = player.GetComponent<NetworkConnectionToClient>();
-            ReplacePlayer(playerConn);
-        }
+        ReplacePlayers();
 
-        yield return 0;
+        yield return new WaitUntil(HasChangedRoomToGamePlayers);
         
         if (stateManager.activePlayers.Count >= minPlayers)
         {

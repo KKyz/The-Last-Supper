@@ -973,8 +973,7 @@ namespace Mirror
                 Debug.LogError("NetworkClient.AddPlayer: a PlayerController was already added. Did you call AddPlayer twice?");
                 return false;
             }
-
-            // Debug.Log($"NetworkClient.AddPlayer() called with connection {readyConnection}");
+            
             connection.Send(new AddPlayerMessage());
             return true;
         }

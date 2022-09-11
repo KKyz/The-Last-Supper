@@ -62,7 +62,7 @@ public class SettingsMenu : MonoBehaviour
     
     public void ToggleMinScroll()
     {
-        // if (minScrollBtn.isOn)
+        // if (minScrollBtn.isOn)//
         // {PlayerPrefs.SetInt("MinScrollInfo", 1);}
         // else
         // {PlayerPrefs.SetInt("MinScrollInfo", 0);}

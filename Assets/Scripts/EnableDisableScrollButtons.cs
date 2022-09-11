@@ -1,9 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine.SearchService;
 using UnityEngine.UI;
 
 public class EnableDisableScrollButtons : NetworkBehaviour
