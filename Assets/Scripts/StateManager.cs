@@ -18,19 +18,17 @@ public class StateManager : NetworkBehaviour
     [SyncVar]
     public int turn;
     
-    public readonly SyncList<uint> activePlayers = new();
+    public readonly SyncList<NetworkIdentity> activePlayers = new();
     public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new();
 
+    [ServerCallback]
     public void OnStartGame()
     {
-        if (isServer)
-        {
-            currentPlayer = null;
-            Debug.LogWarning("StateManager in DefaultState");
-            turn = 0;
-            currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
-            playerScript = currentPlayer.GetComponent<PlayerManager>(); 
-        }
+        Debug.LogWarning("Started Post Start");
+        currentPlayer = null;
+        turn = 0;
+        currentPlayer = activePlayers[turn].gameObject;
+        playerScript = currentPlayer.GetComponent<PlayerManager>();
     }
 
     public bool CurrentPlayerAssigned()
@@ -39,9 +37,9 @@ public class StateManager : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdRemovePlayer(uint playerID)
+    public void CmdRemovePlayer(NetworkIdentity player)
     {
-        activePlayers.Remove(playerID);
+        activePlayers.Remove(player);
     }
     
     [Command(requiresAuthority = false)]
@@ -66,7 +64,7 @@ public class StateManager : NetworkBehaviour
         }
         
         netIdentity.RemoveClientAuthority();
-        currentPlayer = NetworkClient.spawned[activePlayers[turn]].gameObject;
+        currentPlayer = activePlayers[turn].gameObject;
         netIdentity.AssignClientAuthority(currentPlayer.GetComponent<NetworkConnection>());
 
         playerScript = currentPlayer.GetComponent<PlayerManager>();
@@ -78,9 +76,9 @@ public class StateManager : NetworkBehaviour
         //Function called by PlayerFunctions to trigger encourage of next player
         //Add Authority
         if (turn < activePlayers.Count - 1)
-        {NetworkServer.spawned[activePlayers[turn + 1]].gameObject.GetComponent<PlayerManager>().isEncouraged = true;}
+        {activePlayers[turn + 1].gameObject.GetComponent<PlayerManager>().isEncouraged = true;}
         else
-        {NetworkServer.spawned[activePlayers[0]].GetComponent<PlayerManager>().isEncouraged = true;}
+        {activePlayers[0].GetComponent<PlayerManager>().isEncouraged = true;}
     }
 
     [Command(requiresAuthority = false)]
@@ -88,9 +86,9 @@ public class StateManager : NetworkBehaviour
     {
         //Add Authority
         if (turn < activePlayers.Count - 1)
-        {NetworkServer.spawned[activePlayers[turn + 1]].gameObject.GetComponent<PlayerManager>().Eject();}
+        {activePlayers[turn + 1].gameObject.GetComponent<PlayerManager>().Eject();}
         else
-        {NetworkServer.spawned[activePlayers[0]].gameObject.GetComponent<PlayerManager>().Eject();}
+        {activePlayers[0].gameObject.GetComponent<PlayerManager>().Eject();}
     }
     
     [Command]

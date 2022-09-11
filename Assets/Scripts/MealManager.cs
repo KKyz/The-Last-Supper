@@ -8,7 +8,7 @@ public class MealManager : NetworkBehaviour
 {
     [SyncVar] 
     public int nPieces;
-    public MealContainer mealContainer;
+    public MealContainer menu;
     public GameObject[] restaurants;
     
     private TextMeshProUGUI normCounter;
@@ -27,22 +27,26 @@ public class MealManager : NetworkBehaviour
         normTop = normCounter.colorGradient.topLeft;
         normBottom = normCounter.colorGradient.bottomRight;
 
-        foreach (GameObject course in mealContainer.meals)
+        foreach (GameObject course in menu.meals)
         {
             currentCourses.Push(course);
         }
 
         firstPlate = true;
         
-        Debug.LogWarning("NextCourse");
         NextCourse();
+    }
+
+    private bool PlateChanged()
+    {
+        return currentPlate != null;
     }
 
     public IEnumerator CheckNPieces()
     {
         //Checks # of normal pieces (used to swap plates)
-        
-        yield return 0; //DO NOT REMOVE THIS, IT NEEDS YIELD RETURN 0 IN ORDER TO CHECK W PLATE PROPER
+
+        yield return new WaitUntil(PlateChanged);
         nPieces = 0;
 
         foreach (Transform piece in currentPlate.transform)
@@ -55,7 +59,7 @@ public class MealManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcUpdatePieceCounters()
+    private void RpcUpdatePieceCounters()
     {
         var lastTop = Color.red;
         var lastBottom = Color.red;
@@ -86,15 +90,16 @@ public class MealManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void NextCourse()
     {
+        Debug.LogWarning("Plate Added");
         //Add Authority
 
-        foreach (uint playerID in stateManager.activePlayers)
+        foreach (NetworkIdentity player in stateManager.activePlayers)
         {
-            GameObject playerObj = NetworkServer.spawned[playerID].gameObject;
+            PlayerManager playerScript = player.GetComponent<PlayerManager>();
             
-            if (playerObj != null)
+            if (playerScript != null)
             {
-                playerObj.GetComponent<PlayerManager>().courseCount += 1;
+                playerScript.courseCount += 1;
             }
         }
 

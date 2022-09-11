@@ -53,7 +53,7 @@ public class PlayerLobby : NetworkBehaviour
 
     public void ReadyToStart(bool readyToStart)
     {
-        //Sets game start button as active if you are the leader
+        //Sets game start button as interactable (not SetActive) if you are the leader
         if (isLeader)
         {
             lobbyManager.startGameButton.interactable = readyToStart; 
@@ -73,6 +73,9 @@ public class PlayerLobby : NetworkBehaviour
         {
             room.localRoomPlayer = NetworkClient.localPlayer.GetComponent<PlayerLobby>();
         }
+        
+        lobbyManager.startGameButton.gameObject.SetActive(room.localRoomPlayer.isLeader);
+        lobbyManager.tableSetUp.SetActive(room.localRoomPlayer.isLeader);
     }
 
 }

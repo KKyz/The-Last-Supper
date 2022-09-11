@@ -9,17 +9,19 @@ public class MenuManager : MonoBehaviour
 {
     public AudioClip selectSfx, cancelSfx;
     private GameObject blur;
+    private GameManager gameManager;
     private AudioSource uiAudio;
     private Camera titleCam;
-    private Transform startMenu, altMenu;
+    private Transform startMenu, settingsMenu;
 
     public void Start()
     {
         blur = transform.Find("Blur").gameObject;
         FadeInOut fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         uiAudio = GetComponent<AudioSource>();
         startMenu = transform.Find("Start");
-        altMenu = transform.Find("Settings");
+        settingsMenu = transform.Find("Settings");
         OpenSubMenu(startMenu);
         blur.SetActive(false);
         
@@ -63,17 +65,31 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    public void NameConditionSubMenu(Transform subMenu)
+    public void ConditionStartHost(Transform subMenu)
+    {
+        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 5)
         {
-            if (PlayerPrefs.GetString("PlayerName") != null || PlayerPrefs.GetString("PlayerName") != "" || PlayerPrefs.GetString("PlayerName").Length <= 5)
-            {
-                OpenSubMenu(subMenu);
-            }
-            else
-            {
-                OpenSubMenu(altMenu);
-            }
+            OpenSubMenu(settingsMenu);
         }
+        else
+        {
+            OpenSubMenu(subMenu);
+            gameManager.StartHost();
+        }
+    }
+    
+    public void ConditionStartClient(Transform subMenu)
+    {
+        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 5)
+        {
+            OpenSubMenu(settingsMenu);
+        }
+        else
+        {
+            OpenSubMenu(subMenu);
+            gameManager.StartClient();
+        }
+    }
 
     public void CloseSubMenu(Transform subMenu)
     {

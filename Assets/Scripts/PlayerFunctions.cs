@@ -44,9 +44,10 @@ public class PlayerFunctions : NetworkBehaviour
 
     public void OnStartGame()
     {
-        stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
-        mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
-        musicManager = GameObject.Find("StateManager").GetComponent<MusicManager>();
+        GameObject stateManagerObj = GameObject.Find("StateManager");
+        stateManager = stateManagerObj.GetComponent<StateManager>();
+        mealManager = stateManagerObj.GetComponent<MealManager>();
+        musicManager = stateManagerObj.GetComponent<MusicManager>();
         buttonToggle = transform.GetComponent<EnableDisableScrollButtons>();
         uiAudio = transform.GetComponent<AudioSource>();
         healthBar = transform.Find("HealthBar").GetComponent<ShowHealth>();
@@ -72,11 +73,10 @@ public class PlayerFunctions : NetworkBehaviour
     private IEnumerator PostStartCall()
     {
         yield return new WaitForEndOfFrame();
-
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject newPlayer in players)
+        
+        foreach (NetworkIdentity newPlayer in stateManager.activePlayers)
         {
-            if (newPlayer.GetComponent<PlayerManager>().isLocalPlayer)
+            if (newPlayer.isLocalPlayer)
             {
                 //The player variable is the local player
                 player = newPlayer.GetComponent<PlayerManager>();
@@ -87,15 +87,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
         
         countTime = true;
-        if (player != null)
-        {
-            playerScrolls.ResetScrollAmount();
-        }
-
-        if (!isServer)
-        {
-            ShowChalk();
-        }
+        playerScrolls.ResetScrollAmount();
     }
 
     [Client]
@@ -437,14 +429,14 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = playerScrolls.GetDescription(pieceType);
         buttonToggle.ToggleButtons(6);
 
-       // StartCoroutine(HideMiniScrollInfo());//
+       // StartCoroutine(HideMiniScrollInfo());
     }
 
     [Client]
     public void Die()
     {
         ResetActions(true);
-        stateManager.CmdRemovePlayer(player.netId);
+        stateManager.CmdRemovePlayer(player.netIdentity);
         openPopup = Instantiate(receipt, new Vector3(0f, 0f, 0f), quaternion.identity);
         openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Lose";
         openPopup.GetComponent<ShowStats>().LoadStats(player);

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Mirror;
 using UnityEngine.UI;
 
 public class RecommendMenu : MonoBehaviour
@@ -18,12 +19,12 @@ public class RecommendMenu : MonoBehaviour
         playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
         players.Clear();
         
-        foreach (uint playerID in stateManager.activePlayers)
+        foreach (NetworkIdentity player in stateManager.activePlayers)
         {
-            PlayerManager player = stateManager.spawnedPlayers[playerID];
+            PlayerManager playerManager = player.GetComponent<PlayerManager>();
             if (player.gameObject != stateManager.currentPlayer)
             {
-                players.Add(player.GetComponent<PlayerManager>());
+                players.Add(playerManager);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
                 playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name;
                 playerCount += 1;

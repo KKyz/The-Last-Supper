@@ -9,8 +9,8 @@ using System.Linq;
 public class TalkMenu : NetworkBehaviour
 {
     public string message;
-    private uint targetPlayer;
-    private List<uint> players = new();
+    private NetworkIdentity targetPlayer;
+    private List<NetworkIdentity> players = new();
     private StateManager stateManager;
     private Transform talkButtons, toggleTransform;
     private ToggleGroup playerToggles;
@@ -24,12 +24,12 @@ public class TalkMenu : NetworkBehaviour
         talkButtons = transform.Find("TalkButtons");
         players.Clear();
 
-        foreach (uint playerID in stateManager.activePlayers)
+        foreach (NetworkIdentity playerIdentity in stateManager.activePlayers)
         {
-            PlayerManager player = stateManager.spawnedPlayers[playerID];
+            PlayerManager player = playerIdentity.GetComponent<PlayerManager>();
             if (player.gameObject != NetworkClient.localPlayer.gameObject)
             {
-                players.Add(player.GetComponent<NetworkIdentity>().netId);
+                players.Add(playerIdentity);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
                 playerToggles.transform.GetChild(playerCount).GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = player.name;
                 playerCount += 1;
@@ -95,7 +95,7 @@ public class TalkMenu : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdConfirmTalk(string messageToSend, string playerName)
     {
-        NetworkConnection conn = stateManager.spawnedPlayers[targetPlayer].GetComponent<NetworkIdentity>().connectionToClient;  
+        NetworkConnection conn = targetPlayer.connectionToClient;  
         GetComponentInParent<PlayerFunctions>().TargetSendMessage(conn, messageToSend, playerName);
     }
 

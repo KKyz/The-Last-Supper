@@ -32,12 +32,12 @@ public class OrderDrink : NetworkBehaviour
         stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
         playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
 
-        foreach (uint playerID in stateManager.activePlayers)
+        foreach (NetworkIdentity player in stateManager.activePlayers)
         {
-            PlayerManager player = stateManager.spawnedPlayers[playerID];
+            PlayerManager playerManager = player.GetComponent<PlayerManager>();
             if (player.gameObject != stateManager.currentPlayer)
             {
-                victims.Add(player.GetComponent<PlayerManager>());
+                victims.Add(playerManager);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
                 playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name;
                 playerCount += 1;

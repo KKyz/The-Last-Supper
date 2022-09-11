@@ -40,7 +40,7 @@ public class PlayerManager : NetworkBehaviour
     public void OnStartGame()
     {
         
-        health = 2;//
+        health = 2;
         scrollCount = 0;
         courseCount = 1;
         pieceCount = 0;

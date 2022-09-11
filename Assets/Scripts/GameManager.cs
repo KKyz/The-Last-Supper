@@ -58,10 +58,8 @@ public class GameManager : NetworkManager
             newPlayerLobby.isLeader = isLeader;
 
             NetworkServer.AddPlayerForConnection(conn, newPlayerLobby.gameObject);
-
-            stateManager.activePlayers.Add(conn.identity.netId);
-            Debug.LogWarning("ActivePlayers Count: " + stateManager.activePlayers.Count);
             newPlayerLobby.TargetFindLocalPlayer(conn);
+            DontDestroyOnLoad(conn.identity.gameObject);
         }
     }
 
@@ -148,16 +146,17 @@ public class GameManager : NetworkManager
         //Void that changes connection's object from room player to game player
         foreach (PlayerLobby player in roomPlayers)
         {
-            Debug.LogWarning("Started Post Start");
             NetworkConnectionToClient conn = player.netIdentity.connectionToClient;
+            string playerName = conn.identity.name;
             int playerIndex = roomPlayers.IndexOf(player);
             GameObject roomPlayer = conn.identity.gameObject;
 
             NetworkClient.Ready();
             NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
-            conn.identity.gameObject.name = conn.identity.name;
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
+            conn.identity.gameObject.name = playerName;
             conn.identity.GetComponent<PlayerManager>().OnStartGame();
+            stateManager.activePlayers.Add(conn.identity);
             
             Destroy(roomPlayer, 0.1f);
         }
@@ -186,7 +185,6 @@ public class GameManager : NetworkManager
 
     public void StartGame()
     {
-        Debug.Log("Start Game: " +roomPlayers.Count);
         StartCoroutine(FadeToNewScene());
     }
     

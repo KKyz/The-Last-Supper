@@ -15,11 +15,6 @@ public class LobbyManager : NetworkBehaviour
     public void Start()
     {
         room = GameObject.Find("GameManager").GetComponent<GameManager>();
-        
-        if (isServer)
-        {
-            tableSetUp.SetActive(true);
-        }
     }
 
     public void UpdateDisplay()
