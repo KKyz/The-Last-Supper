@@ -75,16 +75,18 @@ public class GameManager : NetworkManager
         base.OnStartClient();
         //Add all server spawnable objects
         GameObject[] spawnablePrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs");
-
+        
         foreach (GameObject prefab in spawnablePrefabs)
         {
             GetComponent<NetworkManager>().spawnPrefabs.Add(prefab);
         }
+        
     }
 
     public override void OnClientConnect()
     {
         base.OnClientConnect();
+        
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
             NetworkClient.AddPlayer();

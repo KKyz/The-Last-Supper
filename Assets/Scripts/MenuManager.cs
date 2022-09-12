@@ -73,8 +73,8 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            OpenSubMenu(subMenu);
             gameManager.StartHost();
+            OpenSubMenu(subMenu);
         }
     }
     
@@ -86,8 +86,8 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            OpenSubMenu(subMenu);
             gameManager.StartClient();
+            OpenSubMenu(subMenu);
         }
     }
 

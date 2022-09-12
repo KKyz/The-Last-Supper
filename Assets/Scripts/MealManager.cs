@@ -61,8 +61,8 @@ public class MealManager : NetworkBehaviour
     [ClientRpc]
     private void RpcUpdatePieceCounters()
     {
-        var lastTop = Color.red;
-        var lastBottom = Color.red;
+        Color lastTop = Color.red;
+        Color lastBottom = Color.red;
         if (nPieces <= 1)
         {
             normCounter.colorGradient = new VertexGradient(lastTop, lastTop, lastBottom, lastBottom);
@@ -90,7 +90,6 @@ public class MealManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void NextCourse()
     {
-        Debug.LogWarning("Plate Added");
         //Add Authority
 
         foreach (NetworkIdentity player in stateManager.activePlayers)
@@ -103,6 +102,8 @@ public class MealManager : NetworkBehaviour
             }
         }
 
+        Debug.LogWarning("Plate Added");
+        
         if (currentPlate != null)
         {
             Destroy(currentPlate);
@@ -112,7 +113,7 @@ public class MealManager : NetworkBehaviour
         {
             currentCourses.Pop();
         }
-        
+
         currentPlate = Instantiate(currentCourses.Peek(), transform.position, Quaternion.identity);
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);

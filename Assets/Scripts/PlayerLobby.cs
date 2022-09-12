@@ -74,8 +74,8 @@ public class PlayerLobby : NetworkBehaviour
             room.localRoomPlayer = NetworkClient.localPlayer.GetComponent<PlayerLobby>();
         }
         
-        lobbyManager.startGameButton.gameObject.SetActive(room.localRoomPlayer.isLeader);
-        lobbyManager.tableSetUp.SetActive(room.localRoomPlayer.isLeader);
+        lobbyManager.startGameButton.gameObject.SetActive(isLeader);
+        lobbyManager.tableSetUp.SetActive(isLeader);
     }
 
 }
