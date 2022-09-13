@@ -6,6 +6,7 @@ using UnityEngine;
 using Mirror;
 using Telepathy;
 using TMPro;
+using Unity.Mathematics;
 using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkManager
@@ -23,10 +24,12 @@ public class GameManager : NetworkManager
     public GameObject stateManagerObj;
     private StateManager stateManager;
     private MealManager mealManager;
+    private GameObject currentRestaurant;
 
     private new void Start()
     {
         autoCreatePlayer = false;
+        currentRestaurant = null;
         fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
         GameObject stateManagerInstance = Instantiate(stateManagerObj, new Vector3(-2.8f, 3.6f, 0), Quaternion.identity);
         stateManagerInstance.name = "StateManager";
@@ -152,8 +155,7 @@ public class GameManager : NetworkManager
             string playerName = conn.identity.name;
             int playerIndex = roomPlayers.IndexOf(player);
             GameObject roomPlayer = conn.identity.gameObject;
-
-            NetworkClient.Ready();
+            
             NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
             conn.identity.gameObject.name = playerName;
@@ -176,15 +178,24 @@ public class GameManager : NetworkManager
         
         return true;
     }
+
+    private bool IsRestaurantInstantiated()
+    {
+        return currentRestaurant != null;
+    }
     
     private IEnumerator FadeToNewScene()
     {
         fade.FadeIn(1.5f);
         yield return new WaitForSeconds(1.7f);
-        ServerChangeScene(gameScene); 
+        
+        if (localRoomPlayer.isLeader)
+        {
+            ServerChangeScene(gameScene); 
+        }
 
     }
-
+    
     public void StartGame()
     {
         StartCoroutine(FadeToNewScene());
@@ -192,8 +203,13 @@ public class GameManager : NetworkManager
     
     private IEnumerator PostStartCall()
     {
-        //Delayed call to ensure players spawn first before turns or course begins
+        //Delayed call to ensure start order of Restaurant, Player, PlayerUI, StateManager, and finally MealManager
+        currentRestaurant = mealManager.restaurant.gameObject;
+        Instantiate(currentRestaurant, currentRestaurant.transform.position, quaternion.identity);
+        
+        yield return new WaitUntil(IsRestaurantInstantiated);
 
+        stateManager.transform.position = GameObject.Find("StateManagerPos").transform.position;
         ReplacePlayers();
 
         yield return new WaitUntil(HasChangedRoomToGamePlayers);

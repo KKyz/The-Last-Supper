@@ -34,6 +34,7 @@ Transform:
   - {fileID: 622297249783889974}
   - {fileID: 7838306903167751644}
   - {fileID: 7122833683507351090}
+  - {fileID: 1633770756523980418}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -49,11 +50,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54a29d4cfa8dfd74ead9262e64569a53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  courses:
-  - {fileID: 1124554345365666318, guid: 0b2dc0e859e5c54458e0d157f8b3d34f, type: 3}
+  bgmClips:
+  - {fileID: 8300000, guid: 82beaafa554a1d642bc67334ad3e4608, type: 3}
+  - {fileID: 8300000, guid: 82beaafa554a1d642bc67334ad3e4608, type: 3}
+  - {fileID: 8300000, guid: dd270f1494d8de645b3cc44afc263a1f, type: 3}
+  - {fileID: 8300000, guid: 40569c4b2abf17b4ca3ce959d628e533, type: 3}
   skyBox: {fileID: 2100000, guid: 9ce4158b25e0028469474a3c80f2667f, type: 2}
   thumbnail: {fileID: 0}
   restaurantName: Pizza Restuarant
+  menus:
+  - mealName: Standard
+    meals:
+    - {fileID: 2525988890905768603, guid: 13f317259b2cc0e41957671f9f9cf4a0, type: 3}
+    - {fileID: 2525988890905768603, guid: e3bce77c05a02af46be4c9e9eadb8f42, type: 3}
+    - {fileID: 8136041450091477235, guid: 53e8816d61c70aa4aa4bc6cedc7119c2, type: 3}
+    - {fileID: 4723392658126809247, guid: 0ab3463af263aed43a081e7d2ec4e12b, type: 3}
+  - mealName: Barbeque
+    meals:
+    - {fileID: 2525988890905768603, guid: aa0b4f322c909024ba80e1bbde86a866, type: 3}
+    - {fileID: 2525988890905768603, guid: 3bc97d6d971f1f24fa3d406e50f8014c, type: 3}
+    - {fileID: 8136041450091477235, guid: 25f7e0e2132589b49b21613589e9be14, type: 3}
+    - {fileID: 4723392658126809247, guid: 420532bd96ba682468eef4b35bd72a3c, type: 3}
 --- !u!114 &-4065937298884651616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5483,7 +5500,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -7139,7 +7156,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -7809,7 +7826,7 @@ GameObject:
   - component: {fileID: 3470818201677644736}
   m_Layer: 0
   m_Name: Player2Pos
-  m_TagString: PlayerPos
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7844,7 +7861,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 766230732023927901}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -10133,7 +10150,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -16147,7 +16164,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -22578,7 +22595,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -26121,7 +26138,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -30987,7 +31004,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -31185,7 +31202,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -31715,7 +31732,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -32255,7 +32272,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -32708,7 +32725,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -32823,7 +32840,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -39608,7 +39625,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -40055,7 +40072,7 @@ GameObject:
   - component: {fileID: 6233661103721735028}
   m_Layer: 0
   m_Name: Player1Pos
-  m_TagString: PlayerPos
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -40090,7 +40107,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3492757965581098961}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -48602,6 +48619,37 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &4119221387927436043
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1633770756523980418}
+  m_Layer: 0
+  m_Name: StateManagerPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1633770756523980418
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4119221387927436043}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 1.1238724, y: 1.074, z: -1.3829212}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4448863050659290}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4125055746476110280
 GameObject:
   m_ObjectHideFlags: 0
@@ -51235,7 +51283,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -51350,7 +51398,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -58568,7 +58616,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -59202,7 +59250,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -60951,7 +60999,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -62536,7 +62584,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -62984,7 +63032,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -65063,7 +65111,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -65178,7 +65226,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -72503,7 +72551,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -73244,7 +73292,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -75499,7 +75547,7 @@ GameObject:
   - component: {fileID: 6749883148811095633}
   m_Layer: 0
   m_Name: Player3Pos
-  m_TagString: PlayerPos
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -75534,7 +75582,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6187581717899930581}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -77137,7 +77185,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -80493,7 +80541,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -81899,7 +81947,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -83267,7 +83315,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -84663,7 +84711,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -84861,7 +84909,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -96658,7 +96706,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -99385,7 +99433,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -101131,7 +101179,7 @@ GameObject:
   - component: {fileID: 693729470259745845}
   m_Layer: 0
   m_Name: Player4Pos
-  m_TagString: PlayerPos
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -101166,7 +101214,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8338368783542563631}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -102541,7 +102589,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -106693,7 +106741,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -108459,7 +108507,7 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 0.74369144, b: 0.495283, a: 1}
-  m_Intensity: 2
+  m_Intensity: 200
   m_Range: 5
   m_SpotAngle: 75
   m_InnerSpotAngle: 7
@@ -109323,7 +109371,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -109438,7 +109486,7 @@ Light:
   m_Type: 2
   m_Shape: 0
   m_Color: {r: 1, g: 0.8122349, b: 0.6273585, a: 1}
-  m_Intensity: 3
+  m_Intensity: 400
   m_Range: 67.63
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208

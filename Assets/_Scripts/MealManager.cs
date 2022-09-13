@@ -8,14 +8,15 @@ public class MealManager : NetworkBehaviour
 {
     [SyncVar] 
     public int nPieces;
-    public MealContainer menu;
-    public GameObject[] restaurants;
+    public RestaurantContents restaurant;
+    public int menuIndex = 0;
     
     private TextMeshProUGUI normCounter;
     private StateManager stateManager;
     private MusicManager musicManager;
     private Color normTop, normBottom;
-    private readonly Stack<GameObject> currentCourses = new();
+    private readonly Stack<GameObject> courseStack = new();
+    private readonly Stack<AudioClip> bgmStack = new();
     private GameObject currentPlate;
     private bool firstPlate;
 
@@ -27,14 +28,31 @@ public class MealManager : NetworkBehaviour
         normTop = normCounter.colorGradient.topLeft;
         normBottom = normCounter.colorGradient.bottomRight;
 
-        foreach (GameObject course in menu.meals)
-        {
-            currentCourses.Push(course);
-        }
-
+        PopulateCourses(menuIndex);
         firstPlate = true;
         
         NextCourse();
+    }
+
+    private void PopulateCourses(int i)
+    {
+        courseStack.Clear();
+        bgmStack.Clear();
+        
+        GameObject[] menu = restaurant.GetCourses(i);
+        //Add courses from the selected restaurant into course stack
+        foreach (GameObject course in menu)
+        {
+            courseStack.Push(course);
+        }
+
+        AudioClip[] Bgm = restaurant.bgmClips;
+        //Add music from selected restaurant into music
+        foreach (AudioClip track in Bgm)
+        {
+            bgmStack.Push(track);
+        }
+
     }
 
     private bool PlateChanged()
@@ -81,8 +99,7 @@ public class MealManager : NetworkBehaviour
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.ShowChalk();
         
-        AudioClip courseBGM = currentPlate.GetComponent<SpawnPiece>().courseBGM;
-        musicManager.PlayBGM(courseBGM);
+        musicManager.PlayBGM(bgmStack.Peek());
         
         GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook();
     }
@@ -109,18 +126,19 @@ public class MealManager : NetworkBehaviour
             Destroy(currentPlate);
         }
 
-        if (currentCourses.Count > 1 && !firstPlate)
+        if (courseStack.Count > 1 && !firstPlate)
         {
-            currentCourses.Pop();
+            courseStack.Pop();
+            bgmStack.Pop();
         }
 
-        currentPlate = Instantiate(currentCourses.Peek(), transform.position, Quaternion.identity);
+        currentPlate = Instantiate(courseStack.Peek(), transform.position, Quaternion.identity);
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);
         currentPlate.transform.SetParent(transform, true);
         //RpcUpdatePlayerEnd();
         /* This function doesn't run on clients*/
-        StartCoroutine(CheckNPieces());
-        currentPlate.GetComponent<SpawnPiece>().RpcUpdatePieceParent();
+        //StartCoroutine(CheckNPieces());
+        //currentPlate.GetComponent<SpawnPiece>().RpcUpdatePieceParent();
     }
 }

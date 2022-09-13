@@ -69,6 +69,9 @@ public class PlayerLobby : NetworkBehaviour
     [TargetRpc]
     public void TargetFindLocalPlayer(NetworkConnection conn)
     {
+        lobbyManager.startGameButton.gameObject.SetActive(false);
+        lobbyManager.tableSetUp.SetActive(false);
+        
         if (room.localRoomPlayer == null)
         {
             room.localRoomPlayer = NetworkClient.localPlayer.GetComponent<PlayerLobby>();

@@ -6,35 +6,25 @@ using UnityEngine.UI;
 public class SetCourse : MonoBehaviour
 {
     private Dropdown restaurantDropdown, menuDropdown;
-    private MealManager mealManager;
+    private List<string> restaurantNames, menuNames;
+    private MealManager mealManager;//
 
-    [HideInInspector] public GameObject selectedRestaurant, selectedMenu;
-    public List<GameObject> restaurants = new();
-    public List<GameObject> menus = new();
-
-    void Start()
+    public void Start()
     {
-        restaurantDropdown = transform.Find("Restaurants").GetComponent<Dropdown>();
-        menuDropdown = transform.Find("Courses").GetComponent<Dropdown>();
         mealManager = GameObject.Find("StateManager").GetComponent<MealManager>();
-        restaurantDropdown.ClearOptions();
-        menuDropdown.ClearOptions();
-
-
-        foreach (GameObject restaurant in mealManager.restaurants)
-        {
-            restaurants.Add(restaurant);
-        }
+        restaurantDropdown = transform.Find("Restaurants").GetComponent<Dropdown>();
+        menuDropdown = transform.Find("Menus").GetComponent<Dropdown>();
     }
 
-    public void AddRestaurantNames()
+    public void UpdateDropdowns()
     {
-        List<GameObject> restaurants = new();
-        foreach (GameObject restaurant in mealManager.restaurants)
-        {
-            restaurants.Add(restaurant);
-        }
+        restaurantNames.Clear();
+        menuNames.Clear();
+        restaurantDropdown.options.Clear();
+        menuDropdown.options.Clear();
+        
+        //Populate restaurant dropdown with elements from MealManager's list of restaurants
 
-        //restaurantDropdown.AddOptions(restaurants);
+        //Populate restaurant dropdown with elements from MealManager's list of restaurants
     }
 }
