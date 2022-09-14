@@ -24,7 +24,7 @@ public class StateManager : NetworkBehaviour
     [ServerCallback]
     public void OnStartGame()
     {
-        Debug.LogWarning("Started Post Start");
+        gameCanEnd = false;
         currentPlayer = null;
         turn = 0;
         currentPlayer = activePlayers[turn].gameObject;
@@ -65,7 +65,7 @@ public class StateManager : NetworkBehaviour
         
         netIdentity.RemoveClientAuthority();
         currentPlayer = activePlayers[turn].gameObject;
-        netIdentity.AssignClientAuthority(currentPlayer.GetComponent<NetworkConnection>());
+        netIdentity.AssignClientAuthority(currentPlayer.GetComponent<NetworkConnectionToClient>());
 
         playerScript = currentPlayer.GetComponent<PlayerManager>();
     }

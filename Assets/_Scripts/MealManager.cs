@@ -6,11 +6,10 @@ using TMPro;
 
 public class MealManager : NetworkBehaviour
 {
-    [SyncVar] 
-    public int nPieces;
+    [SyncVar] public int nPieces;
     public RestaurantContents restaurant;
     public int menuIndex = 0;
-    
+
     private TextMeshProUGUI normCounter;
     private StateManager stateManager;
     private MusicManager musicManager;
@@ -30,15 +29,13 @@ public class MealManager : NetworkBehaviour
 
         PopulateCourses(menuIndex);
         firstPlate = true;
-        
-        NextCourse();
     }
 
     private void PopulateCourses(int i)
     {
         courseStack.Clear();
         bgmStack.Clear();
-        
+
         GameObject[] menu = restaurant.GetCourses(i);
         //Add courses from the selected restaurant into course stack
         foreach (GameObject course in menu)
@@ -53,6 +50,11 @@ public class MealManager : NetworkBehaviour
             bgmStack.Push(track);
         }
 
+    }
+
+    public bool PopulatedCourseStack()
+    {
+        return courseStack.Count == 4;
     }
 
     private bool PlateChanged()
@@ -70,9 +72,11 @@ public class MealManager : NetworkBehaviour
         foreach (Transform piece in currentPlate.transform)
         {
             if (piece.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Normal")
-            {nPieces += 1;}
+            {
+                nPieces += 1;
+            }
         }
-        
+
         RpcUpdatePieceCounters();
     }
 
@@ -89,22 +93,22 @@ public class MealManager : NetworkBehaviour
         {
             normCounter.colorGradient = new VertexGradient(normTop, normTop, normBottom, normBottom);
         }
-        
+
         normCounter.text = "# Of Empty Pieces Left: " + nPieces;
     }
 
     [ClientRpc]
-    public void RpcUpdatePlayerEnd()
+    private void RpcUpdatePlayerEnd()
     {
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.ShowChalk();
-        
+
         musicManager.PlayBGM(bgmStack.Peek());
-        
+
         GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook();
     }
 
-    [Command(requiresAuthority = false)]
+    [ServerCallback]
     public void NextCourse()
     {
         //Add Authority
@@ -119,26 +123,23 @@ public class MealManager : NetworkBehaviour
             }
         }
 
-        Debug.LogWarning("Plate Added");
-        
         if (currentPlate != null)
         {
             Destroy(currentPlate);
         }
-
+        
         if (courseStack.Count > 1 && !firstPlate)
         {
             courseStack.Pop();
             bgmStack.Pop();
         }
-
+        
         currentPlate = Instantiate(courseStack.Peek(), transform.position, Quaternion.identity);
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);
-        currentPlate.transform.SetParent(transform, true);
-        //RpcUpdatePlayerEnd();
+        RpcUpdatePlayerEnd();
         /* This function doesn't run on clients*/
         //StartCoroutine(CheckNPieces());
-        //currentPlate.GetComponent<SpawnPiece>().RpcUpdatePieceParent();
+        currentPlate.GetComponent<SpawnPiece>().RpcUpdatePieceParent();
     }
 }

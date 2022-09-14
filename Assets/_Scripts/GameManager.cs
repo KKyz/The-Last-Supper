@@ -7,6 +7,7 @@ using Mirror;
 using Telepathy;
 using TMPro;
 using Unity.Mathematics;
+using UnityEngine.Networking.Types;
 using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkManager
@@ -19,11 +20,12 @@ public class GameManager : NetworkManager
     public PlayerLobby localRoomPlayer;
     private Transform playerList;
     private FadeInOut fade;
+    private GameObject stateManagerInstance;
 
     [Header("Game")] 
     public GameObject stateManagerObj;
     private StateManager stateManager;
-    private MealManager mealManager;
+    public MealManager mealManager;
     private GameObject currentRestaurant;
 
     private new void Start()
@@ -31,15 +33,16 @@ public class GameManager : NetworkManager
         autoCreatePlayer = false;
         currentRestaurant = null;
         fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
-        GameObject stateManagerInstance = Instantiate(stateManagerObj, new Vector3(-2.8f, 3.6f, 0), Quaternion.identity);
+        
+        stateManagerInstance = Instantiate(stateManagerObj, new Vector3(-2.8f, 3.6f, 0), Quaternion.identity);
         stateManagerInstance.name = "StateManager";
         stateManager = stateManagerInstance.GetComponent<StateManager>();
         mealManager = stateManagerInstance.GetComponent<MealManager>();
         stateManager.gameCanEnd = false;
-        DontDestroyOnLoad(stateManager);
+        DontDestroyOnLoad(stateManagerInstance);
     }
 
-    public override void OnServerConnect(NetworkConnection conn)
+    public override void OnServerConnect(NetworkConnectionToClient conn)
     {
         //Adds new player to players list when joined
 
@@ -49,7 +52,7 @@ public class GameManager : NetworkManager
         }
     }
     
-    public override void OnServerAddPlayer(NetworkConnection conn)
+    public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         //If in the menus, the lobby player is instantiated and manually added
         if (SceneManager.GetActiveScene().name == "StartMenu")
@@ -69,14 +72,15 @@ public class GameManager : NetworkManager
     public override void OnStartHost()
     {
         //Add all server spawnable objects
+        spawnPrefabs.Clear();
         spawnPrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs").ToList();
-        
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
         //Add all server spawnable objects
+        spawnPrefabs.Clear();
         GameObject[] spawnablePrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs");
         
         foreach (GameObject prefab in spawnablePrefabs)
@@ -96,7 +100,7 @@ public class GameManager : NetworkManager
         }
     }
 
-    public override void OnServerDisconnect(NetworkConnection conn)
+    public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         // Remove connection from roomPlayers, activePlayers
         if (conn.identity != null)
@@ -142,12 +146,10 @@ public class GameManager : NetworkManager
     {
         //If all players in lobby have isReady = true, then return true
         roomPlayers.Clear();
-        stateManager.activePlayers.Clear();
     }
 
     private void ReplacePlayers()
     {
-        Debug.LogWarning("Replace Players: " + roomPlayers.Count);
         //Void that changes connection's object from room player to game player
         foreach (PlayerLobby player in roomPlayers)
         {
@@ -201,12 +203,11 @@ public class GameManager : NetworkManager
         StartCoroutine(FadeToNewScene());
     }
     
+
     private IEnumerator PostStartCall()
     {
         //Delayed call to ensure start order of Restaurant, Player, PlayerUI, StateManager, and finally MealManager
-        currentRestaurant = mealManager.restaurant.gameObject;
-        Instantiate(currentRestaurant, currentRestaurant.transform.position, quaternion.identity);
-        
+
         yield return new WaitUntil(IsRestaurantInstantiated);
 
         stateManager.transform.position = GameObject.Find("StateManagerPos").transform.position;
@@ -214,16 +215,31 @@ public class GameManager : NetworkManager
 
         yield return new WaitUntil(HasChangedRoomToGamePlayers);
         
+        stateManager.OnStartGame();
+        
         if (stateManager.activePlayers.Count >= minPlayers)
         {
             stateManager.gameCanEnd = true;
         }
-        
-        stateManager.OnStartGame();
 
         yield return new WaitUntil(stateManager.CurrentPlayerAssigned);
         
         mealManager.OnStartGame();
+
+        yield return new WaitUntil(mealManager.PopulatedCourseStack);
+        
+        mealManager.NextCourse();
+    }
+
+    public override void OnServerChangeScene(string newSceneName)
+    {
+        NetworkServer.Spawn(stateManagerInstance);
+    }
+
+    public override void OnClientSceneChanged()
+    {
+        currentRestaurant = mealManager.restaurant.gameObject;
+        Instantiate(currentRestaurant, currentRestaurant.transform.position, quaternion.identity);
     }
 
     public override void OnServerSceneChanged(string newSceneName)

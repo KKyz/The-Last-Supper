@@ -68,7 +68,6 @@ public class SpawnPiece : NetworkBehaviour
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
             newPiece.GetComponent<FoodPiece>().SetType(0, null);
-            newPiece.transform.SetParent(transform, true);
         }
 
         for (int i = psnPiece; i > 0; i--)
@@ -80,7 +79,6 @@ public class SpawnPiece : NetworkBehaviour
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
             newPiece.GetComponent<FoodPiece>().SetType(1, null);
-            newPiece.transform.SetParent(transform, true);
         }
 
         for (int i = scrollPiece - 1; i >= 0; i--)
@@ -92,7 +90,6 @@ public class SpawnPiece : NetworkBehaviour
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
             newPiece.GetComponent<FoodPiece>().SetType(2, scrollProbability);
-            newPiece.transform.SetParent(transform, true);
         }
         
         RpcUpdatePieceParent();
@@ -105,8 +102,6 @@ public class SpawnPiece : NetworkBehaviour
         {
             obj.transform.SetParent(transform, true);
         }
-        
-        transform.SetParent(GameObject.Find("StateManager").transform, true);
     }
 
     [Command(requiresAuthority = false)]

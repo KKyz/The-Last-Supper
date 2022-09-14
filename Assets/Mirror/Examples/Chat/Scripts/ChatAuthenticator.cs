@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Mirror;
 using UnityEngine;
 
 /*
@@ -62,7 +61,7 @@ namespace Mirror.Examples.Chat
         /// Called on server from OnServerAuthenticateInternal when a client needs to authenticate
         /// </summary>
         /// <param name="conn">Connection to client.</param>
-        public override void OnServerAuthenticate(NetworkConnection conn)
+        public override void OnServerAuthenticate(NetworkConnectionToClient conn)
         {
             // do nothing...wait for AuthRequestMessage from client
         }
@@ -72,7 +71,7 @@ namespace Mirror.Examples.Chat
         /// </summary>
         /// <param name="conn">Connection to client.</param>
         /// <param name="msg">The message payload</param>
-        public void OnAuthRequestMessage(NetworkConnection conn, AuthRequestMessage msg)
+        public void OnAuthRequestMessage(NetworkConnectionToClient conn, AuthRequestMessage msg)
         {
             Debug.Log($"Authentication Request: {msg.authUsername}");
 
@@ -122,7 +121,7 @@ namespace Mirror.Examples.Chat
             }
         }
 
-        IEnumerator DelayedDisconnect(NetworkConnection conn, float waitTime)
+        IEnumerator DelayedDisconnect(NetworkConnectionToClient conn, float waitTime)
         {
             yield return new WaitForSeconds(waitTime);
 
@@ -139,7 +138,7 @@ namespace Mirror.Examples.Chat
 
         #region Client
 
-        // Called by UI element Username.OnValueChanged
+        // Called by UI element UsernameInput.OnValueChanged
         public void SetPlayername(string username)
         {
             playerName = username;
@@ -154,7 +153,7 @@ namespace Mirror.Examples.Chat
         public override void OnStartClient()
         {
             // register a handler for the authentication response we expect from server
-            NetworkClient.RegisterHandler<AuthResponseMessage>((Action<AuthResponseMessage>)OnAuthResponseMessage, false);
+            NetworkClient.RegisterHandler<AuthResponseMessage>(OnAuthResponseMessage, false);
         }
 
         /// <summary>

@@ -161,7 +161,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
     }
     
-    [Command(requiresAuthority = false)]
+    [Command]
     public void CmdQuake()
     {
         RpcQuakeAnim();
@@ -562,8 +562,8 @@ public class PlayerFunctions : NetworkBehaviour
         StartCoroutine(buttonToggle.ButtonDisable(fakeConfirm.transform));
     }
     
-    [Command(requiresAuthority = false)]
-    private void DestroyPiece(GameObject piece)
+    [Command]
+    private void CmdDestroyPiece(GameObject piece)
     {
         //Add Authority to this function
         NetworkServer.Destroy(piece);
@@ -602,6 +602,18 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.GetComponent<SpawnMenu>().SlideOutMenu();
     }
 
+    [Command]
+    private void CmdRemoveNPiece()
+    {
+        mealManager.nPieces -= 1;
+    }
+    
+    [Command]
+    public void CmdNextCourse()
+    {
+        mealManager.NextCourse();
+    }
+
     void Update()
     {
         if (countTime && player != null)
@@ -622,7 +634,7 @@ public class PlayerFunctions : NetworkBehaviour
                     player.hasRecommended = false;
                     player.hasTalked = false;
                     playerAnim.SetTrigger("ActiveTr");
-                    netIdentity.AssignClientAuthority(player.connectionToServer);
+                    netIdentity.AssignClientAuthority(player.connectionToClient);
                 }
 
                 if (!fade.gameObject.activeInHierarchy)
@@ -679,7 +691,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                 if (Input.GetKeyDown("c"))
                 {
-                    mealManager.NextCourse();
+                    CmdNextCourse();
                 }
 
                 if (player.orderVictim && openPopup == null)
@@ -727,7 +739,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                                 else if (pieceType == "Normal")
                                 {
-                                    mealManager.nPieces -= 1;
+                                    CmdRemoveNPiece();
                                 }
 
                                 else
@@ -738,7 +750,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                                 if (mealManager.nPieces <= 0)
                                 {
-                                    mealManager.NextCourse();
+                                    CmdNextCourse();
                                 }
 
                                 if (player.nPiecesEaten >= 10)
@@ -748,7 +760,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 }
 
                                 playerAnim.SetTrigger("EatTr");
-                                DestroyPiece(piece.transform.gameObject);
+                                CmdDestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;
                                 currentState = "Idle";
                                 ResetActions(false);

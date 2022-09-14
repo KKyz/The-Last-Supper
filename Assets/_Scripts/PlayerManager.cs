@@ -38,7 +38,7 @@ public class PlayerManager : NetworkBehaviour
     private StateManager stateManager;
 
     public void OnStartGame()
-    {
+    {//
         
         health = 2;
         scrollCount = 0;
