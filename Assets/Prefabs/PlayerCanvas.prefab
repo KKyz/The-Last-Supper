@@ -3777,6 +3777,7 @@ MonoBehaviour:
   mealManager: {fileID: 0}
   musicManager: {fileID: 0}
   infoText: {fileID: 0}
+  forcePlayerButtonsOff: 0
   drinkMenu: {fileID: 1726764216373698842, guid: 822189effad6ad549b6764d13d32f972, type: 3}
   talkMenu: {fileID: 1772595890193486071, guid: bf33bf646d87f414f99fdce0c92ebf8e, type: 3}
   drinkPlate: {fileID: 5927585440408363999, guid: 4d6504b2cefc4e248be206332a61b841, type: 3}
@@ -3795,6 +3796,8 @@ MonoBehaviour:
   poisonSfx: {fileID: 8300000, guid: 23e398fae579cb34ab5e152d8281027c, type: 3}
   healthSfx: {fileID: 8300000, guid: 382e8362c5181a948ac081ff7d40e817, type: 3}
   popupSfx: {fileID: 8300000, guid: 8570d07a76adf6f4b9a34d6af623cc20, type: 3}
+  dropdownUp: {fileID: 21300000, guid: b87bac7943350e6489c6fb09c7a5a5f3, type: 3}
+  dropdownDown: {fileID: 21300000, guid: bb5e1f88b24588d4285e17f7b5708646, type: 3}
 --- !u!114 &8698564207709150152
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6345,7 +6348,7 @@ MonoBehaviour:
     m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
+  m_Transition: 0
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
@@ -6355,9 +6358,9 @@ MonoBehaviour:
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
+    m_HighlightedSprite: {fileID: 21300000, guid: bb5e1f88b24588d4285e17f7b5708646, type: 3}
+    m_PressedSprite: {fileID: 21300000, guid: bb5e1f88b24588d4285e17f7b5708646, type: 3}
+    m_SelectedSprite: {fileID: 21300000, guid: b87bac7943350e6489c6fb09c7a5a5f3, type: 3}
     m_DisabledSprite: {fileID: 0}
   m_AnimationTriggers:
     m_NormalTrigger: Normal

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using TMPro;
+using UnityEngine.UIElements;
 
 public class MealManager : NetworkBehaviour
 {
     [SyncVar] public int nPieces;
     public RestaurantContents restaurant;
+    public GameObject platterTop;
     public int menuIndex = 0;
 
     private TextMeshProUGUI normCounter;
@@ -16,7 +18,7 @@ public class MealManager : NetworkBehaviour
     private Color normTop, normBottom;
     private readonly Stack<GameObject> courseStack = new();
     private readonly Stack<AudioClip> bgmStack = new();
-    private GameObject currentPlate;
+    private GameObject currentPlate, platterInstance;
     private bool firstPlate;
 
     public void OnStartGame()
@@ -57,16 +59,16 @@ public class MealManager : NetworkBehaviour
         return courseStack.Count == 4;
     }
 
-    private bool PlateChanged()
+    [Command(requiresAuthority = false)]
+    public void CmdCheckNPieces()
     {
-        return currentPlate != null;
+        StartCoroutine(CheckNPieces());
     }
 
-    public IEnumerator CheckNPieces()
+    private IEnumerator CheckNPieces()
     {
         //Checks # of normal pieces (used to swap plates)
-
-        yield return new WaitUntil(PlateChanged);
+        yield return 0;
         nPieces = 0;
 
         foreach (Transform piece in currentPlate.transform)
@@ -106,13 +108,25 @@ public class MealManager : NetworkBehaviour
         musicManager.PlayBGM(bgmStack.Peek());
 
         GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook();
+        playerCanvas.forcePlayerButtonsOff = false;
+
+        if (isServer)
+        {
+            CmdCheckNPieces();
+        }
     }
 
-    [ServerCallback]
-    public void NextCourse()
+    private IEnumerator CourseTransitionAnim()
     {
-        //Add Authority
+        Vector3 managerPos = transform.position;
+        Vector3 platterStartPos = new Vector3(managerPos.x, managerPos.y + 50f, managerPos.z);
+        platterInstance = Instantiate(platterTop, platterStartPos, Quaternion.identity);
+        NetworkServer.Spawn(platterInstance);
 
+        LeanTween.moveY(platterInstance, managerPos.y, 1.8f).setEaseInSine();
+
+        yield return new WaitForSeconds(2.5f);
+        
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
             PlayerManager playerScript = player.GetComponent<PlayerManager>();
@@ -125,7 +139,12 @@ public class MealManager : NetworkBehaviour
 
         if (currentPlate != null)
         {
-            Destroy(currentPlate);
+            foreach (GameObject obj in GameObject.FindGameObjectsWithTag("FoodPiece"))
+            {
+                NetworkServer.Destroy(obj);
+            }
+            
+            NetworkServer.Destroy(currentPlate);
         }
         
         if (courseStack.Count > 1 && !firstPlate)
@@ -137,9 +156,19 @@ public class MealManager : NetworkBehaviour
         currentPlate = Instantiate(courseStack.Peek(), transform.position, Quaternion.identity);
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);
+        
+        yield return 0;
         RpcUpdatePlayerEnd();
-        /* This function doesn't run on clients*/
-        //StartCoroutine(CheckNPieces());
-        currentPlate.GetComponent<SpawnPiece>().RpcUpdatePieceParent();
+
+        LeanTween.moveY(platterInstance, platterStartPos.y, 1.8f).setEaseInSine().setLoopPingPong();
+        currentPlate.transform.position = managerPos;
+        yield return new WaitForSeconds(1f);
+        NetworkServer.Destroy(platterInstance);
+    }
+
+    [ServerCallback]
+    public void NextCourse()
+    {
+        StartCoroutine(CourseTransitionAnim());
     }
 }

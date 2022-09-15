@@ -55,7 +55,7 @@ public class SpawnPiece : NetworkBehaviour
     private void InitPlate(int normalPiece, int psnPiece, int scrollPiece)
     {
         //In mode 0; Until i = normalPiece, keep adding pieces with "normal tag"
-        //In mode 1; Until i = psnPiece, keep adding pieces with "normal tag"
+        //In mode 1; Until i = psnPiece, keep adding pieces with "poison tag"
         //In mode 2; Until i = scrollPiece keep adding scroll pieces
         //Code will check what the percentage of scroll pieces should be
         
@@ -96,7 +96,7 @@ public class SpawnPiece : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcUpdatePieceParent()
+    private void RpcUpdatePieceParent()
     {
         foreach (GameObject obj in GameObject.FindGameObjectsWithTag("FoodPiece"))
         {

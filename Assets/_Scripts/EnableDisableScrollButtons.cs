@@ -18,7 +18,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     public int menuMode;
     public float disableTime, enableTime;
 
-    void Start()
+    public void OnStartGame()
     {
         playerFunctions = GetComponent<PlayerFunctions>();
         sfxPlayer = GetComponent<AudioSource>();
@@ -73,7 +73,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                     //Sets Fade-In
                     CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
                     LeanTween.alphaCanvas(buttonCanvas, 1f, 0.6f);
-                    sfxPlayer.PlayOneShot(buttonSfx);//
+                    sfxPlayer.PlayOneShot(buttonSfx);
 
                     yield return new WaitForSeconds(enableTime);
                     buttonChild.GetComponent<Button>().interactable = true;
@@ -210,7 +210,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
-        Debug.Log("button mode is: " + menuMode);
 
         CheckConditions();
 
@@ -266,6 +265,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             StartCoroutine(ButtonDisable(actionButtons));
 
             StartCoroutine(ButtonDisable(cancelButton));
+            
+            playerFunctions.infoText.GetComponent<InfoText>().CloseInfoText();
         }
 
         //Disables every button except skip (used for DrinkMenu)

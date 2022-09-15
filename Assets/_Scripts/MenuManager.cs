@@ -91,6 +91,12 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    private IEnumerator SetActiveOff(GameObject menuObj)
+    {
+        yield return new WaitForSeconds(1f);
+        menuObj.SetActive(false);
+    }
+
     public void CloseSubMenu(Transform subMenu)
     {
         blur.SetActive(false);
@@ -98,6 +104,7 @@ public class MenuManager : MonoBehaviour
         foreach (Transform menuObj in subMenu)
         {
             menuObj.GetComponent<MenuAnimations>().ExitAnim();
+            StartCoroutine(SetActiveOff(menuObj.gameObject));
         }
     }
 

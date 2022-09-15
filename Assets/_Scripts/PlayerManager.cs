@@ -35,10 +35,9 @@ public class PlayerManager : NetworkBehaviour
     private GameObject playerCam;
     private Transform playerModel;
     private PlayerFunctions playerCanvas;
-    private StateManager stateManager;
 
     public void OnStartGame()
-    {//
+    {
         
         health = 2;
         scrollCount = 0;
@@ -61,8 +60,6 @@ public class PlayerManager : NetworkBehaviour
         
         playerModel = transform.Find("PlayerModel");
         playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
-        stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
-        stateManager.spawnedPlayers.Add(GetComponent<NetworkIdentity>().netId, this);
         playerCam = transform.Find("Camera").gameObject;
         playerCam.SetActive(false);
         

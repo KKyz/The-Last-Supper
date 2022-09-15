@@ -19,8 +19,7 @@ public class StateManager : NetworkBehaviour
     public int turn;
     
     public readonly SyncList<NetworkIdentity> activePlayers = new();
-    public readonly Dictionary<uint, PlayerManager> spawnedPlayers = new();
-
+    
     [ServerCallback]
     public void OnStartGame()
     {
@@ -63,9 +62,7 @@ public class StateManager : NetworkBehaviour
             }
         }
         
-        netIdentity.RemoveClientAuthority();
         currentPlayer = activePlayers[turn].gameObject;
-        netIdentity.AssignClientAuthority(currentPlayer.GetComponent<NetworkConnectionToClient>());
 
         playerScript = currentPlayer.GetComponent<PlayerManager>();
     }
@@ -74,23 +71,12 @@ public class StateManager : NetworkBehaviour
     public void CmdNextEncourage()
     {
         //Function called by PlayerFunctions to trigger encourage of next player
-        //Add Authority
         if (turn < activePlayers.Count - 1)
         {activePlayers[turn + 1].gameObject.GetComponent<PlayerManager>().isEncouraged = true;}
         else
         {activePlayers[0].GetComponent<PlayerManager>().isEncouraged = true;}
     }
 
-    [Command(requiresAuthority = false)]
-    public void CmdNextEject()
-    {
-        //Add Authority
-        if (turn < activePlayers.Count - 1)
-        {activePlayers[turn + 1].gameObject.GetComponent<PlayerManager>().Eject();}
-        else
-        {activePlayers[0].gameObject.GetComponent<PlayerManager>().Eject();}
-    }
-    
     [Command]
     public void CmdSyncOrder(bool[] psnArray, PlayerManager victim)
     {

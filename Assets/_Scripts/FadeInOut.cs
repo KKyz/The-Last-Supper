@@ -9,7 +9,7 @@ public class FadeInOut : MonoBehaviour
     {
         canvasGroup = GetComponent<CanvasGroup>();
     }
-
+    
     public void FadeOut(float time)
     {
         gameObject.SetActive(true);
@@ -18,7 +18,7 @@ public class FadeInOut : MonoBehaviour
         StartCoroutine(DisableFade(time));
     }
 
-    public void FadeIn(float time)//
+    public void FadeIn(float time)
     {
         gameObject.SetActive(true);
         canvasGroup.alpha = 0f;

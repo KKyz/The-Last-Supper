@@ -157,7 +157,8 @@ public class GameManager : NetworkManager
             string playerName = conn.identity.name;
             int playerIndex = roomPlayers.IndexOf(player);
             GameObject roomPlayer = conn.identity.gameObject;
-            
+
+            NetworkClient.Ready();
             NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
             conn.identity.gameObject.name = playerName;
@@ -189,7 +190,7 @@ public class GameManager : NetworkManager
     private IEnumerator FadeToNewScene()
     {
         fade.FadeIn(1.5f);
-        yield return new WaitForSeconds(1.7f);
+        yield return new WaitForSeconds(1.8f);
         
         if (localRoomPlayer.isLeader)
         {

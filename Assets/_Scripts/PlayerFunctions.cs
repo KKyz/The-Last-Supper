@@ -25,11 +25,15 @@ public class PlayerFunctions : NetworkBehaviour
     
     [HideInInspector]
     public TextMeshProUGUI infoText;
+
+    [HideInInspector] 
+    public bool forcePlayerButtonsOff;
     
     public GameObject drinkMenu, talkMenu, drinkPlate, chalkBoard, recommendFlag, typeFlag, fakeFlag, swapFlag, receipt, vomitSplash, healthSplash, smokeSplash, scrollInfo;
     public string currentState;
     public bool countTime;
     public AudioClip poisonSfx, healthSfx, popupSfx;
+    public Sprite dropdownUp, dropdownDown;
 
     private EnableDisableScrollButtons buttonToggle;
     private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
@@ -57,8 +61,9 @@ public class PlayerFunctions : NetworkBehaviour
         fakeConfirm = transform.Find("FakeConfirm").gameObject;
         fade = transform.Find("Fade").GetComponent<FadeInOut>();
         infoText = transform.Find("Info").GetComponent<TextMeshProUGUI>();
-
+        
         currentState = "Idle";
+        forcePlayerButtonsOff = false;
         player = null;
         openPopup = null;
         fakeTarget = null;
@@ -88,6 +93,7 @@ public class PlayerFunctions : NetworkBehaviour
         
         countTime = true;
         playerScrolls.ResetScrollAmount();
+        buttonToggle.OnStartGame();
     }
 
     [Client]
@@ -246,7 +252,7 @@ public class PlayerFunctions : NetworkBehaviour
         playerAnim.SetTrigger("DecoyTr");
         if (fakeTarget.transform.parent.GetComponent<FoodPiece>().type == "Normal")
         {
-            StartCoroutine(mealManager.CheckNPieces());
+            mealManager.CmdCheckNPieces();
         }
         
         fakeTarget.transform.parent.GetComponent<FoodPiece>().FakePsn();
@@ -281,9 +287,9 @@ public class PlayerFunctions : NetworkBehaviour
     public void ConfirmSwap()
     {
         playerAnim.SetTrigger("SwapTr");
-        uint playerID = player.transform.GetComponent<NetworkIdentity>().netId;
+        NetworkIdentity localPlayer = player.transform.GetComponent<NetworkIdentity>();
         Transform[] swapArray = {swapTargets[0], swapTargets[1]};
-        CmdSyncSwap(swapTargets[0].GetComponent<FoodPiece>(), swapTargets[1].GetComponent<FoodPiece>(), playerID, swapArray);
+        CmdSyncSwap(swapTargets[0].GetComponent<FoodPiece>(), swapTargets[1].GetComponent<FoodPiece>(), localPlayer, swapArray);
         
         foreach (Transform piece in swapTargets)
         {
@@ -302,12 +308,11 @@ public class PlayerFunctions : NetworkBehaviour
         ResetActions(true);
     }
 
-    [Command(requiresAuthority = false)]
-    public void CmdSyncSwap(FoodPiece target1, FoodPiece target2, uint playerID, Transform[] targets)
+    [Command]
+    public void CmdSyncSwap(FoodPiece target1, FoodPiece target2, NetworkIdentity playerID, Transform[] targets)
     {
-        //Add Authority
         (target1.type, target2.type) = (target2.type, target1.type);
-        NetworkConnection conn = stateManager.spawnedPlayers[playerID].GetComponent<NetworkIdentity>().connectionToClient;
+        NetworkConnection conn = playerID.connectionToClient;
         TargetUpdateFlag(conn, targets);
     }
     
@@ -337,12 +342,18 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ToggleChatPanel()
     {
+        Image dropdownArrow = transform.Find("ChatLog").Find("DropdownArrow").GetComponent<Image>();
+        
+        if (dropdownArrow.sprite == dropdownDown)
+        {
+            dropdownArrow.sprite = dropdownUp;
+        }
+        else
+        {
+            dropdownArrow.sprite = dropdownDown;
+        }
+        
         chatPanel.SetActive(!chatPanel.activeSelf);
-    }
-    [Client]
-    private void Eject()
-    {
-        stateManager.CmdNextEject();
     }
     
     [Client]
@@ -397,7 +408,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void SpawnTalkMenu()
     {
-        openPopup = Instantiate(talkMenu, new Vector3(0f, 0f, 0f), quaternion.identity);
+        openPopup = Instantiate(talkMenu, new Vector3(0f, 200f, 0f), quaternion.identity);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -417,7 +428,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ShowScrollInfo(string pieceType)
     {
-        openPopup = Instantiate(scrollInfo, new Vector3(0f, 0f, 0f), quaternion.identity);
+        openPopup = Instantiate(scrollInfo, new Vector3(0f, 200f, 0f), quaternion.identity);
 
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         uiAudio.PlayOneShot(popupSfx);
@@ -464,8 +475,7 @@ public class PlayerFunctions : NetworkBehaviour
         StartCoroutine(musicManager.PlayResultBGM(true));
         PlayerPrefs.SetInt("gamesWon", PlayerPrefs.GetInt("gamesWon", 0) + 1);
     }
-
-    /*This function doesn't work as clientRpc*/
+    
 
     public void ShowChalk()
     {
@@ -542,7 +552,7 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (openPopup == null)
         {
-            if (stateManager.currentPlayer == player.gameObject)
+            if (stateManager.currentPlayer == player.gameObject && !forcePlayerButtonsOff)
             {
                 buttonToggle.ToggleButtons(2);
                 playerAnim.SetTrigger("ActiveTr");
@@ -565,9 +575,8 @@ public class PlayerFunctions : NetworkBehaviour
     [Command]
     private void CmdDestroyPiece(GameObject piece)
     {
-        //Add Authority to this function
         NetworkServer.Destroy(piece);
-        StartCoroutine(mealManager.CheckNPieces());
+        mealManager.CmdCheckNPieces();
     }
     
     public IEnumerator DespawnBillboard(GameObject billboard)
@@ -609,9 +618,16 @@ public class PlayerFunctions : NetworkBehaviour
     }
     
     [Command]
-    public void CmdNextCourse()
+    private void CmdNextCourse()
     {
         mealManager.NextCourse();
+    }
+
+    [ClientRpc]
+    private void RpcForceButtonsOff()
+    {
+        forcePlayerButtonsOff = true;
+        buttonToggle.ToggleButtons(6);
     }
 
     void Update()
@@ -635,9 +651,10 @@ public class PlayerFunctions : NetworkBehaviour
                     player.hasTalked = false;
                     playerAnim.SetTrigger("ActiveTr");
                     netIdentity.AssignClientAuthority(player.connectionToClient);
+                    stateManager.netIdentity.AssignClientAuthority(player.connectionToClient);
                 }
 
-                if (!fade.gameObject.activeInHierarchy)
+                if (!fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff)
                 {
                     buttonToggle.ToggleButtons(2);
                 }
@@ -648,7 +665,9 @@ public class PlayerFunctions : NetworkBehaviour
             {
                 player.actionable = false;
                 netIdentity.RemoveClientAuthority();
-                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy)
+                stateManager.netIdentity.RemoveClientAuthority();
+                
+                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff)
                 {
                     buttonToggle.ToggleButtons(4);
                 }
@@ -681,16 +700,12 @@ public class PlayerFunctions : NetworkBehaviour
                 
                 if (Input.GetKeyDown("3"))
                 {
-                    Eject();
-                }
-
-                if (Input.GetKeyDown("4"))
-                {
                     currentState = "Recommending";
                 }
 
                 if (Input.GetKeyDown("c"))
                 {
+                    RpcForceButtonsOff();
                     CmdNextCourse();
                 }
 
@@ -750,6 +765,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                                 if (mealManager.nPieces <= 0)
                                 {
+                                    RpcForceButtonsOff();
                                     CmdNextCourse();
                                 }
 
