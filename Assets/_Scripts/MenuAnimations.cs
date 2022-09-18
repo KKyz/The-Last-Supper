@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class MenuAnimations : MonoBehaviour
@@ -17,7 +15,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Up)
         {
             Vector2 goalPos = awakePos;
-            Vector2 startPos = new Vector2(goalPos.x, goalPos.y - 700);
+            Vector2 startPos = new Vector2(goalPos.x, goalPos.y - Screen.height);
             transform.position = startPos;
             LeanTween.moveY(gameObject, goalPos.y, 0.15f);
         }
@@ -25,7 +23,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Down)
         {
             Vector2 goalPos = awakePos;
-            Vector2 startPos = new Vector2(goalPos.x, goalPos.y + 700);
+            Vector2 startPos = new Vector2(goalPos.x, goalPos.y + Screen.height);
             transform.position = startPos;
             LeanTween.moveY(gameObject, goalPos.y, 0.15f);
         }
@@ -33,7 +31,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Left)
         {
             Vector2 goalPos = awakePos;
-            Vector2 startPos = new Vector2(goalPos.x - 700, goalPos.y);
+            Vector2 startPos = new Vector2(goalPos.x - Screen.width, goalPos.y);
             transform.position = startPos;
             LeanTween.moveX(gameObject, goalPos.x, 0.15f);
         }
@@ -41,7 +39,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Right)
         {
             Vector2 goalPos = awakePos;
-            Vector2 startPos = new Vector2(goalPos.x + 700, goalPos.y);
+            Vector2 startPos = new Vector2(goalPos.x + Screen.width, goalPos.y);
             transform.position = startPos;
             LeanTween.moveX(gameObject, goalPos.x, 0.15f);
         }
@@ -60,7 +58,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Up)
         {
             Vector2 startPos = awakePos;
-            Vector2 goalPos = new Vector2(startPos.x, startPos.y - 700);
+            Vector2 goalPos = new Vector2(startPos.x, startPos.y - Screen.height);
             transform.position = startPos;
             LeanTween.moveY(gameObject, goalPos.y, 0.15f);
         }
@@ -68,7 +66,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Down)
         {
             Vector2 startPos = awakePos;
-            Vector2 goalPos = new Vector2(startPos.x, startPos.y + 700);
+            Vector2 goalPos = new Vector2(startPos.x, startPos.y + Screen.height);
             transform.position = startPos;
             LeanTween.moveY(gameObject, goalPos.y, 0.15f);
         }
@@ -76,7 +74,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Left)
         {
             Vector2 startPos = awakePos;
-            Vector2 goalPos = new Vector2(startPos.x - 700, startPos.y);
+            Vector2 goalPos = new Vector2(startPos.x - Screen.width, startPos.y);
             transform.position = startPos;
             LeanTween.moveX(gameObject, goalPos.x, 0.15f);
         }
@@ -84,7 +82,7 @@ public class MenuAnimations : MonoBehaviour
         if (animationType == AnimEnum.Right)
         {
             Vector2 startPos = awakePos;
-            Vector2 goalPos = new Vector2(startPos.x + 700, startPos.y);
+            Vector2 goalPos = new Vector2(startPos.x + Screen.width, startPos.y);
             transform.position = startPos;
             LeanTween.moveX(gameObject, goalPos.x, 0.15f);
         }

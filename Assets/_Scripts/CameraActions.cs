@@ -1,7 +1,4 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using Mirror;
+using EZCameraShake;
 using UnityEngine;
 
 public class CameraActions : MonoBehaviour
@@ -47,22 +44,11 @@ public class CameraActions : MonoBehaviour
     public void ZoomOut()
     {
         LeanTween.move(playerCam.gameObject, zoomOutPos, 1f).setEaseOutSine();
+        UpdateCameraLook();
     }
 
-    public IEnumerator ShakeCamera(float shakeDuration, float shakeAmount, float decreaseFactor)
+    public void ShakeCamera(float length)
     {
-        if (shakeDuration > 0)
-        {
-            playerCam.localPosition = zoomOutPos + UnityEngine.Random.insideUnitSphere * shakeAmount;
-			
-            shakeDuration -= Time.deltaTime * decreaseFactor;
-        }
-        else
-        {
-            shakeDuration = 0f;
-            playerCam.localPosition = zoomOutPos;
-        }
-
-        yield return null;
+        CameraShaker.Instance.ShakeOnce(5f, 15f, 0.1f, length);
     }
 }

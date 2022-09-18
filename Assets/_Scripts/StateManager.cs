@@ -25,6 +25,7 @@ public class StateManager : NetworkBehaviour
     {
         gameCanEnd = false;
         currentPlayer = null;
+        playerScript = null;
         turn = 0;
         currentPlayer = activePlayers[turn].gameObject;
         playerScript = currentPlayer.GetComponent<PlayerManager>();

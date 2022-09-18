@@ -1,39 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.UI;
 using UnityEngine;
 
 public class InfoText : MonoBehaviour
 {
-    private TextMeshProUGUI text;
+    public CanvasGroup infoTextCanvas;
 
-    void Start()
+    public void Awake()
     {
-        text = GetComponent<TextMeshProUGUI>();
-        var color = text.color;
-        var fadeoutcolor = color;
-        fadeoutcolor.a = 0;
-        LeanTween.value(gameObject, updateValueExampleCallback, fadeoutcolor, color, 1f);
+        infoTextCanvas = transform.GetComponent<CanvasGroup>();
     }
-
-
-    void updateValueExampleCallback(Color val)
+    
+    public void ShowInfoText()
     {
-        text.color = val;
-    }
-
-    public IEnumerator CycleTextAlpha()
-    {
-        yield return 0;
+        LeanTween.alphaCanvas(infoTextCanvas, 1f, 0.5f);
     }
     
     public void CloseInfoText()
     {
-        gameObject.SetActive(false);
+        if (gameObject.activeInHierarchy)
+        {
+            LeanTween.alphaCanvas(infoTextCanvas, 0f, 0.5f);
+            StartCoroutine(DisableText());
+        }
     }
-    
-    void Update()
-    {
 
+    private IEnumerator DisableText()
+    {
+        yield return new WaitForSeconds(0.7f);
+        gameObject.SetActive(false);
     }
 }

@@ -94,7 +94,7 @@ public class MenuManager : MonoBehaviour
     private IEnumerator SetActiveOff(GameObject menuObj)
     {
         yield return new WaitForSeconds(1f);
-        menuObj.SetActive(false);
+        //menuObj.SetActive(false);
     }
 
     public void CloseSubMenu(Transform subMenu)

@@ -68,7 +68,7 @@ public class MealManager : NetworkBehaviour
     private IEnumerator CheckNPieces()
     {
         //Checks # of normal pieces (used to swap plates)
-        yield return 0;
+        yield return new WaitForSeconds(0.3f);
         nPieces = 0;
 
         foreach (Transform piece in currentPlate.transform)

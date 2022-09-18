@@ -20,7 +20,7 @@ public class RecieptAnimation : MonoBehaviour
         resultText.alpha = 0f;
         
         Vector2 targetPos = receipt.transform.position;
-        Vector2 initPos = new Vector2(targetPos.x, targetPos.y - 500f);
+        Vector2 initPos = new Vector2(targetPos.x, targetPos.y - Screen.height);
         receipt.transform.position = initPos;
 
         StartCoroutine(ResultAnimation(targetPos));
@@ -34,10 +34,10 @@ public class RecieptAnimation : MonoBehaviour
         
         //"Printing" receipt animation
         yield return new WaitForSeconds(1.2f);
-        LeanTween.moveY(receipt, finalPos.y - 300f, 0.7f);
+        LeanTween.moveY(receipt, finalPos.y - Screen.height/2f, 0.7f);
         sfxSource.PlayOneShot(recieptPrint);
         yield return new WaitForSeconds(1.5f);
-        LeanTween.moveY(receipt, finalPos.y - 200f, 0.3f);
+        LeanTween.moveY(receipt, finalPos.y - Screen.height/2.5f, 0.3f);
         sfxSource.PlayOneShot(recieptPrint);
         yield return new WaitForSeconds(1.5f);
         LeanTween.moveY(receipt, finalPos.y, 0.7f).setEaseOutSine();

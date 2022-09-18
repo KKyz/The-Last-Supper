@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4102572141451337352}
   m_Layer: 0
   m_Name: Pizza Shop
-  m_TagString: Untagged
+  m_TagString: Restaurant
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -50,11 +50,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 54a29d4cfa8dfd74ead9262e64569a53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bgmClips:
-  - {fileID: 8300000, guid: 82beaafa554a1d642bc67334ad3e4608, type: 3}
-  - {fileID: 8300000, guid: 82beaafa554a1d642bc67334ad3e4608, type: 3}
-  - {fileID: 8300000, guid: dd270f1494d8de645b3cc44afc263a1f, type: 3}
-  - {fileID: 8300000, guid: 40569c4b2abf17b4ca3ce959d628e533, type: 3}
   skyBox: {fileID: 2100000, guid: 9ce4158b25e0028469474a3c80f2667f, type: 2}
   thumbnail: {fileID: 0}
   restaurantName: Pizza Restuarant
@@ -71,6 +66,28 @@ MonoBehaviour:
     - {fileID: 2525988890905768603, guid: 3bc97d6d971f1f24fa3d406e50f8014c, type: 3}
     - {fileID: 8136041450091477235, guid: 25f7e0e2132589b49b21613589e9be14, type: 3}
     - {fileID: 4723392658126809247, guid: 420532bd96ba682468eef4b35bd72a3c, type: 3}
+  pieceTypes:
+  - course: Starters
+    normalAmount: 4
+    psnAmount: 1
+    scrollAmount: 4
+  - course: Main
+    normalAmount: 6
+    psnAmount: 5
+    scrollAmount: 5
+  - course: Desserts
+    normalAmount: 3
+    psnAmount: 4
+    scrollAmount: 2
+  - course: Sudden Death Desserts
+    normalAmount: 2
+    psnAmount: 5
+    scrollAmount: 2
+  bgmClips:
+  - {fileID: 8300000, guid: 82beaafa554a1d642bc67334ad3e4608, type: 3}
+  - {fileID: 8300000, guid: 82beaafa554a1d642bc67334ad3e4608, type: 3}
+  - {fileID: 8300000, guid: dd270f1494d8de645b3cc44afc263a1f, type: 3}
+  - {fileID: 8300000, guid: 40569c4b2abf17b4ca3ce959d628e533, type: 3}
 --- !u!114 &-4065937298884651616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29889,8 +29906,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2720057976919772954}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0, w: -0.7071068}
-  m_LocalPosition: {x: 5, y: 0, z: 12.5}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 5, y: 0, z: 12.5176}
+  m_LocalScale: {x: 0.98592, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4531663228582441252}

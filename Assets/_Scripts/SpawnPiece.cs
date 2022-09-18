@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -7,11 +5,12 @@ using Random = UnityEngine.Random;
 
 public class SpawnPiece : NetworkBehaviour
 {
-    public int normalCount, psnCount, scrollCount;
+    [HideInInspector] 
+    public int[] pieceTypes;
+    
     public float[] scrollProbability;
     public Sprite chalkSprite;
     public string courseName;
-    public AudioClip courseBGM;
     public GameObject[] pieces;
     
     private List<Vector3> piecePos = new();
@@ -21,6 +20,7 @@ public class SpawnPiece : NetworkBehaviour
     private GameObject newPiece;
     private Vector3 newRandPos;
     private Quaternion newRandRot;
+    private PlayerManager playerManager;
 
     public void Start()
     {
@@ -28,15 +28,17 @@ public class SpawnPiece : NetworkBehaviour
         
         if (isServer)
         {
-            InitPlate(normalCount, psnCount, scrollCount);
+            InitPlate();
         }
+        
+        playerManager = GameObject.FindWithTag("Player").GetComponent<PlayerManager>();
     }
     
     private void RefreshPieceList()
     {
         piecePos.Clear();
         pieceRot.Clear();
-        
+
         foreach (Transform child in transform)
         {
             if((child.CompareTag("PiecePos") || child.CompareTag("FoodPiece")) && isServer)
@@ -52,14 +54,26 @@ public class SpawnPiece : NetworkBehaviour
         }
     }
     
-    private void InitPlate(int normalPiece, int psnPiece, int scrollPiece)
+    private void InitPlate()
     {
         //In mode 0; Until i = normalPiece, keep adding pieces with "normal tag"
         //In mode 1; Until i = psnPiece, keep adding pieces with "poison tag"
         //In mode 2; Until i = scrollPiece keep adding scroll pieces
         //Code will check what the percentage of scroll pieces should be
         
-        for (int i = normalPiece; i > 0; i--)
+        int index = playerManager.courseCount;
+        
+        if (index <= 2)
+        {
+            pieceTypes = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>().GetTypeAmounts(index);
+        }
+
+        else
+        {
+            pieceTypes = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>().GetTypeAmounts(3); 
+        }
+
+        for (int i = pieceTypes[0]; i > 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
             int k = Random.Range(0, pieces.Length - 1);
@@ -70,7 +84,7 @@ public class SpawnPiece : NetworkBehaviour
             newPiece.GetComponent<FoodPiece>().SetType(0, null);
         }
 
-        for (int i = psnPiece; i > 0; i--)
+        for (int i = pieceTypes[1]; i > 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
             int k = Random.Range(0, pieces.Length - 1);
@@ -81,7 +95,7 @@ public class SpawnPiece : NetworkBehaviour
             newPiece.GetComponent<FoodPiece>().SetType(1, null);
         }
 
-        for (int i = scrollPiece - 1; i >= 0; i--)
+        for (int i = pieceTypes[2] - 1; i >= 0; i--)
         {
             int j = Random.Range(i, piecePos.Count - 1);
             int k = Random.Range(0, pieces.Length - 1);

@@ -101,23 +101,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         infoText.gameObject.SetActive(true);
         infoText.text = info;
-        StartCoroutine(LoopInfoAnimation());
-
-    }
-
-    private IEnumerator LoopInfoAnimation()
-    {
-        CanvasGroup infoTextCanvas = infoText.GetComponent<CanvasGroup>();
-        infoTextCanvas.alpha = 0f;
-        
-        while (infoText.gameObject.activeInHierarchy)
-        {
-            LeanTween.alphaCanvas(infoTextCanvas, 1f, 0.5f);
-            yield return new WaitForSeconds(0.5f);
-            LeanTween.alphaCanvas(infoTextCanvas, 0f, 0.5f);
-        }
-        
-        LeanTween.alphaCanvas(infoTextCanvas, 0f, 0.5f);
+        infoText.GetComponent<InfoText>().ShowInfoText();
     }
 
     [Client]
@@ -128,10 +112,11 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Client]
-    public void FakeSplash()
+    private void FakeSplash()
     {
-        GameObject sSplash = Instantiate(smokeSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
+        GameObject sSplash = Instantiate(smokeSplash, Vector2.zero, quaternion.identity);
         sSplash.transform.SetParent(transform, false);
+        camActions.ShakeCamera(1.5f);
     }
 
     [Client]
@@ -143,12 +128,12 @@ public class PlayerFunctions : NetworkBehaviour
             healthBar.SetHealth(player.health);
             if (splash)
             { 
-                GameObject vSplash = Instantiate(vomitSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
+                GameObject vSplash = Instantiate(vomitSplash, Vector2.zero, quaternion.identity);
                 vSplash.transform.SetParent(transform, false);
 
                 playerAnim.SetTrigger("PoisonTr");
                 uiAudio.PlayOneShot(poisonSfx);
-                StartCoroutine(camActions.ShakeCamera(0.5f, 0.7f, 1f));
+                camActions.ShakeCamera(1.5f);
             }
         }
     }
@@ -162,7 +147,7 @@ public class PlayerFunctions : NetworkBehaviour
             uiAudio.PlayOneShot(healthSfx);
             healthBar.SetHealth(player.health);
             
-            GameObject hSplash = Instantiate(healthSplash, new Vector3(0f, 0f, 0f), quaternion.identity);
+            GameObject hSplash = Instantiate(healthSplash, Vector2.zero, quaternion.identity);
             hSplash.transform.SetParent(transform, false);
         }
     }
@@ -174,15 +159,15 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [ClientRpc]
-    public void RpcQuakeAnim()
+    private void RpcQuakeAnim()
     {
         StartCoroutine(QuakeFade());
     }
     
-    public IEnumerator QuakeFade()
+    private IEnumerator QuakeFade()
     {
         playerAnim.SetTrigger("QuakeTr");
-        StartCoroutine(camActions.ShakeCamera(1f, 0.7f, 1f));
+        camActions.ShakeCamera(4.5f);
         fade.FadeIn(1.5f);
         buttonToggle.ToggleButtons(6);
         yield return new WaitForSeconds(2f);
@@ -194,7 +179,7 @@ public class PlayerFunctions : NetworkBehaviour
             player.scrollCount += 1;
         }
         
-        fade.FadeOut(1.5f);
+        fade.FadeOut(1.3f);
     }
     
     [Client]
@@ -360,11 +345,11 @@ public class PlayerFunctions : NetworkBehaviour
     public void OrderDrink()
     {
         playerAnim.SetTrigger("OrderTr");
-        openPopup = Instantiate(drinkMenu, new Vector3(0f, -40f, 0f), quaternion.identity);
-        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        openPopup = Instantiate(drinkMenu, Vector2.zero, quaternion.identity);
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         buttonToggle.ToggleButtons(6);
     }
 
@@ -378,12 +363,12 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     private void ReceiveDrink()
     {
-        openPopup = Instantiate(drinkPlate, new Vector3(0f, -40f, 0f), quaternion.identity);
-        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        openPopup = Instantiate(drinkPlate, Vector2.zero, quaternion.identity);
+        openPopup.transform.name = "DrinkMenu";
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
-        openPopup.transform.name = "DrinkMenu";
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         buttonToggle.ToggleButtons(5);
         player.orderVictim = false;
         ShowInfoText("Select a glass to drink from");
@@ -408,10 +393,10 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void SpawnTalkMenu()
     {
-        openPopup = Instantiate(talkMenu, new Vector3(0f, 200f, 0f), quaternion.identity);
-        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        openPopup = Instantiate(talkMenu, Vector2.zero, quaternion.identity);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         buttonToggle.ToggleButtons(6);
     }
 
@@ -426,15 +411,15 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Client]
-    public void ShowScrollInfo(string pieceType)
+    private void ShowScrollInfo(string pieceType)
     {
-        openPopup = Instantiate(scrollInfo, new Vector3(0f, 200f, 0f), quaternion.identity);
-
-        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
+        
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
-        
+        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+
         openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
         openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("You've got a " + pieceType + " scroll!");
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = playerScrolls.GetDescription(pieceType);
@@ -448,14 +433,23 @@ public class PlayerFunctions : NetworkBehaviour
     {
         ResetActions(true);
         stateManager.CmdRemovePlayer(player.netIdentity);
-        openPopup = Instantiate(receipt, new Vector3(0f, 0f, 0f), quaternion.identity);
-        openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Lose";
+        openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
+
+        if (player.pieceCount <= 2)
+        {
+            openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "Very Unlucky"; 
+        }
+        else
+        {
+            openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Lose";  
+        }
+        
         openPopup.GetComponent<ShowStats>().LoadStats(player);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         buttonToggle.ToggleButtons(6);
         countTime = false;
-        StartCoroutine(musicManager.PlayResultBGM(false));
+        StartCoroutine(musicManager.PlayLoseResultBGM());
 
         if (stateManager.activePlayers.Count > 1)
         {stateManager.CmdNextPlayer();}
@@ -465,14 +459,14 @@ public class PlayerFunctions : NetworkBehaviour
     private void Win()
     {
         ResetActions(true);
-        openPopup = Instantiate(receipt, new Vector3(0f, 0f, 0f), quaternion.identity);
+        openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
         openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Win";
         openPopup.GetComponent<ShowStats>().LoadStats(player);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         buttonToggle.ToggleButtons(6);
         countTime = false;
-        StartCoroutine(musicManager.PlayResultBGM(true));
+        StartCoroutine(musicManager.PlayWinResultBGM());
         PlayerPrefs.SetInt("gamesWon", PlayerPrefs.GetInt("gamesWon", 0) + 1);
     }
     
@@ -481,8 +475,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         string chalkDescription = ""; 
         
-        Vector3 chalkPos = new Vector3(0f, -40f, 0f);
-        openPopup = Instantiate(chalkBoard, chalkPos, quaternion.identity);
+        openPopup = Instantiate(chalkBoard, Vector2.zero, quaternion.identity);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
@@ -492,10 +485,10 @@ public class PlayerFunctions : NetworkBehaviour
         SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
         openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
         openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = chalkData.courseName;
-        chalkDescription += "- " + chalkData.normalCount + " Empty Pieces";
-        chalkDescription += "\n - " + chalkData.psnCount + " Poison Pieces";
-        chalkDescription += "\n - " + chalkData.scrollCount + " Special Pieces";
-        chalkDescription += "\n - " + (chalkData.normalCount +  chalkData.scrollCount + chalkData.psnCount) +" Total Pieces";
+        chalkDescription += "- " + chalkData.pieceTypes[0] + " Empty Pieces";
+        chalkDescription += "\n - " + chalkData.pieceTypes[1] + " Poison Pieces";
+        chalkDescription += "\n - " + chalkData.pieceTypes[2] + " Special Pieces";
+        chalkDescription += "\n - " + (chalkData.pieceTypes[0] +  chalkData.pieceTypes[1] + chalkData.pieceTypes[2]) +" Total Pieces";
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = chalkDescription;
     }
 
@@ -678,7 +671,7 @@ public class PlayerFunctions : NetworkBehaviour
         {
             if (player.health <= 0 && openPopup == null)
             {
-                //Die();
+                Die();
             }
 
             if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health > 0 && openPopup == null)
@@ -693,14 +686,29 @@ public class PlayerFunctions : NetworkBehaviour
                     Poison(true);
                 }
 
-                if (Input.GetKeyDown("2"))
+                if (Input.GetKeyDown("2") || Input.GetMouseButtonDown(1))
                 {
                     Health();
                 }
                 
                 if (Input.GetKeyDown("3"))
                 {
-                    currentState = "Recommending";
+                    Recommend();
+                }
+                
+                if (Input.GetKeyDown("4"))
+                {
+                    Smell();
+                }
+                
+                if (Input.GetKeyDown("5"))
+                {
+                    CmdQuake();
+                }
+                
+                if (Input.GetKeyDown("6"))
+                {
+                    Win();
                 }
 
                 if (Input.GetKeyDown("c"))
