@@ -21,17 +21,19 @@ public class SpawnPiece : NetworkBehaviour
     private Vector3 newRandPos;
     private Quaternion newRandRot;
     private PlayerManager playerManager;
+    private RestaurantContents restaurant;
 
     public void Start()
     {
         RefreshPieceList();
         
+        restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
+        playerManager = GameObject.FindWithTag("Player").GetComponent<PlayerManager>();
+        
         if (isServer)
         {
             InitPlate();
         }
-        
-        playerManager = GameObject.FindWithTag("Player").GetComponent<PlayerManager>();
     }
     
     private void RefreshPieceList()
@@ -61,16 +63,16 @@ public class SpawnPiece : NetworkBehaviour
         //In mode 2; Until i = scrollPiece keep adding scroll pieces
         //Code will check what the percentage of scroll pieces should be
         
-        int index = playerManager.courseCount;
-        
+        int index = playerManager.courseCount - 1;
+
         if (index <= 2)
         {
-            pieceTypes = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>().GetTypeAmounts(index);
+            pieceTypes = restaurant.GetTypeAmounts(index);
         }
 
         else
         {
-            pieceTypes = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>().GetTypeAmounts(3); 
+            pieceTypes = restaurant.GetTypeAmounts(3); 
         }
 
         for (int i = pieceTypes[0]; i > 0; i--)

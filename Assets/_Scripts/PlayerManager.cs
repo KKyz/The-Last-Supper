@@ -41,7 +41,7 @@ public class PlayerManager : NetworkBehaviour
         
         health = 2;
         scrollCount = 0;
-        courseCount = 1;
+        courseCount = 0;
         pieceCount = 0;
         nPiecesEaten = 0;
         accumulatedTime = 0;

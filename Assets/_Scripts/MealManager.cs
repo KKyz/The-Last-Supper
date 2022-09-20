@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using TMPro;
-using UnityEngine.UIElements;
 
 public class MealManager : NetworkBehaviour
 {
