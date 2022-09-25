@@ -12,7 +12,7 @@ public class MenuManager : MonoBehaviour
     private GameManager gameManager;
     private AudioSource uiAudio;
     private Camera titleCam;
-    private Transform startMenu, settingsMenu;
+    private Transform startMenu, settingsMenu, gameSetup, gameFind;
 
     public void Start()
     {
@@ -22,6 +22,8 @@ public class MenuManager : MonoBehaviour
         uiAudio = GetComponent<AudioSource>();
         startMenu = transform.Find("Start");
         settingsMenu = transform.Find("Settings");
+        gameSetup = transform.Find("GameSetup");
+        gameFind = transform.Find("GameSearch");
         OpenSubMenu(startMenu);
         blur.SetActive(false);
         
@@ -65,6 +67,12 @@ public class MenuManager : MonoBehaviour
         }
     }
 
+    public void ForceReturnToTitle()
+    {
+        OpenSubMenu(startMenu);
+        CloseSubMenu(gameSetup);
+    }
+
     public void ConditionStartHost(Transform subMenu)
     {
         if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 5)
@@ -74,7 +82,7 @@ public class MenuManager : MonoBehaviour
         else
         {
             gameManager.StartHost();
-            OpenSubMenu(subMenu);
+            OpenSubMenu(gameSetup);
         }
     }
     

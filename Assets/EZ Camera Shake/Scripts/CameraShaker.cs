@@ -21,10 +21,6 @@ namespace EZCameraShake
         /// </summary>
         public Vector3 DefaultRotInfluence = new Vector3(1, 1, 1);
         /// <summary>
-        /// Offset that will be applied to the camera's default (0,0,0) rest position
-        /// </summary>
-        public Vector3 RestPositionOffset = new Vector3(0, 0, 0);
-        /// <summary>
         /// Offset that will be applied to the camera's default (0,0,0) rest rotation
         /// </summary>
         public Vector3 RestRotationOffset = new Vector3(0, 0, 0);
@@ -33,7 +29,7 @@ namespace EZCameraShake
 
         List<CameraShakeInstance> cameraShakeInstances = new List<CameraShakeInstance>();
 
-        void Awake()
+        void Start()
         {
             Instance = this;
             instanceList.Add(gameObject.name, this);
@@ -63,7 +59,7 @@ namespace EZCameraShake
                 }
             }
 
-            transform.localPosition = posAddShake + RestPositionOffset;
+            transform.localPosition = posAddShake + transform.localPosition;
             transform.localEulerAngles = rotAddShake + RestRotationOffset;
         }
 

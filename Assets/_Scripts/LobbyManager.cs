@@ -1,11 +1,9 @@
-using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyManager : NetworkBehaviour
+public class LobbyManager: MonoBehaviour
 {
-    public GameObject tableSetUp;
     public TMP_Text[] playerNames = new TMP_Text[4];
     public Toggle[] playerReadyToggles = new Toggle[4];
     public Button startGameButton;
@@ -32,11 +30,8 @@ public class LobbyManager : NetworkBehaviour
         }
     }
 
-    [Command(requiresAuthority = false)]
-    public void CmdReadyUp()
-    { 
-        room.localRoomPlayer.isReady = !room.localRoomPlayer.isReady;
-        
-        room.UpdateReadyState();
+    public void ReadyUp()
+    {
+        room.localRoomPlayer.CmdReadyUp();
     }
 }

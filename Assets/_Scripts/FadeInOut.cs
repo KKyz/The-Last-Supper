@@ -29,7 +29,7 @@ public class FadeInOut : MonoBehaviour
     
     private IEnumerator DisableFade(float time)
     {
-        yield return new WaitForSeconds(time + 2f);
+        yield return new WaitForSeconds(time + 1f);
         gameObject.SetActive(false);
     }
 }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 
@@ -19,7 +17,15 @@ public class StateManager : NetworkBehaviour
     public int turn;
     
     public readonly SyncList<NetworkIdentity> activePlayers = new();
+
+    public void Start()
+    {
+        gameObject.name = "StateManager";
+        DontDestroyOnLoad(this);
+        gameCanEnd = false;
+    }
     
+
     [ServerCallback]
     public void OnStartGame()
     {

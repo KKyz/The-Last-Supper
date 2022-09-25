@@ -1,3 +1,4 @@
+using System;
 using EZCameraShake;
 using UnityEngine;
 
@@ -5,9 +6,12 @@ public class CameraActions : MonoBehaviour
 {
     private Transform playerCam;
     private Vector3 zoomOutPos, plateCorrectedPos, centerPos;
+    private CameraShaker camShaker;
 
     public void Start()
     {
+        camShaker = GetComponent<CameraShaker>();
+        
         //Player model should be facing the food, so it is rotated across y-axis
         centerPos = GameObject.Find("StateManager").transform.position;
         Vector3 lookTowards = new Vector3(0, centerPos.y, 0);
@@ -18,20 +22,13 @@ public class CameraActions : MonoBehaviour
         zoomOutPos = playerCam.position;
         playerCam.LookAt(centerPos);
     }
-    
+
     public void UpdateCameraLook()
     {
         Vector3 platePos = GameObject.FindWithTag("Plate").transform.position; 
         plateCorrectedPos = new Vector3(platePos.x + 1f, platePos.y + 2.5f, platePos.z);
-        playerCam.LookAt(plateCorrectedPos); 
-    }
-
-    public void Update()
-    {
-        if (Input.GetKeyDown("z"))
-        {
-            UpdateCameraLook();
-        }
+        Quaternion rotation = Quaternion.LookRotation (plateCorrectedPos - transform.position);
+        playerCam.rotation = Quaternion.Slerp (playerCam.rotation, rotation, Time.deltaTime);
     }
 
     public void ZoomIn()
@@ -49,6 +46,6 @@ public class CameraActions : MonoBehaviour
 
     public void ShakeCamera(float length)
     {
-        CameraShaker.Instance.ShakeOnce(5f, 15f, 0.1f, length);
+        camShaker.ShakeOnce(5f, 15f, 0.1f, length);
     }
 }

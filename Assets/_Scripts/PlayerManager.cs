@@ -29,14 +29,14 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar(hook=nameof(SyncRecommended))]
     public GameObject recommendedPiece;
 
-    [HideInInspector]
-    public GameObject currentRecommend;
+    
+    public GameObject currentRecommend, currentPlate;
     
     private GameObject playerCam;
     private Transform playerModel;
     private PlayerFunctions playerCanvas;
 
-    public void OnStartGame()
+    public void Start()
     {
         
         health = 2;
@@ -99,6 +99,12 @@ public class PlayerManager : NetworkBehaviour
         {
             recommendedPiece = piece;
         }
+    }
+    
+    [ClientRpc]
+    public void RpcRenamePlayer(string newName)
+    {
+        gameObject.name = newName;
     }
 
     public void SyncRecommended(GameObject oldValue, GameObject newValue)

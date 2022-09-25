@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using Mirror;
-using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PlayerLobby : NetworkBehaviour
 {
@@ -21,34 +18,58 @@ public class PlayerLobby : NetworkBehaviour
     public override void OnStartAuthority()
     {
         //Display your saved name on display and on gameObject
-        lobbyManager = GameObject.Find("Guests").GetComponent<LobbyManager>();
-        room = GameObject.Find("GameManager").GetComponent<GameManager>();
-        
-        string playerName = PlayerPrefs.GetString("PlayerName");
-        connectionToClient.identity.name = playerName;
-        CmdSetDisplayName(playerName);
-    }
+        // Code might not like being in here...
+
+        if (SceneManager.GetActiveScene().name == "StartMenu")
+        {
+            room.localRoomPlayer = this;
+            CmdSetDisplayName(PlayerPrefs.GetString("PlayerName"));
+        }
+    } 
 
     public override void OnStartClient()
     {
-        room.roomPlayers.Add(this);
-        lobbyManager.UpdateDisplay();
+        // lobbyManager.UpdateDisplay();
+    }
+
+    public void Awake()
+    {
+        room = GameObject.Find("GameManager").GetComponent<GameManager>();
+        if (SceneManager.GetActiveScene().name == "StartMenu")
+        {
+            lobbyManager = GameObject.Find("Guests").GetComponent<LobbyManager>();
+            room.roomPlayers.Add(this);
+        }
     }
 
     public override void OnStopClient()
     {
-        room.roomPlayers.Remove(this);
-        lobbyManager.UpdateDisplay();
+        if (SceneManager.GetActiveScene().name == "StartMenu")
+        {
+            room.roomPlayers.Remove(this);
+            lobbyManager.UpdateDisplay();
+        }
+        else
+        {
+        }
     }
 
     public void ChangeDisplayName(string oldValue, string newValue)
     {
-        lobbyManager.UpdateDisplay();
+    // the problem is lobbyManager is ever only referenced for the client. I.e., host may not have a reference to this local player's lobby manager. lobby manager is null for it.
+
+        if (lobbyManager != null)
+        {
+            lobbyManager.UpdateDisplay();
+        }
     }
     
     public void ChangeReadyStatus(bool oldValue, bool newValue)
     {
-        lobbyManager.UpdateDisplay();
+        if (lobbyManager != null)
+        {
+            lobbyManager.UpdateDisplay();
+        }
     }
 
     public void ReadyToStart(bool readyToStart)
@@ -61,16 +82,42 @@ public class PlayerLobby : NetworkBehaviour
     }
 
     [Command]
+    public void CmdDestroy()
+    {
+        RpcRemoveRoomReference();
+        room.RemoveLobbyPlayer(gameObject);
+    }
+
+    [ClientRpc]
+    private void RpcRemoveRoomReference()
+    {
+        Destroy(this);
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdReadyUp()
+    { 
+        isReady = !isReady;
+        
+        room.UpdateReadyState();
+    }
+
+    [Command]
     private void CmdSetDisplayName(string newDisplayName)
     {
         displayName = newDisplayName;
+        
+        connectionToClient.identity.name = newDisplayName;
     }
     
     [TargetRpc]
     public void TargetFindLocalPlayer(NetworkConnection conn)
     {
-        lobbyManager.startGameButton.gameObject.SetActive(false);
-        lobbyManager.tableSetUp.SetActive(false);
+        if (!isLeader)
+        {
+            lobbyManager.startGameButton.gameObject.SetActive(false);
+        }
+            //lobbyManager.tableSetUp.SetActive(false);
         
         if (room.localRoomPlayer == null)
         {
@@ -78,7 +125,7 @@ public class PlayerLobby : NetworkBehaviour
         }
         
         lobbyManager.startGameButton.gameObject.SetActive(isLeader);
-        lobbyManager.tableSetUp.SetActive(isLeader);
-    }
+        //lobbyManager.tableSetUp.SetActive(isLeader);
+    } 
 
 }

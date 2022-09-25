@@ -10,8 +10,7 @@ public class PlayerFunctions : NetworkBehaviour
 {
     [HideInInspector]
     public ScrollArray playerScrolls;
-
-    [HideInInspector]
+    
     public PlayerManager player;
 
     [HideInInspector] 
@@ -179,7 +178,7 @@ public class PlayerFunctions : NetworkBehaviour
             player.scrollCount += 1;
         }
         
-        fade.FadeOut(1.3f);
+        fade.FadeOut(1f);
     }
     
     [Client]
@@ -623,6 +622,20 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.ToggleButtons(6);
     }
 
+    [Command(requiresAuthority = false)]
+    private void CmdAddAuthority(NetworkConnectionToClient conn)
+    {
+        netIdentity.AssignClientAuthority(conn);
+        stateManager.netIdentity.AssignClientAuthority(conn);
+    }
+    
+    [Command(requiresAuthority = false)]
+    private void CmdRemoveAuthority()
+    {
+        netIdentity.RemoveClientAuthority();
+        stateManager.netIdentity.RemoveClientAuthority(); 
+    }
+
     void Update()
     {
         if (countTime && player != null)
@@ -643,8 +656,7 @@ public class PlayerFunctions : NetworkBehaviour
                     player.hasRecommended = false;
                     player.hasTalked = false;
                     playerAnim.SetTrigger("ActiveTr");
-                    netIdentity.AssignClientAuthority(player.connectionToClient);
-                    stateManager.netIdentity.AssignClientAuthority(player.connectionToClient);
+                    CmdAddAuthority(player.connectionToClient);
                 }
 
                 if (!fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff)
@@ -657,8 +669,7 @@ public class PlayerFunctions : NetworkBehaviour
             else if (stateManager.currentPlayer != player.gameObject)
             {
                 player.actionable = false;
-                netIdentity.RemoveClientAuthority();
-                stateManager.netIdentity.RemoveClientAuthority();
+                CmdRemoveAuthority();
                 
                 if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff)
                 {
