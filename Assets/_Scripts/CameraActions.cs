@@ -1,4 +1,3 @@
-using System;
 using EZCameraShake;
 using UnityEngine;
 

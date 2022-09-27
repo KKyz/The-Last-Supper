@@ -1,3 +1,4 @@
+using System.Collections;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -84,14 +85,20 @@ public class PlayerLobby : NetworkBehaviour
     [Command]
     public void CmdDestroy()
     {
-        RpcRemoveRoomReference();
-        room.RemoveLobbyPlayer(gameObject);
+        StartCoroutine(DestroySelf());
+    }
+
+    private IEnumerator DestroySelf()
+    {
+        yield return new WaitForSeconds(0.1f);
+        
+        NetworkServer.Destroy(gameObject);
     }
 
     [ClientRpc]
-    private void RpcRemoveRoomReference()
+    public void RpcFade()
     {
-        Destroy(this);
+        StartCoroutine(room.FadeToNewScene());
     }
 
     [Command(requiresAuthority = false)]

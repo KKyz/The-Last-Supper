@@ -24,7 +24,13 @@ public class StateManager : NetworkBehaviour
         DontDestroyOnLoad(this);
         gameCanEnd = false;
     }
-    
+
+    public void Reset()
+    {
+        turn = 0;
+        activePlayers.Clear();
+        gameCanEnd = false;
+    }
 
     [ServerCallback]
     public void OnStartGame()
@@ -40,6 +46,19 @@ public class StateManager : NetworkBehaviour
     public bool CurrentPlayerAssigned()
     {
         return currentPlayer != null;
+    }
+
+    public bool AllPlayersCanContinue()
+    {
+        foreach (var player in activePlayers)
+        {
+            if (!player.GetComponent<PlayerManager>().canContinue)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     [Command(requiresAuthority = false)]

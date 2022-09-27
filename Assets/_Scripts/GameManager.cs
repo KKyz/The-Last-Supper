@@ -155,40 +155,30 @@ public class GameManager : NetworkManager
             i++;
         }
     }
-    
-
-    public void RemoveLobbyPlayer(GameObject roomPlayer)
-    {
-        Debug.Log("removing lobby player");
-
-        StartCoroutine(DelayDestroyRoomPlayer(roomPlayer));
-    }
-
-    private IEnumerator DelayDestroyRoomPlayer(GameObject roomPlayer)
-    {
-        yield return new WaitForSeconds(0.1f);
-        
-        NetworkServer.Destroy(roomPlayer); 
-    }
 
     private bool HasChangedRoomToGamePlayers()
     {
-        if (playerCount == stateManager.activePlayers.Count)
+        foreach (var player in stateManager.activePlayers)
         {
-            return true;
+            if (stateManager.activePlayers.Count != playerCount && player.GetComponent<PlayerLobby>() != null)
+            {
+                return false;
+            }
         }
 
-        return false;
+        return true;
     }
 
     private bool IsRestaurantInstantiated()
     {
         return currentRestaurant != null;
     }
-    
-    private IEnumerator FadeToNewScene()
+
+    public IEnumerator FadeToNewScene()
     {
         fade.FadeIn(1.5f);
+        StartCoroutine(GameObject.Find("StartCanvas").GetComponent<MenuManager>().BGMFadeOut(0.5f));
+        
         yield return new WaitForSeconds(1.7f);
         
         if (localRoomPlayer.isLeader)
@@ -201,7 +191,7 @@ public class GameManager : NetworkManager
     public void StartGame()
     {
         playerCount = roomPlayers.Count;
-        StartCoroutine(FadeToNewScene());
+        localRoomPlayer.RpcFade();
     }
     
 
@@ -229,7 +219,7 @@ public class GameManager : NetworkManager
 
         yield return new WaitUntil(stateManager.CurrentPlayerAssigned);
         
-        mealManager.OnStartGame();
+        mealManager.RpcStartGame();
 
         yield return new WaitUntil(mealManager.PopulatedCourseStack);
         
@@ -239,8 +229,19 @@ public class GameManager : NetworkManager
     public override void OnClientSceneChanged()
     {
         base.OnClientSceneChanged();
-        
-        localRoomPlayer.CmdDestroy();
+
+        if (SceneManager.GetActiveScene().name != "StartMenu")
+        {
+            localRoomPlayer.CmdDestroy();
+        }
+
+        else
+        {
+            if (stateManagerInstance != null)
+            {
+                Destroy(stateManagerInstance);
+            }
+        }
     }
 
     public override void OnServerChangeScene(string newSceneName)
@@ -257,6 +258,9 @@ public class GameManager : NetworkManager
 
     public override void OnServerSceneChanged(string newSceneName)
     {
-        StartCoroutine(PostStartCall());
+        if (newSceneName != "StartMenu")
+        {
+            StartCoroutine(PostStartCall());
+        }
     }
 }

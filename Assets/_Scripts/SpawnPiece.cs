@@ -5,8 +5,8 @@ using Random = UnityEngine.Random;
 
 public class SpawnPiece : NetworkBehaviour
 {
-    [HideInInspector] 
-    public int[] pieceTypes;
+    //[HideInInspector] 
+    public readonly SyncList<int> pieceTypes = new();
     
     public float[] scrollProbability;
     public Sprite chalkSprite;
@@ -63,16 +63,27 @@ public class SpawnPiece : NetworkBehaviour
         //In mode 2; Until i = scrollPiece keep adding scroll pieces
         //Code will check what the percentage of scroll pieces should be
         
+        pieceTypes.Clear();
         int index = playerManager.courseCount - 1;
 
         if (index <= 2)
         {
-            pieceTypes = restaurant.GetTypeAmounts(index);
+            int[] types = restaurant.GetTypeAmounts(index);
+
+            foreach (int amount in types)
+            {
+                pieceTypes.Add(amount);
+            }
         }
 
         else
         {
-            pieceTypes = restaurant.GetTypeAmounts(3); 
+            int[] types = restaurant.GetTypeAmounts(3);
+
+            foreach (int amount in types)
+            {
+                pieceTypes.Add(amount);
+            }
         }
 
         for (int i = pieceTypes[0]; i > 0; i--)

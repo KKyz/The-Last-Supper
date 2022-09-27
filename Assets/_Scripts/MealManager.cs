@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using TMPro;
+using UnityEngine.Networking.Types;
 
 public class MealManager : NetworkBehaviour
 {
@@ -18,28 +19,29 @@ public class MealManager : NetworkBehaviour
     private Color normTop, normBottom;
     private readonly Stack<GameObject> courseStack = new();
     private readonly Stack<AudioClip> bgmStack = new();
-    public GameObject currentPlate, platterInstance;
+    private GameObject currentPlate;
     private bool firstPlate;
-    private PlayerManager localPlayer;
+    public PlayerManager localPlayer;
 
-    public void OnStartGame()
+    [ClientRpc]
+    public void RpcStartGame()
     {
         stateManager = GetComponent<StateManager>();
         musicManager = GetComponent<MusicManager>();
         normCounter = GameObject.Find("NormCounter").GetComponent<TextMeshProUGUI>();
         normTop = normCounter.colorGradient.topLeft;
         normBottom = normCounter.colorGradient.bottomRight;
-
+        
         PopulateCourses(menuIndex);
         firstPlate = true;
-        
-        foreach (var player in stateManager.activePlayers)
-        {
-            if (player.isLocalPlayer)
-            {
-                localPlayer = player.GetComponent<PlayerManager>();
-            }
-        }
+    }
+
+    public void Reset()
+    {
+        nPieces = 0;
+        currentPlate = null;
+        musicManager.musicPlayer.Stop();
+        localPlayer = null;
     }
 
     private void PopulateCourses(int i)
@@ -117,7 +119,6 @@ public class MealManager : NetworkBehaviour
     private void RpcUpdatePlayerEnd()
     {
         currentPlate = GameObject.FindWithTag("Plate");
-        Debug.LogWarning("Update Players' Status...");
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.ShowChalk();
 
@@ -131,27 +132,42 @@ public class MealManager : NetworkBehaviour
             CmdCheckNPieces();
         }
     }
+    
+    [ClientRpc]
+    private void RpcAddCourseCounter()
+    {
+        localPlayer.courseCount += 1;
+    }
+
+    [ClientRpc]
+    private void RpcFindLocalPlayer()
+    {
+        if (localPlayer == null)
+        {
+            localPlayer = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().player;
+        }
+    }
+
+    [ClientRpc]
+    private void RpcAssignPlate(GameObject plate)
+    {
+        plate.name += localPlayer.courseCount;
+        localPlayer.currentPlate = plate;
+    }
 
     private IEnumerator CourseTransitionAnim()
     {
+        RpcFindLocalPlayer();
+        
         Vector3 managerPos = transform.position;
         Vector3 platterStartPos = new Vector3(managerPos.x, managerPos.y + 50f, managerPos.z);
-        platterInstance = Instantiate(platterTop, platterStartPos, Quaternion.identity);
+        GameObject platterInstance = Instantiate(platterTop, platterStartPos, Quaternion.identity);
         NetworkServer.Spawn(platterInstance);
-
         LeanTween.moveY(platterInstance, managerPos.y, 1.8f).setEaseInSine();
 
-        yield return new WaitForSeconds(2.5f);
+        RpcAddCourseCounter();
         
-        foreach (NetworkIdentity player in stateManager.activePlayers)
-        {
-            PlayerManager playerScript = player.GetComponent<PlayerManager>();
-            
-            if (playerScript != null)
-            {
-                playerScript.courseCount += 1;
-            }
-        }
+        yield return new WaitForSeconds(2.5f);
 
         if (currentPlate != null)
         {
@@ -172,29 +188,28 @@ public class MealManager : NetworkBehaviour
         currentPlate = Instantiate(courseStack.Peek(), transform.position, Quaternion.identity);
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);
-        //RpcAssignPlate();
 
-        //yield return new WaitUntil(PlateSpawnedOnAllPlayers);
+        yield return new WaitForSeconds(0.5f);
         
-       //RpcUpdatePlayerEnd();
+        RpcAssignPlate(currentPlate);
+
+        yield return new WaitForSeconds(0.5f);
+        
+        //yield return new WaitUntil(PlateSpawnedOnAllPlayers);
+
+        RpcUpdatePlayerEnd();
 
         LeanTween.moveY(platterInstance, platterStartPos.y, 1.8f).setEaseInSine().setLoopPingPong();
         currentPlate.transform.position = managerPos;
         yield return new WaitForSeconds(1f);
         NetworkServer.Destroy(platterInstance);
     }
-
-    [ClientRpc]
-    private void RpcAssignPlate()
-    {
-        localPlayer.currentPlate = currentPlate;
-    }
-
+    
     private bool PlateSpawnedOnAllPlayers()
     {
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
-            if (player.GetComponent<PlayerManager>().currentPlate != currentPlate)
+            if (player.GetComponent<PlayerManager>().currentPlate.name != currentPlate.name)
             {
                 return false;
             }

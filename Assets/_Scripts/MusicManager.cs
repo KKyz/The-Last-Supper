@@ -1,25 +1,17 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
 
 public class MusicManager : MonoBehaviour
 {
-    public AudioClip titleBGM, winResultBGM, loseJingle, winJingle, loseResultsBGM;
-    private AudioSource musicPlayer;
+    public AudioClip winResultBGM, loseJingle, winJingle, loseResultsBGM;
+    
+    [HideInInspector]
+    public AudioSource musicPlayer;
 
     private void Start()
     {
-        PlayTitle();
-    }
-    
-    public void PlayTitle()
-    {
         musicPlayer = GetComponent<AudioSource>();
         musicPlayer.loop = true;
-        
-        musicPlayer.clip = titleBGM;
-        musicPlayer.Play();
     }
 
     public void PlayBGM(AudioClip courseBGM)

@@ -45,7 +45,7 @@ public class PlayerFunctions : NetworkBehaviour
     private readonly List<Transform> swapTargets = new();
     private bool startCourse;
 
-    public void OnStartGame()
+    public void OnStartGame(PlayerManager localPlayer)
     {
         GameObject stateManagerObj = GameObject.Find("StateManager");
         stateManager = stateManagerObj.GetComponent<StateManager>();
@@ -71,28 +71,20 @@ public class PlayerFunctions : NetworkBehaviour
         swapTargets.Clear();
         fade.FadeOut(1.5f);
 
-        StartCoroutine(PostStartCall());
-    }
+        player = localPlayer;
+        camActions = localPlayer.GetComponent<CameraActions>();
+        playerScrolls = localPlayer.GetComponent<ScrollArray>();
+        playerAnim = localPlayer.GetComponentInChildren<Animator>();
 
-    private IEnumerator PostStartCall()
-    {
-        yield return new WaitForEndOfFrame();
-        
-        foreach (NetworkIdentity newPlayer in stateManager.activePlayers)
-        {
-            if (newPlayer.isLocalPlayer)
-            {
-                //The player variable is the local player
-                player = newPlayer.GetComponent<PlayerManager>();
-                camActions = newPlayer.GetComponent<CameraActions>();
-                playerScrolls = newPlayer.GetComponent<ScrollArray>();
-                playerAnim = newPlayer.GetComponentInChildren<Animator>();
-            }
-        }
-        
         countTime = true;
         playerScrolls.ResetScrollAmount();
         buttonToggle.OnStartGame();
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdChangeContinueState(bool state)
+    {
+        player.canContinue = state;
     }
 
     [Client]
@@ -305,7 +297,6 @@ public class PlayerFunctions : NetworkBehaviour
     {
         foreach (Transform piece in targets)
         {
-            Debug.Log(piece.GetComponent<FoodPiece>().type);
             foreach (Transform flag in piece)
             {
                 if (flag.CompareTag("TypeFlag"))
@@ -428,7 +419,7 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Client]
-    public void Die()
+    private void Die()
     {
         ResetActions(true);
         stateManager.CmdRemovePlayer(player.netIdentity);
@@ -480,6 +471,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         uiAudio.PlayOneShot(popupSfx);
         buttonToggle.ToggleButtons(6);
+        CmdChangeContinueState(false);
         
         SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
         openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
@@ -669,8 +661,12 @@ public class PlayerFunctions : NetworkBehaviour
             else if (stateManager.currentPlayer != player.gameObject)
             {
                 player.actionable = false;
-                CmdRemoveAuthority();
                 
+                if (netIdentity.hasAuthority)
+                {
+                    CmdRemoveAuthority();
+                }
+
                 if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff)
                 {
                     buttonToggle.ToggleButtons(4);

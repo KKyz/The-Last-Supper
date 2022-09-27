@@ -1,9 +1,5 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
@@ -43,6 +39,20 @@ public class MenuManager : MonoBehaviour
     public void CancelSfx()
     {
         uiAudio.PlayOneShot(cancelSfx);
+    }
+    
+    public IEnumerator BGMFadeOut (float fadeTime)
+    {
+        float startVolume = uiAudio.volume;
+ 
+        while (uiAudio.volume > 0) {
+            uiAudio.volume -= startVolume * Time.deltaTime / fadeTime;
+ 
+            yield return null;
+        }
+ 
+        uiAudio.Stop ();
+        uiAudio.volume = startVolume;
     }
 
     public void OpenSubMenu(Transform subMenu)

@@ -16,7 +16,7 @@ public class PlayerManager : NetworkBehaviour
     public bool actionable;
 
     [SyncVar] 
-    public bool isEncouraged, hasRecommended, hasTalked, orderVictim;
+    public bool isEncouraged, hasRecommended, hasTalked, orderVictim, canContinue;
     
     public float accumulatedTime;
 
@@ -38,7 +38,7 @@ public class PlayerManager : NetworkBehaviour
 
     public void Start()
     {
-        
+        canContinue = false;
         health = 2;
         scrollCount = 0;
         courseCount = 0;
@@ -77,7 +77,7 @@ public class PlayerManager : NetworkBehaviour
         }
 
         PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
-        playerCanvas.OnStartGame();
+        playerCanvas.OnStartGame(this);
     }
 
     public void SyncPsn(bool oldValue, bool newValue)
@@ -138,10 +138,5 @@ public class PlayerManager : NetworkBehaviour
             StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
         }
         hasRecommended = true;
-    }
-
-    public void Eject()
-    {
-        playerCanvas.Die();
     }
 }

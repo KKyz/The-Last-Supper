@@ -24,4 +24,9 @@ public class SpawnMenu : MonoBehaviour
         LeanTween.alphaCanvas(menuCanvas, 0, 0.85f);
         Destroy(gameObject, 0.6f);
     }
+
+    public void CanContinue()
+    {
+        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().CmdChangeContinueState(true);
+    }
 }
