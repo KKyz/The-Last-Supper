@@ -8,6 +8,7 @@ public class RestaurantContents : MonoBehaviour
     public Menus[] menus;
     public PieceTypes[] pieceTypes;
     public AudioClip[] bgmClips;
+    public GameObject[] playerModels;
     
     [System.Serializable]
     public class Menus

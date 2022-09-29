@@ -59,7 +59,7 @@ public class MusicManager : MonoBehaviour
         audioSource.Stop ();
         audioSource.volume = startVolume;
 
-        yield return new WaitForSeconds(0.8f);
+        yield return new WaitForSeconds(3f);
         
         musicPlayer.clip = nextBGM;
         musicPlayer.Play();

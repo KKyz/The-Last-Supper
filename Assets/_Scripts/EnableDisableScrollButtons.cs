@@ -7,10 +7,10 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 {
     public AudioClip selectSfx, cancelSfx, buttonSfx;
 
-    public PlayerFunctions playerFunctions;
+    private PlayerFunctions playerFunctions;
     private AudioSource sfxPlayer;
     private ScrollArray playerScrollArray;
-    public PlayerManager playerManager;
+    private PlayerManager playerManager;
 
     private GameObject slapButton, recommendButton, talkButton, outTalkButton, outRecommendButton, skipButton;
     private Transform actionButtons, scrollButtons, outsideButtons, cancelButton;

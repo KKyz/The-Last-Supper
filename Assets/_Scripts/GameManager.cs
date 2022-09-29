@@ -150,7 +150,10 @@ public class GameManager : NetworkManager
             
             NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
-            conn.identity.GetComponent<PlayerManager>().RpcRenamePlayer(playerName + i);
+            PlayerManager playerManager = conn.identity.GetComponent<PlayerManager>();
+            playerManager.RpcRenamePlayer(playerName + i);
+            playerManager.AddPlayerModel(i);
+            playerManager.OnStartGame();
             stateManager.activePlayers.Add(conn.identity);
             i++;
         }
@@ -177,7 +180,7 @@ public class GameManager : NetworkManager
     public IEnumerator FadeToNewScene()
     {
         fade.FadeIn(1.5f);
-        StartCoroutine(GameObject.Find("StartCanvas").GetComponent<MenuManager>().BGMFadeOut(0.5f));
+        StartCoroutine(GameObject.Find("StartCanvas").GetComponent<MenuManager>().BGMFadeOut(1.4f));
         
         yield return new WaitForSeconds(1.7f);
         

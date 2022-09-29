@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using TMPro;
-using UnityEngine.Networking.Types;
 
 public class MealManager : NetworkBehaviour
 {

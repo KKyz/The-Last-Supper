@@ -1,9 +1,5 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using TMPro;
 
 public class PlayerManager : NetworkBehaviour
 {
@@ -36,7 +32,7 @@ public class PlayerManager : NetworkBehaviour
     private Transform playerModel;
     private PlayerFunctions playerCanvas;
 
-    public void Start()
+    public void OnStartGame()
     {
         canContinue = false;
         health = 2;
@@ -78,6 +74,28 @@ public class PlayerManager : NetworkBehaviour
 
         PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
         playerCanvas.OnStartGame(this);
+    }
+
+    public void AddPlayerModel(int index)
+    {
+        //Creating player model
+        RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
+        GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], transform, false);
+        newPlayerModel.name = "PlayerModel";
+        NetworkServer.Spawn(newPlayerModel);
+        
+        //Uploading model pos to network
+        NetworkTransformChild networkTransformChild = gameObject.AddComponent<NetworkTransformChild>();
+        networkTransformChild.enabled = false;
+        networkTransformChild.target = newPlayerModel.transform;
+        networkTransformChild.enabled = true;
+        
+        //Uploading model animator to network
+        Animator modelAnim = newPlayerModel.GetComponent<Animator>();
+        NetworkAnimator networkAnimator = gameObject.AddComponent<NetworkAnimator>();
+        networkAnimator.enabled = false;
+        networkAnimator.animator = modelAnim;
+        networkAnimator.enabled = true;
     }
 
     public void SyncPsn(bool oldValue, bool newValue)

@@ -11,6 +11,7 @@ public class PlayerFunctions : NetworkBehaviour
     [HideInInspector]
     public ScrollArray playerScrolls;
     
+    [HideInInspector]
     public PlayerManager player;
 
     [HideInInspector] 
@@ -27,12 +28,39 @@ public class PlayerFunctions : NetworkBehaviour
 
     [HideInInspector] 
     public bool forcePlayerButtonsOff;
+
+    [Header("Popups")] 
+    public GameObject drinkMenu;
+    public GameObject talkMenu;
+    public GameObject drinkPlate;
+    public GameObject chalkBoard;
+    public GameObject recommendFlag;
+    public GameObject typeFlag;
+    public GameObject fakeFlag;
+    public GameObject swapFlag;
+    public GameObject receipt;
+    public GameObject vomitSplash;
+    public GameObject healthSplash;
+    public GameObject smokeSplash;
+    public GameObject scrollInfo;
+
+    [Header("SFX")] 
+    public AudioClip poisonSfx;
+    public AudioClip healthSfx;
+    public AudioClip scrollGetSfx;
+    public AudioClip nextCourseSfx;
+    public AudioClip popupSfx;
     
-    public GameObject drinkMenu, talkMenu, drinkPlate, chalkBoard, recommendFlag, typeFlag, fakeFlag, swapFlag, receipt, vomitSplash, healthSplash, smokeSplash, scrollInfo;
+
+    [Header("Miscellaneous")] 
+    public Sprite dropdownUp;
+    public Sprite dropdownDown;
+    
+    [HideInInspector]
     public string currentState;
+    
+    [HideInInspector]
     public bool countTime;
-    public AudioClip poisonSfx, healthSfx, popupSfx;
-    public Sprite dropdownUp, dropdownDown;
 
     private EnableDisableScrollButtons buttonToggle;
     private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
@@ -44,6 +72,12 @@ public class PlayerFunctions : NetworkBehaviour
     private readonly List<GameObject> smellTargets = new();
     private readonly List<Transform> swapTargets = new();
     private bool startCourse;
+
+    private void DebugAnim(string name)
+    {
+        Debug.LogWarning(name);
+        playerAnim.SetTrigger(name);
+    }
 
     public void OnStartGame(PlayerManager localPlayer)
     {
@@ -122,7 +156,7 @@ public class PlayerFunctions : NetworkBehaviour
                 GameObject vSplash = Instantiate(vomitSplash, Vector2.zero, quaternion.identity);
                 vSplash.transform.SetParent(transform, false);
 
-                playerAnim.SetTrigger("PoisonTr");
+                DebugAnim("PoisonTr");
                 uiAudio.PlayOneShot(poisonSfx);
                 camActions.ShakeCamera(1.5f);
             }
@@ -157,7 +191,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     private IEnumerator QuakeFade()
     {
-        playerAnim.SetTrigger("QuakeTr");
+        DebugAnim("QuakeTr");
         camActions.ShakeCamera(4.5f);
         fade.FadeIn(1.5f);
         buttonToggle.ToggleButtons(6);
@@ -176,7 +210,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Slap()
     {
-        playerAnim.SetTrigger("SlapTr");
+        DebugAnim("SlapTr");
         ResetActions(true);
         stateManager.CmdNextPlayer();
         playerScrolls.RemoveScrollAmount("Slap");
@@ -186,7 +220,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Skip()
     {
-        playerAnim.SetTrigger("SkipTr");
+        DebugAnim("SkipTr");
         player.orderVictim = false;
         ResetActions(true);
         stateManager.CmdNextPlayer();
@@ -205,7 +239,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ConfirmSmell()
     {
-        playerAnim.SetTrigger("SmellTr");
+        DebugAnim("SmellTr");
         foreach (GameObject piece in smellTargets)
         {
             foreach (Transform flag in piece.transform)
@@ -225,7 +259,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmFake()
     {
-        playerAnim.SetTrigger("DecoyTr");
+        DebugAnim("DecoyTr");
         if (fakeTarget.transform.parent.GetComponent<FoodPiece>().type == "Normal")
         {
             mealManager.CmdCheckNPieces();
@@ -262,7 +296,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmSwap()
     {
-        playerAnim.SetTrigger("SwapTr");
+        DebugAnim("SwapTr");
         NetworkIdentity localPlayer = player.transform.GetComponent<NetworkIdentity>();
         Transform[] swapArray = {swapTargets[0], swapTargets[1]};
         CmdSyncSwap(swapTargets[0].GetComponent<FoodPiece>(), swapTargets[1].GetComponent<FoodPiece>(), localPlayer, swapArray);
@@ -334,7 +368,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void OrderDrink()
     {
-        playerAnim.SetTrigger("OrderTr");
+        DebugAnim("OrderTr");
         openPopup = Instantiate(drinkMenu, Vector2.zero, quaternion.identity);
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
@@ -383,6 +417,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void SpawnTalkMenu()
     {
+        uiAudio.PlayOneShot(popupSfx);
         openPopup = Instantiate(talkMenu, Vector2.zero, quaternion.identity);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -393,7 +428,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Encourage()
     {
-        playerAnim.SetTrigger("TauntTr");
+        DebugAnim("TauntTr");
         stateManager.CmdNextEncourage();
         ResetActions(true);
         playerScrolls.RemoveScrollAmount("Taunt");
@@ -405,7 +440,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
         
-        uiAudio.PlayOneShot(popupSfx);
+        uiAudio.PlayOneShot(scrollGetSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
@@ -469,7 +504,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
-        uiAudio.PlayOneShot(popupSfx);
+        uiAudio.PlayOneShot(nextCourseSfx);
         buttonToggle.ToggleButtons(6);
         CmdChangeContinueState(false);
         
@@ -489,6 +524,15 @@ public class PlayerFunctions : NetworkBehaviour
         currentState = "Idle";
         player.orderVictim = false;
         camActions.ZoomOut();
+
+        if (player.actionable)
+        {
+            DebugAnim("ActiveTr");
+        }
+        else
+        {
+            DebugAnim("IdleTr"); 
+        }
 
         if (infoText.gameObject.activeInHierarchy)
         {
@@ -539,13 +583,11 @@ public class PlayerFunctions : NetworkBehaviour
             if (stateManager.currentPlayer == player.gameObject && !forcePlayerButtonsOff)
             {
                 buttonToggle.ToggleButtons(2);
-                playerAnim.SetTrigger("ActiveTr");
             }
 
             else
             {
                 buttonToggle.ToggleButtons(4);
-                playerAnim.SetTrigger("IdleTr");
             }
         }
 
@@ -565,6 +607,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public IEnumerator DespawnBillboard(GameObject billboard)
     {
+        uiAudio.PlayOneShot(popupSfx);
         Vector3 startPos = billboard.transform.position;
         Vector3 goalPos = new Vector3(startPos.x, (startPos.y + 1f), startPos.z);
         LeanTween.alpha(billboard, 0, 0.4f);
@@ -578,6 +621,7 @@ public class PlayerFunctions : NetworkBehaviour
 
     public IEnumerator SpawnBillboard(GameObject billboard, Transform parent)
     {
+        uiAudio.PlayOneShot(popupSfx);
         billboard.transform.SetParent(parent);
         billboard.transform.LookAt(Camera.main.transform.position);
         Vector3 goalPos = billboard.transform.position;
@@ -647,7 +691,7 @@ public class PlayerFunctions : NetworkBehaviour
                     player.actionable = true;
                     player.hasRecommended = false;
                     player.hasTalked = false;
-                    playerAnim.SetTrigger("ActiveTr");
+                    DebugAnim("ActiveTr");
                     CmdAddAuthority(player.connectionToClient);
                 }
 
@@ -742,6 +786,7 @@ public class PlayerFunctions : NetworkBehaviour
                         if (currentState == "Recommending")
                         {
                             player.CmdCreateRecommend(piece.transform.gameObject);
+                            DebugAnim("RecommendTr");
                             ResetActions(true);
                         }
                         
@@ -751,6 +796,7 @@ public class PlayerFunctions : NetworkBehaviour
                             if (currentState == "Eating")
                             {
                                 string pieceType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
+                                DebugAnim("EatTr");
 
                                 if (pieceType == "FakePoison")
                                 {
@@ -789,13 +835,12 @@ public class PlayerFunctions : NetworkBehaviour
                                     Health();
                                     player.nPiecesEaten = 0;
                                 }
-
-                                playerAnim.SetTrigger("EatTr");
+                                
                                 CmdDestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;
                                 currentState = "Idle";
-                                ResetActions(false);
                                 stateManager.CmdNextPlayer();
+                                ResetActions(false);
                             }
 
                             else if (currentState == "Smelling")
