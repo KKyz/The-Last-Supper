@@ -14,7 +14,8 @@ public class CameraActions : MonoBehaviour
         //Player model should be facing the food, so it is rotated across y-axis
         centerPos = GameObject.Find("StateManager").transform.position;
         Vector3 lookTowards = new Vector3(0, centerPos.y, 0);
-        //transform.LookAt(lookTowards);
+        Debug.LogWarning("StateManager is: " + lookTowards);
+        //transform.LookAt(lookTowards);//
 
         //Camera is looking ath the food more directly, so it should transform everything
         playerCam = transform.Find("Camera");

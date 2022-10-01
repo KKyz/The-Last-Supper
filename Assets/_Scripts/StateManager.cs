@@ -35,11 +35,11 @@ public class StateManager : NetworkBehaviour
     [ServerCallback]
     public void OnStartGame()
     {
-        gameCanEnd = false;
         currentPlayer = null;
         playerScript = null;
         turn = 0;
         currentPlayer = activePlayers[turn].gameObject;
+        Debug.Log("CurrentPlayer");
         playerScript = currentPlayer.GetComponent<PlayerManager>();
     }
 

@@ -1,4 +1,5 @@
 using System.Collections;
+using Mirror.Discovery;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
@@ -9,12 +10,14 @@ public class MenuManager : MonoBehaviour
     private AudioSource uiAudio;
     private Camera titleCam;
     private Transform startMenu, settingsMenu, gameSetup, gameFind;
+    private NetworkDiscovery networkDiscovery;
 
     public void Start()
     {
         blur = transform.Find("Blur").gameObject;
         FadeInOut fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        networkDiscovery = GameObject.Find("GameManager").GetComponent<NetworkDiscovery>();
         uiAudio = GetComponent<AudioSource>();
         startMenu = transform.Find("Start");
         settingsMenu = transform.Find("Settings");
@@ -92,6 +95,7 @@ public class MenuManager : MonoBehaviour
         else
         {
             gameManager.StartHost();
+            networkDiscovery.AdvertiseServer();
             OpenSubMenu(gameSetup);
         }
     }
@@ -104,7 +108,7 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            gameManager.StartClient();
+            networkDiscovery.StartDiscovery();
             OpenSubMenu(subMenu);
         }
     }

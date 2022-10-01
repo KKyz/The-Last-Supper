@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using Mirror.Discovery;
+using Mono.CecilX.Cil;
+using TMPro;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
 
@@ -11,17 +14,20 @@ public class GameManager : NetworkManager
     [Scene] public string gameScene;
     public int minPlayers;
     public GameObject playerLobby;
+    public GameObject discoveryButton;
+    public Transform discoveryList;
     public List<PlayerLobby> roomPlayers = new();
     [HideInInspector]  public PlayerLobby localRoomPlayer;
     private Transform playerList;
     private int playerCount;
     private FadeInOut fade;
     private GameObject stateManagerInstance;
+    Dictionary<long, ServerResponse> discoveredServers = new Dictionary<long, ServerResponse>();
 
     [Header("Game")] 
     public GameObject stateManagerObj;
     private StateManager stateManager;
-    public MealManager mealManager;
+    private MealManager mealManager;
     private GameObject currentRestaurant;
 
     private new void Start()
@@ -57,6 +63,7 @@ public class GameManager : NetworkManager
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     { 
         //If in the menus, the lobby player is instantiated and manually added
+        
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
             bool isLeader = roomPlayers.Count == 0;
@@ -89,6 +96,15 @@ public class GameManager : NetworkManager
         }
     }
 
+    public void OnDiscoverServer(ServerResponse info)
+    {
+        // Note that you can check the versioning to decide if you can connect to the server or not using this method
+        discoveredServers[info.serverId] = info;
+        GameObject newDiscoveryButton = Instantiate(discoveryButton, discoveryList, false);
+        newDiscoveryButton.transform.Find("TableName").GetComponent<TextMeshProUGUI>().text = info. "'s Table";
+        newDiscoveryButton.transform.Find("playerCount").GetComponent<TextMeshProUGUI>().text = "/" + maxConnections;
+    }
+
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
     {
         // Remove connection from roomPlayers
@@ -114,7 +130,7 @@ public class GameManager : NetworkManager
 
     private bool IsReadyToStart()
     {
-        //If all players in lobby have isReady = true, then return true
+        // If all players in lobby have isReady = true, then return true
         if (numPlayers < minPlayers)
         {
             return false;

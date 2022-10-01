@@ -54,7 +54,7 @@ public class PlayerManager : NetworkBehaviour
         }
 
         
-        playerModel = transform.Find("PlayerModel");
+        playerModel = transform.Find("Model").GetChild(0);
         playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCam = transform.Find("Camera").gameObject;
         playerCam.SetActive(false);
@@ -78,24 +78,11 @@ public class PlayerManager : NetworkBehaviour
 
     public void AddPlayerModel(int index)
     {
-        //Creating player model
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
-        GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], transform, false);
+        Transform modelContainer = transform.Find("Model");
+        GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], modelContainer, false);
         newPlayerModel.name = "PlayerModel";
         NetworkServer.Spawn(newPlayerModel);
-        
-        //Uploading model pos to network
-        NetworkTransformChild networkTransformChild = gameObject.AddComponent<NetworkTransformChild>();
-        networkTransformChild.enabled = false;
-        networkTransformChild.target = newPlayerModel.transform;
-        networkTransformChild.enabled = true;
-        
-        //Uploading model animator to network
-        Animator modelAnim = newPlayerModel.GetComponent<Animator>();
-        NetworkAnimator networkAnimator = gameObject.AddComponent<NetworkAnimator>();
-        networkAnimator.enabled = false;
-        networkAnimator.animator = modelAnim;
-        networkAnimator.enabled = true;
     }
 
     public void SyncPsn(bool oldValue, bool newValue)
