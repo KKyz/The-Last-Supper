@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SpawnMenu : MonoBehaviour
 {
@@ -27,6 +24,7 @@ public class SpawnMenu : MonoBehaviour
 
     public void CanContinue()
     {
-        GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().CmdChangeContinueState(true);
+        PlayerFunctions playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
+        playerFunctions.player.CmdSwitchContinueState(true);
     }
 }

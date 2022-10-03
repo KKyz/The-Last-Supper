@@ -29,7 +29,7 @@ public class OrderDrink : NetworkBehaviour
         playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
         orderButton = transform.Find("OrderButton").GetComponent<Button>();
         wines = transform.Find("Wines");
-        stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
+        stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
         playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
 
         foreach (NetworkIdentity player in stateManager.activePlayers)

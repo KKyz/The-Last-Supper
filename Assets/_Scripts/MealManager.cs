@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using Mono.CecilX.Cil;
 using TMPro;
 
 public class MealManager : NetworkBehaviour
@@ -30,6 +31,11 @@ public class MealManager : NetworkBehaviour
         normTop = normCounter.colorGradient.topLeft;
         normBottom = normCounter.colorGradient.bottomRight;
         
+        if (localPlayer == null)
+        {
+            localPlayer = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().player;
+        }
+        
         PopulateCourses(menuIndex);
         firstPlate = true;
     }
@@ -55,7 +61,7 @@ public class MealManager : NetworkBehaviour
         }
 
         AudioClip[] Bgm = restaurant.bgmClips;
-        //Add music from selected restaurant into music
+        //Add music from selected restaurant into music 
         foreach (AudioClip track in Bgm)
         {
             bgmStack.Push(track);
@@ -65,7 +71,7 @@ public class MealManager : NetworkBehaviour
 
     public bool PopulatedCourseStack()
     {
-        return courseStack.Count == 4;
+        return courseStack.Count == 4 && localPlayer != null;
     }
 
     [Command(requiresAuthority = false)]
@@ -116,14 +122,15 @@ public class MealManager : NetworkBehaviour
     [ClientRpc]
     private void RpcUpdatePlayerEnd()
     {
-        currentPlate = GameObject.FindWithTag("Plate");
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.ShowChalk();
+        playerCanvas.forcePlayerButtonsOff = false;
+            
+        currentPlate = GameObject.FindWithTag("Plate");
 
         musicManager.PlayBGM(bgmStack.Peek());
 
         GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook();
-        playerCanvas.forcePlayerButtonsOff = false;
 
         if (isServer)
         {
@@ -137,26 +144,19 @@ public class MealManager : NetworkBehaviour
         localPlayer.courseCount += 1;
     }
 
-    [ClientRpc]
-    private void RpcFindLocalPlayer()
-    {
-        if (localPlayer == null)
-        {
-            localPlayer = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().player;
-        }
-    }
-
-    [ClientRpc]
-    private void RpcAssignPlate(GameObject plate)
+    [Command(requiresAuthority = false)]
+    private void CmdAssignPlate(GameObject plate)
     {
         plate.name += localPlayer.courseCount;
-        localPlayer.currentPlate = plate;
+        
+        foreach (NetworkIdentity player in stateManager.activePlayers)
+        {
+            player.GetComponent<PlayerManager>().currentPlate = plate.name;
+        }
     }
 
     private IEnumerator CourseTransitionAnim()
     {
-        RpcFindLocalPlayer();
-        
         Vector3 managerPos = transform.position;
         Vector3 platterStartPos = new Vector3(managerPos.x, managerPos.y + 50f, managerPos.z);
         GameObject platterInstance = Instantiate(platterTop, platterStartPos, Quaternion.identity);
@@ -189,11 +189,9 @@ public class MealManager : NetworkBehaviour
 
         yield return new WaitForSeconds(0.5f);
         
-        RpcAssignPlate(currentPlate);
+        CmdAssignPlate(currentPlate);
 
-        yield return new WaitForSeconds(0.5f);
-        
-        //yield return new WaitUntil(PlateSpawnedOnAllPlayers);
+        yield return new WaitUntil(PlateSpawnedOnAllPlayers);
 
         RpcUpdatePlayerEnd();
 
@@ -207,7 +205,7 @@ public class MealManager : NetworkBehaviour
     {
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
-            if (player.GetComponent<PlayerManager>().currentPlate.name != currentPlate.name)
+            if (player == null || player.GetComponent<PlayerManager>().currentPlate != currentPlate.name)
             {
                 return false;
             }

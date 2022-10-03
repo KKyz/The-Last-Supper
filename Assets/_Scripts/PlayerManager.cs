@@ -4,10 +4,13 @@ using Mirror;
 public class PlayerManager : NetworkBehaviour
 {
 
-    //[HideInInspector]
+    [HideInInspector]
     public int scrollCount, courseCount, pieceCount, nPiecesEaten;
     
     public int health;
+
+    [SyncVar]
+    public string currentPlate;
 
     public bool actionable;
 
@@ -26,14 +29,17 @@ public class PlayerManager : NetworkBehaviour
     public GameObject recommendedPiece;
 
     
-    public GameObject currentRecommend, currentPlate;
+    public GameObject currentRecommend;
     
     private GameObject playerCam;
     private Transform playerModel;
     private PlayerFunctions playerCanvas;
 
-    public void OnStartGame()
+    public void Start()
     {
+        playerCam = transform.Find("Camera").gameObject;
+        playerCam.SetActive(false);
+        
         canContinue = false;
         health = 2;
         scrollCount = 0;
@@ -53,12 +59,8 @@ public class PlayerManager : NetworkBehaviour
             psnArray[i] = false;
         }
 
-        
-        playerModel = transform.Find("Model").GetChild(0);
-        playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
-        playerCam = transform.Find("Camera").gameObject;
-        playerCam.SetActive(false);
-        
+        playerModel = transform.Find("Model");
+
         if (isLocalPlayer)
         {
             playerCam.SetActive(true);
@@ -70,19 +72,35 @@ public class PlayerManager : NetworkBehaviour
                     child.GetComponent<SkinnedMeshRenderer>().enabled = false;
                 }
             }
+            
+            PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
+            
+            playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
+            playerCanvas.OnStartGame(this);
         }
-
-        PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
-        playerCanvas.OnStartGame(this);
+    }
+    
+    [Command(requiresAuthority = false)]
+    public void CmdSwitchContinueState(bool state)
+    {
+        canContinue = state;
+        Debug.LogWarning(name + ": " + state); //This debug cannot be removed...why?
     }
 
-    public void AddPlayerModel(int index)
+    [TargetRpc]
+    public void TargetAddPlayerModel(NetworkConnection conn,int index)
     {
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
         Transform modelContainer = transform.Find("Model");
         GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], modelContainer, false);
-        newPlayerModel.name = "PlayerModel";
         NetworkServer.Spawn(newPlayerModel);
+
+        foreach (Transform item in newPlayerModel.transform)
+        {
+            item.SetParent(modelContainer, false);
+        }
+        
+        NetworkServer.Destroy(newPlayerModel);
     }
 
     public void SyncPsn(bool oldValue, bool newValue)

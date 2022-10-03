@@ -95,7 +95,7 @@ public class MenuManager : MonoBehaviour
         else
         {
             gameManager.StartHost();
-            networkDiscovery.AdvertiseServer();
+            //networkDiscovery.AdvertiseServer();
             OpenSubMenu(gameSetup);
         }
     }
@@ -108,7 +108,8 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            networkDiscovery.StartDiscovery();
+            //networkDiscovery.StartDiscovery();
+            gameManager.StartClient();
             OpenSubMenu(subMenu);
         }
     }

@@ -15,7 +15,7 @@ public class RecommendMenu : MonoBehaviour
     {
         targetPlayer = null;
         int playerCount = 0;
-        stateManager = GameObject.Find("StateManager").GetComponent<StateManager>();
+        stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
         playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
         players.Clear();
         

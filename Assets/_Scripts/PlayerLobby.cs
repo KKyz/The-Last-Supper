@@ -50,9 +50,6 @@ public class PlayerLobby : NetworkBehaviour
             room.roomPlayers.Remove(this);
             lobbyManager.UpdateDisplay();
         }
-        else
-        {
-        }
     }
 
     public void ChangeDisplayName(string oldValue, string newValue)

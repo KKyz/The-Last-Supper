@@ -3,7 +3,7 @@ using Mirror;
 
 public class StateManager : NetworkBehaviour
 {
-
+    
     [SyncVar] 
     public GameObject currentPlayer;
     
@@ -20,7 +20,6 @@ public class StateManager : NetworkBehaviour
 
     public void Start()
     {
-        gameObject.name = "StateManager";
         DontDestroyOnLoad(this);
         gameCanEnd = false;
     }
@@ -52,12 +51,12 @@ public class StateManager : NetworkBehaviour
     {
         foreach (var player in activePlayers)
         {
-            if (!player.GetComponent<PlayerManager>().canContinue)
+            if (player == null || player.GetComponent<PlayerManager>().canContinue == false)
             {
                 return false;
             }
         }
-
+        
         return true;
     }
 

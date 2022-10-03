@@ -33,6 +33,7 @@ public class RecieptAnimation : MonoBehaviour
         sfxSource = playerFunctions.GetComponent<AudioSource>();
         receipt = transform.Find("Receipt").gameObject;
         resultText = transform.Find("Banner2").GetComponent<CanvasGroup>();
+        background = transform.Find("BG").GetComponent<Image>();
         
         exitButton.GetComponent<Button>().interactable = false;
         spectateButton.GetComponent<Button>().interactable = false;

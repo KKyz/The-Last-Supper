@@ -19,7 +19,7 @@ GameObject:
   - component: {fileID: 1778691644}
   m_Layer: 0
   m_Name: StateManager
-  m_TagString: Untagged
+  m_TagString: StateManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -92,6 +92,7 @@ MonoBehaviour:
   restaurant: {fileID: 2410075232901827257, guid: 0a4352b7cd4ce61479f16e6a648e358d, type: 3}
   platterTop: {fileID: 8302602564438247045, guid: c124779b722d5b748a6a01d2d26c55c4, type: 3}
   menuIndex: 0
+  localPlayer: {fileID: 0}
 --- !u!114 &1778691645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -104,7 +105,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e1b3172ba2923e49b938ca2ffb0f71b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  titleBGM: {fileID: 8300000, guid: 0d0529ffb700ea54193294b47a6d12a3, type: 3}
   winResultBGM: {fileID: 8300000, guid: 056c6ad00ad73b54b8c010fa59a872a2, type: 3}
   loseJingle: {fileID: 8300000, guid: c7770ead3e3f80548b0834a1d6f02560, type: 3}
   winJingle: {fileID: 8300000, guid: b0061ad6512633248a3f42c5053466c1, type: 3}

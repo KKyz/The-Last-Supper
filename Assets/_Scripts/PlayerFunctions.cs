@@ -81,7 +81,7 @@ public class PlayerFunctions : NetworkBehaviour
 
     public void OnStartGame(PlayerManager localPlayer)
     {
-        GameObject stateManagerObj = GameObject.Find("StateManager");
+        GameObject stateManagerObj = GameObject.Find("StateManager(Clone)");
         stateManager = stateManagerObj.GetComponent<StateManager>();
         mealManager = stateManagerObj.GetComponent<MealManager>();
         musicManager = stateManagerObj.GetComponent<MusicManager>();
@@ -113,12 +113,6 @@ public class PlayerFunctions : NetworkBehaviour
         countTime = true;
         playerScrolls.ResetScrollAmount();
         buttonToggle.OnStartGame();
-    }
-
-    [Command(requiresAuthority = false)]
-    public void CmdChangeContinueState(bool state)
-    {
-        player.canContinue = state;
     }
 
     [Client]
@@ -319,7 +313,7 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Command]
-    public void CmdSyncSwap(FoodPiece target1, FoodPiece target2, NetworkIdentity playerID, Transform[] targets)
+    private void CmdSyncSwap(FoodPiece target1, FoodPiece target2, NetworkIdentity playerID, Transform[] targets)
     {
         (target1.type, target2.type) = (target2.type, target1.type);
         NetworkConnection conn = playerID.connectionToClient;
@@ -327,7 +321,7 @@ public class PlayerFunctions : NetworkBehaviour
     }
     
     [TargetRpc]
-    public void TargetUpdateFlag(NetworkConnection target, Transform[] targets)
+    private void TargetUpdateFlag(NetworkConnection target, Transform[] targets)
     {
         foreach (Transform piece in targets)
         {
@@ -449,8 +443,6 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("You've got a " + pieceType + " scroll!");
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = playerScrolls.GetDescription(pieceType);
         buttonToggle.ToggleButtons(6);
-
-       // StartCoroutine(HideMiniScrollInfo());
     }
 
     [Client]
@@ -462,7 +454,7 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (player.pieceCount <= 2)
         {
-            openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "Very Unlucky"; 
+            openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "No Witches?"; 
         }
         else
         {
@@ -506,7 +498,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         uiAudio.PlayOneShot(nextCourseSfx);
         buttonToggle.ToggleButtons(6);
-        CmdChangeContinueState(false);
+        player.CmdSwitchContinueState(false);
         
         SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
         openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
@@ -633,12 +625,6 @@ public class PlayerFunctions : NetworkBehaviour
         yield return 0;
     }
 
-    private IEnumerator HideMiniScrollInfo()
-    {
-        yield return new WaitForSeconds(3f);
-        openPopup.GetComponent<SpawnMenu>().SlideOutMenu();
-    }
-
     [Command]
     private void CmdRemoveNPiece()
     {
@@ -686,16 +672,17 @@ public class PlayerFunctions : NetworkBehaviour
             //If it is the player's turn, switch to Action Buttons
             if (stateManager.currentPlayer == player.gameObject && (buttonToggle.menuMode == 4 || buttonToggle.menuMode == 6))
             {
-                if (!player.actionable)
+                if (!player.actionable && netIdentity.hasAuthority == false)
                 {
                     player.actionable = true;
                     player.hasRecommended = false;
                     player.hasTalked = false;
                     DebugAnim("ActiveTr");
+                    CmdRemoveAuthority();
                     CmdAddAuthority(player.connectionToClient);
                 }
 
-                if (!fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff)
+                if (!fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff && stateManager.AllPlayersCanContinue())
                 {
                     buttonToggle.ToggleButtons(2);
                 }
@@ -711,7 +698,7 @@ public class PlayerFunctions : NetworkBehaviour
                     CmdRemoveAuthority();
                 }
 
-                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff)
+                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff && stateManager.AllPlayersCanContinue())
                 {
                     buttonToggle.ToggleButtons(4);
                 }

@@ -1,3 +1,4 @@
+using System;
 using EZCameraShake;
 using UnityEngine;
 
@@ -12,10 +13,9 @@ public class CameraActions : MonoBehaviour
         camShaker = GetComponent<CameraShaker>();
         
         //Player model should be facing the food, so it is rotated across y-axis
-        centerPos = GameObject.Find("StateManager").transform.position;
+        centerPos = GameObject.Find("StateManager(Clone)").transform.position;
         Vector3 lookTowards = new Vector3(0, centerPos.y, 0);
-        Debug.LogWarning("StateManager is: " + lookTowards);
-        //transform.LookAt(lookTowards);//
+        //transform.LookAt(lookTowards);
 
         //Camera is looking ath the food more directly, so it should transform everything
         playerCam = transform.Find("Camera");
@@ -33,6 +33,7 @@ public class CameraActions : MonoBehaviour
 
     public void ZoomIn()
     {
+        Debug.LogWarning("Zooming  In");
         Vector3 direction = zoomOutPos - plateCorrectedPos;
         Vector3 zoomInPos = zoomOutPos - (direction * 0.4f);
         LeanTween.move(playerCam.gameObject, zoomInPos, 1f).setEaseOutSine();
@@ -40,6 +41,7 @@ public class CameraActions : MonoBehaviour
     
     public void ZoomOut()
     {
+        Debug.LogWarning("Zooming Out");
         LeanTween.move(playerCam.gameObject, zoomOutPos, 1f).setEaseOutSine();
         UpdateCameraLook();
     }

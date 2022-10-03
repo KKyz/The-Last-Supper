@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using Mirror.Discovery;
-using Mono.CecilX.Cil;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
@@ -101,8 +100,8 @@ public class GameManager : NetworkManager
         // Note that you can check the versioning to decide if you can connect to the server or not using this method
         discoveredServers[info.serverId] = info;
         GameObject newDiscoveryButton = Instantiate(discoveryButton, discoveryList, false);
-        newDiscoveryButton.transform.Find("TableName").GetComponent<TextMeshProUGUI>().text = info. "'s Table";
-        newDiscoveryButton.transform.Find("playerCount").GetComponent<TextMeshProUGUI>().text = "/" + maxConnections;
+        newDiscoveryButton.transform.Find("TableName").GetComponent<TextMeshProUGUI>().text = "AddInfo" + "'s Table";
+        newDiscoveryButton.transform.Find("playerCount").GetComponent<TextMeshProUGUI>().text = "playerCount" + "/" + maxConnections;
     }
 
     public override void OnServerDisconnect(NetworkConnectionToClient conn)
@@ -168,8 +167,7 @@ public class GameManager : NetworkManager
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
             PlayerManager playerManager = conn.identity.GetComponent<PlayerManager>();
             playerManager.RpcRenamePlayer(playerName + i);
-            playerManager.AddPlayerModel(i);
-            playerManager.OnStartGame();
+            //playerManager.TargetAddPlayerModel(conn, i);
             stateManager.activePlayers.Add(conn.identity);
             i++;
         }
