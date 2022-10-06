@@ -26,9 +26,6 @@ public class PlayerFunctions : NetworkBehaviour
     [HideInInspector]
     public TextMeshProUGUI infoText;
 
-    [HideInInspector] 
-    public bool forcePlayerButtonsOff;
-
     [Header("Popups")] 
     public GameObject drinkMenu;
     public GameObject talkMenu;
@@ -94,9 +91,9 @@ public class PlayerFunctions : NetworkBehaviour
         fakeConfirm = transform.Find("FakeConfirm").gameObject;
         fade = transform.Find("Fade").GetComponent<FadeInOut>();
         infoText = transform.Find("Info").GetComponent<TextMeshProUGUI>();
-        
+        Transform exitObj = transform.Find("ExitObj");
+
         currentState = "Idle";
-        forcePlayerButtonsOff = false;
         player = null;
         openPopup = null;
         fakeTarget = null;
@@ -111,7 +108,7 @@ public class PlayerFunctions : NetworkBehaviour
         playerAnim = localPlayer.GetComponentInChildren<Animator>();
 
         countTime = true;
-        playerScrolls.ResetScrollAmount();
+        //playerScrolls.ResetScrollAmount();
         buttonToggle.OnStartGame();
     }
 
@@ -312,7 +309,7 @@ public class PlayerFunctions : NetworkBehaviour
         ResetActions(true);
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     private void CmdSyncSwap(FoodPiece target1, FoodPiece target2, NetworkIdentity playerID, Transform[] targets)
     {
         (target1.type, target2.type) = (target2.type, target1.type);
@@ -451,14 +448,19 @@ public class PlayerFunctions : NetworkBehaviour
         ResetActions(true);
         stateManager.CmdRemovePlayer(player.netIdentity);
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
+        openPopup.name = "LoseScreen";
 
         if (player.pieceCount <= 2)
         {
-            openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "No Witches?"; 
+            openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "No Witches?"; 
+        }
+        else if (stateManager.activePlayers.Count == 0)
+        {
+            openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "This Game Has Ended"; 
         }
         else
         {
-            openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Lose";  
+            openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "You Lose";  
         }
         
         openPopup.GetComponent<ShowStats>().LoadStats(player);
@@ -471,13 +473,28 @@ public class PlayerFunctions : NetworkBehaviour
         if (stateManager.activePlayers.Count > 1)
         {stateManager.CmdNextPlayer();}
     }
+    
+    [Client]
+    private void ServerGameEnd()
+    {
+        ResetActions(true);
+        openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
+        openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "This Game Has Ended";
+
+        openPopup.GetComponent<ShowStats>().LoadStats(player);
+        openPopup.transform.SetParent(transform, false);
+        openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+        buttonToggle.ToggleButtons(6);
+        countTime = false;
+    }
 
     [Client]
     private void Win()
     {
         ResetActions(true);
+        stateManager.CmdRemovePlayer(player.netIdentity);
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
-        openPopup.transform.Find("Banner2").GetComponent<TextMeshProUGUI>().text = "You Win";
+        openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "You Win!";
         openPopup.GetComponent<ShowStats>().LoadStats(player);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -490,24 +507,27 @@ public class PlayerFunctions : NetworkBehaviour
 
     public void ShowChalk()
     {
-        string chalkDescription = ""; 
+        if (stateManager.activePlayers.Contains(player.netIdentity))
+        {
+            string chalkDescription = ""; 
         
-        openPopup = Instantiate(chalkBoard, Vector2.zero, quaternion.identity);
-        openPopup.transform.SetParent(transform, false);
-        openPopup.transform.SetSiblingIndex(transform.childCount - 2);
-        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
-        uiAudio.PlayOneShot(nextCourseSfx);
-        buttonToggle.ToggleButtons(6);
-        player.CmdSwitchContinueState(false);
+            openPopup = Instantiate(chalkBoard, Vector2.zero, quaternion.identity);
+            openPopup.transform.SetParent(transform, false);
+            openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+            openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+            uiAudio.PlayOneShot(nextCourseSfx);
+            buttonToggle.ToggleButtons(6);
+            player.CmdSwitchContinueState(false);
         
-        SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
-        openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
-        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = chalkData.courseName;
-        chalkDescription += "- " + chalkData.pieceTypes[0] + " Empty Pieces";
-        chalkDescription += "\n - " + chalkData.pieceTypes[1] + " Poison Pieces";
-        chalkDescription += "\n - " + chalkData.pieceTypes[2] + " Special Pieces";
-        chalkDescription += "\n - " + (chalkData.pieceTypes[0] +  chalkData.pieceTypes[1] + chalkData.pieceTypes[2]) +" Total Pieces";
-        openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = chalkDescription;
+            SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
+            openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
+            openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = chalkData.courseName;
+            chalkDescription += "- " + chalkData.pieceTypes[0] + " Empty Pieces";
+            chalkDescription += "\n - " + chalkData.pieceTypes[1] + " Poison Pieces";
+            chalkDescription += "\n - " + chalkData.pieceTypes[2] + " Special Pieces";
+            chalkDescription += "\n - " + (chalkData.pieceTypes[0] +  chalkData.pieceTypes[1] + chalkData.pieceTypes[2]) +" Total Pieces";
+            openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = chalkDescription;
+        }
     }
 
     [Client]
@@ -537,7 +557,7 @@ public class PlayerFunctions : NetworkBehaviour
             {
                 openPopup.GetComponent<SpawnMenu>().SlideOutMenu();
             }
-            else if (!openPopup.CompareTag("ScrollInfo"))
+            else if (!openPopup.CompareTag("ScrollInfo") && openPopup.name != "LoseScreen")
             {
                 openPopup.GetComponent<SpawnMenu>().SlideOutMenu();
             }
@@ -572,7 +592,7 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (openPopup == null)
         {
-            if (stateManager.currentPlayer == player.gameObject && !forcePlayerButtonsOff)
+            if (stateManager.currentPlayer == player.gameObject && stateManager.AllPlayersCanContinue())
             {
                 buttonToggle.ToggleButtons(2);
             }
@@ -634,13 +654,14 @@ public class PlayerFunctions : NetworkBehaviour
     [Command]
     private void CmdNextCourse()
     {
+        RpcForceButtonsOff();
         mealManager.NextCourse();
     }
 
     [ClientRpc]
     private void RpcForceButtonsOff()
     {
-        forcePlayerButtonsOff = true;
+        player.CmdSwitchContinueState(false);
         buttonToggle.ToggleButtons(6);
     }
 
@@ -670,7 +691,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (openPopup == null && player != null)
         {
             //If it is the player's turn, switch to Action Buttons
-            if (stateManager.currentPlayer == player.gameObject && (buttonToggle.menuMode == 4 || buttonToggle.menuMode == 6))
+            if (stateManager.currentPlayer == player.gameObject && (buttonToggle.menuMode == 4 || buttonToggle.menuMode == 6 || buttonToggle.menuMode == 5))
             {
                 if (!player.actionable && netIdentity.hasAuthority == false)
                 {
@@ -682,7 +703,7 @@ public class PlayerFunctions : NetworkBehaviour
                     CmdAddAuthority(player.connectionToClient);
                 }
 
-                if (!fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff && stateManager.AllPlayersCanContinue())
+                if (!fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
                 {
                     buttonToggle.ToggleButtons(2);
                 }
@@ -698,7 +719,7 @@ public class PlayerFunctions : NetworkBehaviour
                     CmdRemoveAuthority();
                 }
 
-                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && !forcePlayerButtonsOff && stateManager.AllPlayersCanContinue())
+                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
                 {
                     buttonToggle.ToggleButtons(4);
                 }
@@ -707,16 +728,23 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (player != null)
         {
-            if (player.health <= 0 && openPopup == null)
+            if (player.health == 0 && openPopup == null)
             {
                 Die();
             }
-
-            if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health > 0 && openPopup == null)
+            
+            else if (stateManager.activePlayers.Count == 0 && openPopup != null && openPopup.name == "LoseScreen" && player.isServer)
             {
-                //Win();
+                Destroy(openPopup);
+                ServerGameEnd();
             }
 
+
+            else if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
+            {
+                Win();
+            }
+            
             if (player.actionable)
             {
                 if (Input.GetKeyDown("1"))
@@ -748,10 +776,14 @@ public class PlayerFunctions : NetworkBehaviour
                 {
                     Win();
                 }
+                
+                if (Input.GetKeyDown("7"))
+                {
+                    Swap();
+                }
 
                 if (Input.GetKeyDown("c"))
                 {
-                    RpcForceButtonsOff();
                     CmdNextCourse();
                 }
 
@@ -813,7 +845,6 @@ public class PlayerFunctions : NetworkBehaviour
 
                                 if (mealManager.nPieces <= 0)
                                 {
-                                    RpcForceButtonsOff();
                                     CmdNextCourse();
                                 }
 

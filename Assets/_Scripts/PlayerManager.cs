@@ -127,7 +127,8 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     public void RpcRenamePlayer(string newName)
     {
-        gameObject.name = newName;
+        netIdentity.name = newName;
+        gameObject.name = netIdentity.name;
     }
 
     public void SyncRecommended(GameObject oldValue, GameObject newValue)
@@ -139,6 +140,7 @@ public class PlayerManager : NetworkBehaviour
             //If the piece doesn't have any flags already, create one
             Vector3 pTrans = recommendedPiece.transform.position;
             currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            NetworkServer.Spawn(currentRecommend);
             //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = transform.name;
             StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
         }
@@ -157,6 +159,7 @@ public class PlayerManager : NetworkBehaviour
             Vector3 pTrans = recommendedPiece.transform.position;
             currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
             currentRecommend.transform.SetParent(recommendedPiece.transform);
+            NetworkServer.Spawn(currentRecommend);
             //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = transform.name;
             StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
         }

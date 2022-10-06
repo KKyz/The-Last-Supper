@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using TMPro;
@@ -17,7 +16,7 @@ public class TalkMenu : NetworkBehaviour
 
     void Start()
     {
-        message = "";
+        message = null;
         int playerCount = 0;
         stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
         playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
@@ -31,7 +30,7 @@ public class TalkMenu : NetworkBehaviour
             {
                 players.Add(playerIdentity);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
-                playerToggles.transform.GetChild(playerCount).GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = player.name;
+                playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TextMeshProUGUI>().text = player.name;
                 playerCount += 1;
             }
         }
@@ -60,7 +59,16 @@ public class TalkMenu : NetworkBehaviour
             {
                 GameObject talkButton = attackRow.GetChild(i).gameObject;
                 talkButton.SetActive(true);
-                talkButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = players[i] + " is targeting you";
+                string buttonText = GetComponentInChildren<TextMeshProUGUI>().text;
+
+                if (players[i].isLocalPlayer)
+                {
+                    buttonText = "I am targeting you";
+                }
+                else
+                {
+                    buttonText = players[i] + " is targeting you";
+                }
             }
         }
         
@@ -73,7 +81,16 @@ public class TalkMenu : NetworkBehaviour
             {
                 GameObject talkButton = supportRow.GetChild(i).gameObject;
                 talkButton.SetActive(true);
-                talkButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = players[i] + " is helping you";
+                string buttonText = GetComponentInChildren<TextMeshProUGUI>().text;
+
+                if (players[i].isLocalPlayer)
+                {
+                    buttonText = "I am helping you";
+                }
+                else
+                {
+                    buttonText = players[i] + " is helping you";
+                }
             }
         }
         
@@ -82,11 +99,11 @@ public class TalkMenu : NetworkBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
-            if (players[i] != targetPlayer)
+            if (players[i] != targetPlayer && players[i].isLocalPlayer == false)
             {
                 GameObject talkButton = teamRow.GetChild(i).gameObject;
                 talkButton.SetActive(true);
-                talkButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "let's team up on " + players[i];
+                talkButton.transform.GetComponentInChildren<TextMeshProUGUI>().text = "let's team up on " + players[i];
             }
         }
 

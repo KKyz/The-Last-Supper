@@ -48,7 +48,7 @@ public class MenuManager : MonoBehaviour
     {
         float startVolume = uiAudio.volume;
  
-        while (uiAudio.volume > 0) {
+        while (uiAudio.volume > 0 && uiAudio != null){
             uiAudio.volume -= startVolume * Time.deltaTime / fadeTime;
  
             yield return null;

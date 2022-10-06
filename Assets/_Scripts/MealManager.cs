@@ -124,8 +124,7 @@ public class MealManager : NetworkBehaviour
     {
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.ShowChalk();
-        playerCanvas.forcePlayerButtonsOff = false;
-            
+
         currentPlate = GameObject.FindWithTag("Plate");
 
         musicManager.PlayBGM(bgmStack.Peek());
@@ -141,7 +140,10 @@ public class MealManager : NetworkBehaviour
     [ClientRpc]
     private void RpcAddCourseCounter()
     {
-        localPlayer.courseCount += 1;
+        if (localPlayer != null && stateManager.activePlayers.Contains(localPlayer.netIdentity))
+        {
+            localPlayer.courseCount += 1;
+        }
     }
 
     [Command(requiresAuthority = false)]

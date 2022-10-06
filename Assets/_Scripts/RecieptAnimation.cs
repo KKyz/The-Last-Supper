@@ -1,7 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 public class RecieptAnimation : MonoBehaviour
@@ -12,6 +10,7 @@ public class RecieptAnimation : MonoBehaviour
     private Image background;
     private CanvasGroup exitButton, resultText, spectateButton;
     private PlayerFunctions playerFunctions;
+    private Color bgColor;
 
     public void Spectate()
     {
@@ -32,8 +31,10 @@ public class RecieptAnimation : MonoBehaviour
         playerFunctions = transform.parent.GetComponent<PlayerFunctions>();
         sfxSource = playerFunctions.GetComponent<AudioSource>();
         receipt = transform.Find("Receipt").gameObject;
-        resultText = transform.Find("Banner2").GetComponent<CanvasGroup>();
+        resultText = transform.Find("Banner").GetComponent<CanvasGroup>();
         background = transform.Find("BG").GetComponent<Image>();
+
+        bgColor = background.color;
         
         exitButton.GetComponent<Button>().interactable = false;
         spectateButton.GetComponent<Button>().interactable = false;
@@ -47,10 +48,13 @@ public class RecieptAnimation : MonoBehaviour
         receipt.transform.position = initPos;
 
         StartCoroutine(ResultAnimation(targetPos));
+        
     }
 
     private IEnumerator ResultAnimation(Vector2 finalPos)
     {
+        yield return 0;
+        
         //Reveal "you win/lose" text
         
         LeanTween.alphaCanvas(resultText, 1f, 0.5f);
@@ -68,15 +72,18 @@ public class RecieptAnimation : MonoBehaviour
         
 
         //Reveal quit button
-        if (!playerFunctions.player.isServer)
+        if (playerFunctions.stateManager.activePlayers.Count == 0 || playerFunctions.player.isServer == false)
         {
             yield return new WaitForSeconds(1f);
             LeanTween.alphaCanvas(exitButton, 1f, 0.5f);
-            exitButton.GetComponent<Button>().interactable = true;
+            exitButton.GetComponent<Button>().interactable = true; 
         }
         
-        yield return new WaitForSeconds(1f);
-        LeanTween.alphaCanvas(spectateButton, 1f, 0.5f);
-        spectateButton.GetComponent<Button>().interactable = true;
+        if (playerFunctions.stateManager.activePlayers.Count != 0)
+        {
+            yield return new WaitForSeconds(0.4f);
+            LeanTween.alphaCanvas(spectateButton, 1f, 0.5f);
+            spectateButton.GetComponent<Button>().interactable = true;
+        }
     }
 }

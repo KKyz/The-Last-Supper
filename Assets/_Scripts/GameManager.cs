@@ -166,7 +166,7 @@ public class GameManager : NetworkManager
             NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
             PlayerManager playerManager = conn.identity.GetComponent<PlayerManager>();
-            playerManager.RpcRenamePlayer(playerName + i);
+            conn.identity.name = playerName + i;
             //playerManager.TargetAddPlayerModel(conn, i);
             stateManager.activePlayers.Add(conn.identity);
             i++;
@@ -225,6 +225,12 @@ public class GameManager : NetworkManager
         stateManager.transform.position = GameObject.Find("StateManagerPos").transform.position;
         ReplacePlayers();
 
+        foreach (NetworkIdentity activePlayer in stateManager.activePlayers)
+        {
+            PlayerManager playerManager = activePlayer.GetComponent<PlayerManager>();
+            playerManager.RpcRenamePlayer(activePlayer.name); 
+        }
+
         yield return new WaitUntil(HasChangedRoomToGamePlayers);
         
         stateManager.OnStartGame();
@@ -254,6 +260,9 @@ public class GameManager : NetworkManager
 
         else
         {
+            Debug.LogWarning("Stopped Client");
+            StopClient();
+            
             if (stateManagerInstance != null)
             {
                 Destroy(stateManagerInstance);
@@ -278,6 +287,12 @@ public class GameManager : NetworkManager
         if (newSceneName != "StartMenu")
         {
             StartCoroutine(PostStartCall());
+        }
+
+        else
+        {
+            Debug.LogWarning("Stopped Host");
+            StopHost();
         }
     }
 }

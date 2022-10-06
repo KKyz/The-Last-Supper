@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
-using Mirror.Examples.Chat;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -92,7 +90,6 @@ public class OrderDrink : NetworkBehaviour
 
     public void ChangeAmount()
     {
-
         for (int i = 0; i < 4; i++)
         {
             psnArray[i] = false;
