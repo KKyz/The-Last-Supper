@@ -37,6 +37,7 @@ public class ShowStats : MonoBehaviour
 
     public void QuitToTitle()
     {
+        ((GameManager)GameManager.singleton).ReturnToTitle();
         SceneManager.LoadScene("StartMenu");
     }
 }

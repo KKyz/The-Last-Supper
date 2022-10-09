@@ -47,6 +47,9 @@ public class PlayerFunctions : NetworkBehaviour
     public AudioClip scrollGetSfx;
     public AudioClip nextCourseSfx;
     public AudioClip popupSfx;
+    public AudioClip eatingSfx;
+    public AudioClip flagSfx;
+    public AudioClip playerActiveSfx;
     
 
     [Header("Miscellaneous")] 
@@ -147,7 +150,7 @@ public class PlayerFunctions : NetworkBehaviour
                 GameObject vSplash = Instantiate(vomitSplash, Vector2.zero, quaternion.identity);
                 vSplash.transform.SetParent(transform, false);
 
-                DebugAnim("PoisonTr");
+                //DebugAnim("PoisonTr");
                 uiAudio.PlayOneShot(poisonSfx);
                 camActions.ShakeCamera(1.5f);
             }
@@ -182,7 +185,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     private IEnumerator QuakeFade()
     {
-        DebugAnim("QuakeTr");
+        //DebugAnim("QuakeTr");
         camActions.ShakeCamera(4.5f);
         fade.FadeIn(1.5f);
         buttonToggle.ToggleButtons(6);
@@ -201,7 +204,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Slap()
     {
-        DebugAnim("SlapTr");
+        //DebugAnim("SlapTr");
         ResetActions(true);
         stateManager.CmdNextPlayer();
         playerScrolls.RemoveScrollAmount("Slap");
@@ -211,7 +214,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Skip()
     {
-        DebugAnim("SkipTr");
+        //DebugAnim("SkipTr");
         player.orderVictim = false;
         ResetActions(true);
         stateManager.CmdNextPlayer();
@@ -230,7 +233,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ConfirmSmell()
     {
-        DebugAnim("SmellTr");
+        //DebugAnim("SmellTr");
         foreach (GameObject piece in smellTargets)
         {
             foreach (Transform flag in piece.transform)
@@ -250,7 +253,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmFake()
     {
-        DebugAnim("DecoyTr");
+        //DebugAnim("DecoyTr");
         if (fakeTarget.transform.parent.GetComponent<FoodPiece>().type == "Normal")
         {
             mealManager.CmdCheckNPieces();
@@ -287,7 +290,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public void ConfirmSwap()
     {
-        DebugAnim("SwapTr");
+        //DebugAnim("SwapTr");
         NetworkIdentity localPlayer = player.transform.GetComponent<NetworkIdentity>();
         Transform[] swapArray = {swapTargets[0], swapTargets[1]};
         CmdSyncSwap(swapTargets[0].GetComponent<FoodPiece>(), swapTargets[1].GetComponent<FoodPiece>(), localPlayer, swapArray);
@@ -359,7 +362,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void OrderDrink()
     {
-        DebugAnim("OrderTr");
+        //DebugAnim("OrderTr");
         openPopup = Instantiate(drinkMenu, Vector2.zero, quaternion.identity);
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
@@ -419,7 +422,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Encourage()
     {
-        DebugAnim("TauntTr");
+        //DebugAnim("TauntTr");
         stateManager.CmdNextEncourage();
         ResetActions(true);
         playerScrolls.RemoveScrollAmount("Taunt");
@@ -539,11 +542,11 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (player.actionable)
         {
-            DebugAnim("ActiveTr");
+            //DebugAnim("ActiveTr");
         }
         else
         {
-            DebugAnim("IdleTr"); 
+            //DebugAnim("IdleTr"); 
         }
 
         if (infoText.gameObject.activeInHierarchy)
@@ -619,7 +622,7 @@ public class PlayerFunctions : NetworkBehaviour
     
     public IEnumerator DespawnBillboard(GameObject billboard)
     {
-        uiAudio.PlayOneShot(popupSfx);
+        uiAudio.PlayOneShot(flagSfx);
         Vector3 startPos = billboard.transform.position;
         Vector3 goalPos = new Vector3(startPos.x, (startPos.y + 1f), startPos.z);
         LeanTween.alpha(billboard, 0, 0.4f);
@@ -633,7 +636,7 @@ public class PlayerFunctions : NetworkBehaviour
 
     public IEnumerator SpawnBillboard(GameObject billboard, Transform parent)
     {
-        uiAudio.PlayOneShot(popupSfx);
+        uiAudio.PlayOneShot(flagSfx);
         billboard.transform.SetParent(parent);
         billboard.transform.LookAt(Camera.main.transform.position);
         Vector3 goalPos = billboard.transform.position;
@@ -698,7 +701,8 @@ public class PlayerFunctions : NetworkBehaviour
                     player.actionable = true;
                     player.hasRecommended = false;
                     player.hasTalked = false;
-                    DebugAnim("ActiveTr");
+                    uiAudio.PlayOneShot(playerActiveSfx);
+                    //DebugAnim("ActiveTr");
                     CmdRemoveAuthority();
                     CmdAddAuthority(player.connectionToClient);
                 }
@@ -742,7 +746,7 @@ public class PlayerFunctions : NetworkBehaviour
 
             else if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
             {
-                Win();
+                // Win();
             }
             
             if (player.actionable)
@@ -759,27 +763,22 @@ public class PlayerFunctions : NetworkBehaviour
                 
                 if (Input.GetKeyDown("3"))
                 {
-                    Recommend();
+                    Smell();
                 }
                 
                 if (Input.GetKeyDown("4"))
                 {
-                    Smell();
+                    Swap();
                 }
                 
                 if (Input.GetKeyDown("5"))
                 {
-                    CmdQuake();
+                    FakePoison();
                 }
                 
                 if (Input.GetKeyDown("6"))
                 {
-                    Win();
-                }
-                
-                if (Input.GetKeyDown("7"))
-                {
-                    Swap();
+                    OrderDrink();
                 }
 
                 if (Input.GetKeyDown("c"))
@@ -805,7 +804,7 @@ public class PlayerFunctions : NetworkBehaviour
                         if (currentState == "Recommending")
                         {
                             player.CmdCreateRecommend(piece.transform.gameObject);
-                            DebugAnim("RecommendTr");
+                            //DebugAnim("RecommendTr");
                             ResetActions(true);
                         }
                         
@@ -815,7 +814,7 @@ public class PlayerFunctions : NetworkBehaviour
                             if (currentState == "Eating")
                             {
                                 string pieceType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
-                                DebugAnim("EatTr");
+                                //DebugAnim("EatTr");
 
                                 if (pieceType == "FakePoison")
                                 {
@@ -856,6 +855,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 
                                 CmdDestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;
+                                uiAudio.PlayOneShot(eatingSfx);
                                 currentState = "Idle";
                                 stateManager.CmdNextPlayer();
                                 ResetActions(false);

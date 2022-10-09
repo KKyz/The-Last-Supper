@@ -250,7 +250,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1527820043}
   m_Direction: 0
   m_Value: 1
-  m_Size: 0.9999999
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -364,7 +364,7 @@ RectTransform:
   m_Father: {fileID: 779711967}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.00000011920929, y: 0}
+  m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
@@ -435,8 +435,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 6806155316201257017}
+  m_Children: []
   m_Father: {fileID: 42684554}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1077,9 +1076,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Mirror.NetworkManager, Mirror
-        m_MethodName: StopHost
+      - m_Target: {fileID: 3252609467636339213}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: CancelTableButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -6261,6 +6260,18 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 3252609468040909560}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3252609467636339213}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: CancelSfx
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -18534,6 +18545,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   selectSfx: {fileID: 8300000, guid: 5e822949210dded4f9bae775124895dc, type: 3}
   cancelSfx: {fileID: 8300000, guid: 0e8011663b1e3f44980b43cbf952895c, type: 3}
+  startGameSfx: {fileID: 8300000, guid: 4755a2bb4682b4e41bed4b995d55b257, type: 3}
+  gameManagerPrefab: {fileID: 2420248719740584065, guid: 76586cd559f8dc84b953988885e9a807, type: 3}
+  content: {fileID: 1547554044}
 --- !u!82 &982156893
 AudioSource:
   m_ObjectHideFlags: 0
@@ -20136,7 +20150,7 @@ MonoBehaviour:
         m_MethodName: ConditionStartClient
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 3252609467139184437}
+          m_ObjectArgument: {fileID: 3273996837664787666}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Transform, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -22553,9 +22567,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: StartGame
+      - m_Target: {fileID: 3252609467636339213}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: StartButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -22568,6 +22582,18 @@ MonoBehaviour:
       - m_Target: {fileID: 3252609467636339213}
         m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
         m_MethodName: SelectSfx
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 3252609467636339213}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: StartSfx
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -23729,10 +23755,9 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: Mirror.Discovery.NetworkDiscoveryBase`2[[Mirror.Discovery.ServerRequest,
-          Mirror.Components
-        m_MethodName: StopDiscovery
+      - m_Target: {fileID: 3252609467636339213}
+        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_MethodName: CancelSearchButton
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -24560,121 +24585,3 @@ MonoBehaviour:
   - {fileID: 2129837150594400349}
   - {fileID: 6607269556622683209}
   startGameButton: {fileID: 5860036470412007814}
---- !u!1001 &3252609466557400707
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 1547554044}
-    m_Modifications:
-    - target: {fileID: 3622766263059581722, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 3.300003
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_Pivot.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_RootOrder
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 300
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8582407151345838835, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-      propertyPath: m_Name
-      value: DiscoveryButton
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
---- !u!224 &6806155316201257017 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 8311328381576019642, guid: 931dee8391831aa4a858b1a583ef8b9b, type: 3}
-  m_PrefabInstance: {fileID: 3252609466557400707}
-  m_PrefabAsset: {fileID: 0}

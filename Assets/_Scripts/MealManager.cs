@@ -129,7 +129,7 @@ public class MealManager : NetworkBehaviour
 
         musicManager.PlayBGM(bgmStack.Peek());
 
-        GameObject.FindWithTag("Player").GetComponent<CameraActions>().UpdateCameraLook();
+        playerCanvas.player.GetComponent<CameraActions>().UpdateCameraLook();
 
         if (isServer)
         {
