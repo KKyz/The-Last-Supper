@@ -94,7 +94,6 @@ public class PlayerFunctions : NetworkBehaviour
         fakeConfirm = transform.Find("FakeConfirm").gameObject;
         fade = transform.Find("Fade").GetComponent<FadeInOut>();
         infoText = transform.Find("Info").GetComponent<TextMeshProUGUI>();
-        Transform exitObj = transform.Find("ExitObj");
 
         currentState = "Idle";
         player = null;
@@ -118,7 +117,6 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     private void ShowInfoText(string info)
     {
-        infoText.gameObject.SetActive(true);
         infoText.text = info;
         infoText.GetComponent<InfoText>().ShowInfoText();
     }
@@ -158,7 +156,7 @@ public class PlayerFunctions : NetworkBehaviour
     }
     
     [Client]
-    public void Health()
+    private void Health()
     {
         if (player.health < 3)
         {
@@ -362,7 +360,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void OrderDrink()
     {
-        //DebugAnim("OrderTr");
+        //DebugAnim("OrderTr"); 
         openPopup = Instantiate(drinkMenu, Vector2.zero, quaternion.identity);
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
@@ -638,7 +636,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         uiAudio.PlayOneShot(flagSfx);
         billboard.transform.SetParent(parent);
-        billboard.transform.LookAt(Camera.main.transform.position);
+        billboard.transform.LookAt(player.playerCam.transform.position);
         Vector3 goalPos = billboard.transform.position;
         Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
         billboard.transform.position = startPos;
@@ -732,7 +730,7 @@ public class PlayerFunctions : NetworkBehaviour
 
         if (player != null)
         {
-            if (player.health == 0 && openPopup == null)
+            if (player.health == 0 && openPopup == null && player.canContinue)
             {
                 Die();
             }
@@ -746,41 +744,21 @@ public class PlayerFunctions : NetworkBehaviour
 
             else if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
             {
-                // Win();
+                //Win();
             }
             
             if (player.actionable)
             {
                 if (Input.GetKeyDown("1"))
                 {
-                    Poison(true);
-                }
-
-                if (Input.GetKeyDown("2") || Input.GetMouseButtonDown(1))
-                {
-                    Health();
+                    Recommend();
                 }
                 
-                if (Input.GetKeyDown("3"))
+                if (Input.GetKeyDown("2"))
                 {
-                    Smell();
+                    SpawnTalkMenu();
                 }
                 
-                if (Input.GetKeyDown("4"))
-                {
-                    Swap();
-                }
-                
-                if (Input.GetKeyDown("5"))
-                {
-                    FakePoison();
-                }
-                
-                if (Input.GetKeyDown("6"))
-                {
-                    OrderDrink();
-                }
-
                 if (Input.GetKeyDown("c"))
                 {
                     CmdNextCourse();

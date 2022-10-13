@@ -7,12 +7,21 @@ public class LobbyManager: MonoBehaviour
     public TMP_Text[] playerNames = new TMP_Text[4];
     public Toggle[] playerReadyToggles = new Toggle[4];
     public Button startGameButton;
+    public Transform setupButtons;
     
     private GameManager room;
 
     public void Start()
     {
         room = GameObject.Find("GameManager").GetComponent<GameManager>();
+    }
+
+    public void DisableSetupButtons()
+    {
+        foreach (Transform button in setupButtons)
+        {
+            button.GetComponent<Button>().interactable = false;
+        }
     }
 
     public void UpdateDisplay()

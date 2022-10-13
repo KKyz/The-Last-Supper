@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using UnityEngine.SceneManagement;
 
 public class StateManager : NetworkBehaviour
 {
@@ -31,6 +32,34 @@ public class StateManager : NetworkBehaviour
         gameCanEnd = false;
     }
 
+    public void Update()
+    {
+        //Code to add back players if they randomly get disconnected
+        if (SceneManager.GetActiveScene().name != "StartMenu" && !isServer)
+        {
+            foreach (NetworkIdentity player in activePlayers)
+            {
+                if (player == null)
+                {
+                    CmdResyncActivePlayers(activePlayers.IndexOf(player));
+                }
+            }
+        }
+    }
+
+    [Command]
+    private void CmdResyncActivePlayers(int index)
+    {
+        GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
+        foreach (GameObject allPlayer in allPlayers)
+        {
+            if (!activePlayers.Contains(allPlayer.GetComponent<NetworkIdentity>()))
+            {
+                activePlayers[index] = allPlayer.GetComponent<NetworkIdentity>();
+            }
+        }
+    }
+
     [ServerCallback]
     public void OnStartGame()
     {
@@ -38,7 +67,6 @@ public class StateManager : NetworkBehaviour
         playerScript = null;
         turn = 0;
         currentPlayer = activePlayers[turn].gameObject;
-        Debug.Log("CurrentPlayer");
         playerScript = currentPlayer.GetComponent<PlayerManager>();
     }
 
@@ -51,12 +79,20 @@ public class StateManager : NetworkBehaviour
     {
         foreach (var player in activePlayers)
         {
-            if (player == null || player.GetComponent<PlayerManager>().canContinue == false)
+            if (player == null)
             {
+                //Debug.LogWarning("Player Null");
+                return false;
+            }
+
+            if (player.GetComponent<PlayerManager>().canContinue == false)
+            {
+                //Debug.LogWarning("player can't continue ");
                 return false;
             }
         }
         
+        //Debug.LogWarning("All Pass");
         return true;
     }
 

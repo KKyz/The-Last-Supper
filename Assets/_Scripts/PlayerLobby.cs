@@ -26,11 +26,6 @@ public class PlayerLobby : NetworkBehaviour
             room.localRoomPlayer = this;
             CmdSetDisplayName(PlayerPrefs.GetString("PlayerName"));
         }
-    } 
-
-    public override void OnStartClient()
-    {
-        // lobbyManager.UpdateDisplay();
     }
 
     public void Awake()
@@ -54,8 +49,6 @@ public class PlayerLobby : NetworkBehaviour
 
     public void ChangeDisplayName(string oldValue, string newValue)
     {
-    // the problem is lobbyManager is ever only referenced for the client. I.e., host may not have a reference to this local player's lobby manager. lobby manager is null for it.
-
         if (lobbyManager != null)
         {
             lobbyManager.UpdateDisplay();
@@ -95,6 +88,7 @@ public class PlayerLobby : NetworkBehaviour
     [ClientRpc]
     public void RpcFade()
     {
+        lobbyManager.DisableSetupButtons();
         StartCoroutine(room.FadeToNewScene());
     }
 

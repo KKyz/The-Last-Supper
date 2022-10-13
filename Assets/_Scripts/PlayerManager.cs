@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using TMPro;
 
 public class PlayerManager : NetworkBehaviour
 {
@@ -28,18 +29,15 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar(hook=nameof(SyncRecommended))]
     public GameObject recommendedPiece;
 
-    
     public GameObject currentRecommend;
     
-    private GameObject playerCam;
-    private Transform playerModel;
+    [HideInInspector]
+    public GameObject playerCam;
+    
     private PlayerFunctions playerCanvas;
 
     public void Start()
     {
-        playerCam = transform.Find("Camera").gameObject;
-        playerCam.SetActive(false);
-        
         canContinue = false;
         health = 2;
         scrollCount = 0;
@@ -52,17 +50,29 @@ public class PlayerManager : NetworkBehaviour
         isEncouraged = false;
         hasRecommended = false;
         orderVictim = false;
-        recommendedPiece = null;
-        
+
         for (int i = 0; i < 4; i++)
         {
             psnArray[i] = false;
         }
+    }
+    
+    [Command(requiresAuthority = false)]
+    public void CmdSwitchContinueState(bool state)
+    {
+        canContinue = state;
+    }
 
-        playerModel = transform.Find("Model");
-
+    [ClientRpc]
+    public void RpcStartOnLocal()
+    {
+        playerCam = transform.Find("Camera").gameObject;
+        playerCam.SetActive(false);
+        
         if (isLocalPlayer)
         {
+            Transform playerModel = transform.Find("Model").GetChild(0);
+            
             playerCam.SetActive(true);
             
             foreach (Transform child in playerModel)
@@ -79,27 +89,14 @@ public class PlayerManager : NetworkBehaviour
             playerCanvas.OnStartGame(this);
         }
     }
-    
-    [Command(requiresAuthority = false)]
-    public void CmdSwitchContinueState(bool state)
-    {
-        canContinue = state;
-    }
 
-    [TargetRpc]
-    public void TargetAddPlayerModel(NetworkConnection conn,int index)
+    [ClientRpc]
+    public void RpcAddPlayerModel(int index)
     {
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
         Transform modelContainer = transform.Find("Model");
         GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], modelContainer, false);
-        NetworkServer.Spawn(newPlayerModel);
-
-        foreach (Transform item in newPlayerModel.transform)
-        {
-            item.SetParent(modelContainer, false);
-        }
-        
-        NetworkServer.Destroy(newPlayerModel);
+        //NetworkServer.Spawn(newPlayerModel);
     }
 
     public void SyncPsn(bool oldValue, bool newValue)
@@ -134,14 +131,12 @@ public class PlayerManager : NetworkBehaviour
     {
         if (oldValue == null)
         {
-            Debug.Log("PlayerManager: " + netId);
-            
             //If the piece doesn't have any flags already, create one
             Vector3 pTrans = recommendedPiece.transform.position;
             Debug.LogWarning(pTrans);
             currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
             NetworkServer.Spawn(currentRecommend);
-            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = transform.name;
+            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = "Taxi";
             StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
         }
         
@@ -160,7 +155,7 @@ public class PlayerManager : NetworkBehaviour
             currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
             currentRecommend.transform.SetParent(recommendedPiece.transform);
             NetworkServer.Spawn(currentRecommend);
-            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = transform.name;
+            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = "Taxi";
             StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
         }
         hasRecommended = true;

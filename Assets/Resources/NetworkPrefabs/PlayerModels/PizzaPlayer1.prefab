@@ -5257,7 +5257,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3698380961451755276}
-  - component: {fileID: 3698380961451755279}
   - component: {fileID: 2329330342010655398}
   m_Layer: 0
   m_Name: PizzaPlayer1
@@ -5275,8 +5274,8 @@ Transform:
   m_GameObject: {fileID: 1429887785752911839}
   m_LocalRotation: {x: -0.7071068, y: -0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 1.7, y: 1.7, z: 1.7}
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 3690934553338891641}
   - {fileID: 5426964416580723048}
@@ -5293,26 +5292,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &3698380961451755279
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1429887785752911839}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: e8de50589fa096540834aad8349ba22d, type: 3}
-  m_Controller: {fileID: 9100000, guid: 2b807a9afb6d3294e885f8caa19d7490, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!114 &2329330342010655398
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19520,6 +19499,7 @@ SkinnedMeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: -6547935577170393420, guid: d147c3ac8889b80449aa878750e84ce9, type: 3}
+  - {fileID: 2100000, guid: 46052af28a63a014fa9636b7eac62679, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

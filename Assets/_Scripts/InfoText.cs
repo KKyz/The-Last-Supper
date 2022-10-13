@@ -1,4 +1,3 @@
-using System.Collections;
 using UnityEngine;
 
 public class InfoText : MonoBehaviour
@@ -12,7 +11,7 @@ public class InfoText : MonoBehaviour
     
     public void ShowInfoText()
     {
-        LeanTween.alphaCanvas(infoTextCanvas, 1f, 0.5f);
+        LeanTween.alphaCanvas(infoTextCanvas, 1.5f, 0.5f);
     }
     
     public void CloseInfoText()
@@ -20,13 +19,6 @@ public class InfoText : MonoBehaviour
         if (gameObject.activeInHierarchy)
         {
             LeanTween.alphaCanvas(infoTextCanvas, 0f, 0.5f);
-            StartCoroutine(DisableText());
         }
-    }
-
-    private IEnumerator DisableText()
-    {
-        yield return new WaitForSeconds(0.7f);
-        gameObject.SetActive(false);
     }
 }

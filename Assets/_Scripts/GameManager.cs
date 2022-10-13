@@ -1,10 +1,8 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
-using Mirror.Examples.Chat;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
@@ -31,13 +29,13 @@ public class GameManager : NetworkManager
     private GameObject currentRestaurant;
 
     [Header("Network Discovery")] public CustomNetworkDiscovery networkDiscovery;
-    public Dictionary<long, DiscoveryResponse> discoveredServers = new Dictionary<long, DiscoveryResponse>();
-    public Dictionary<long, GameObject> spawnedButtons = new Dictionary<long, GameObject>();
+    public Dictionary<long, DiscoveryResponse> discoveredServers = new();
+    public Dictionary<long, GameObject> spawnedButtons = new();
     [HideInInspector]public float cleanupTimer;
     [HideInInspector]public Transform discoveryList;
 
 #if UNITY_EDITOR
-    void OnValidate()
+    new void OnValidate()
     {
         if (networkDiscovery == null)
         {
@@ -50,12 +48,15 @@ public class GameManager : NetworkManager
 
     private void Update()
     {
-        cleanupTimer += Time.deltaTime;
-
-        if (cleanupTimer > 60)
+        if (SceneManager.GetActiveScene().name == "StartMenu")
         {
-            CleanUpDiscoveryList();
-            cleanupTimer = 0;
+            cleanupTimer += Time.deltaTime;
+
+            if (cleanupTimer > 60)
+            {
+                CleanUpDiscoveryList();
+                cleanupTimer = 0;
+            }
         }
     }
 
@@ -154,6 +155,11 @@ public class GameManager : NetworkManager
         {
             GameObject newDiscoveryButton = Instantiate(discoveryButton, discoveryList, false);
             spawnedButtons[info.serverId] = newDiscoveryButton;
+
+            if (info.hostName == PlayerPrefs.GetString("PlayerName"))
+            {
+                //newDiscoveryButton.GetComponent<Button>().interactable = false;
+            }
         }
 
         if (spawnedButtons.ContainsKey(info.serverId))
@@ -161,8 +167,7 @@ public class GameManager : NetworkManager
             GameObject button = spawnedButtons[info.serverId];
             button.gameObject.SetActive(true);
             button.transform.Find("TableName").GetComponent<TextMeshProUGUI>().text = info.hostName + "'s Table";
-            button.transform.Find("PlayerCount").GetComponent<TextMeshProUGUI>().text =
-                info.playerCount + "/" + maxConnections;
+            button.transform.Find("PlayerCount").GetComponent<TextMeshProUGUI>().text = info.playerCount + "/" + maxConnections;
             button.GetComponent<Button>().onClick.AddListener(delegate { menuManager.Connect(info); });
             button.GetComponent<DiscoveryButton>().ResetTimer();
         }
@@ -230,7 +235,7 @@ public class GameManager : NetworkManager
 
     public override void OnStopServer()
     {
-        //If all players in lobby have isReady = true, then return true
+        //If all players in lobby have isReady = true, then return true 
         roomPlayers.Clear();
     }
 
@@ -249,7 +254,8 @@ public class GameManager : NetworkManager
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
             PlayerManager playerManager = conn.identity.GetComponent<PlayerManager>();
             conn.identity.name = playerName + i;
-            //playerManager.TargetAddPlayerModel(conn, i);
+            playerManager.RpcAddPlayerModel(i);
+            playerManager.RpcStartOnLocal();
             stateManager.activePlayers.Add(conn.identity);
             i++;
         }
@@ -270,7 +276,7 @@ public class GameManager : NetworkManager
 
     private bool IsRestaurantInstantiated()
     {
-        return currentRestaurant != null;
+        return currentRestaurant != null && startPositions.Count == 4;
     }
 
     public IEnumerator FadeToNewScene()

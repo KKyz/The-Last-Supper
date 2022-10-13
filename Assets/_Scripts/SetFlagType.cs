@@ -47,7 +47,7 @@ public class SetFlagType : MonoBehaviour
         {
             currentFlag = flags[6];
         }
-        else if (type == "Encourage")
+        else if (type == "Taunt")
         {
             currentFlag = flags[7];
         }

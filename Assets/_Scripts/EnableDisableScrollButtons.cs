@@ -9,10 +9,10 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
     private PlayerFunctions playerFunctions;
     private AudioSource sfxPlayer;
-    private ScrollArray playerScrollArray;
+    public ScrollArray playerScrollArray;
     private PlayerManager playerManager;
 
-    private GameObject slapButton, recommendButton, talkButton, outTalkButton, outRecommendButton, skipButton;
+    private CanvasGroup slapButton, recommendButton, talkButton, outTalkButton, outRecommendButton, skipButton;
     private Transform actionButtons, scrollButtons, outsideButtons, cancelButton;
 
     public int menuMode;
@@ -26,12 +26,12 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         scrollButtons = transform.Find("ScrollButtons").transform;
         outsideButtons = transform.Find("OutsideButtons").transform;
         cancelButton = transform.Find("CancelButton").transform;
-        slapButton = outsideButtons.Find("SlapButton").gameObject;
-        recommendButton = actionButtons.Find("RecommendButton").gameObject;
-        talkButton = actionButtons.Find("TalkButton").gameObject;
-        outRecommendButton = outsideButtons.Find("RecommendButton").gameObject;
-        outTalkButton = outsideButtons.Find("TalkButton").gameObject;
-        skipButton = scrollButtons.Find("SkipButton").gameObject;
+        slapButton = outsideButtons.Find("SlapButton").GetComponent<CanvasGroup>();
+        recommendButton = actionButtons.Find("RecommendButton").GetComponent<CanvasGroup>();
+        talkButton = actionButtons.Find("TalkButton").GetComponent<CanvasGroup>();
+        outRecommendButton = outsideButtons.Find("RecommendButton").GetComponent<CanvasGroup>();
+        outTalkButton = outsideButtons.Find("TalkButton").GetComponent<CanvasGroup>();
+        skipButton = scrollButtons.Find("SkipButton").GetComponent<CanvasGroup>();
 
         StartCoroutine(PostStartCall());
     }
@@ -46,12 +46,12 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
     public void PlaySelectSfx()
     {
-        sfxPlayer.PlayOneShot(selectSfx); 
+        sfxPlayer.PlayOneShot(selectSfx);
     }
-    
+
     public void PlayCancelSfx()
     {
-        sfxPlayer.PlayOneShot(cancelSfx); 
+        sfxPlayer.PlayOneShot(cancelSfx);
     }
 
     public IEnumerator ButtonEnable(Transform button)
@@ -61,32 +61,35 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         {
             foreach (Transform buttonChild in button)
             {
+                CanvasGroup buttonCg = buttonChild.GetComponent<CanvasGroup>();
                 if (!buttonChild.CompareTag("ConditionButton"))
                 {
-                    buttonChild.gameObject.SetActive(true);
+                    buttonCg.interactable = true;
                 }
 
-                if (buttonChild.gameObject.activeInHierarchy)
+                if (buttonCg.interactable)
                 {
-                    buttonChild.GetComponent<Button>().interactable = false;
-                    
+                    buttonCg.interactable = false;
+
                     //Sets Fade-In
-                    CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
-                    LeanTween.alphaCanvas(buttonCanvas, 1f, 0.6f);
+                    LeanTween.alphaCanvas(buttonCg, 1f, 0.6f);
                     sfxPlayer.PlayOneShot(buttonSfx);
 
                     yield return new WaitForSeconds(enableTime);
-                    buttonChild.GetComponent<Button>().interactable = true;
+                    buttonCg.interactable = true;
+                    buttonCg.blocksRaycasts = true;
                     buttonChild.GetComponent<AwakePos>().UpdatePos(buttonChild.position);
                 }
             }
         }
-        
+
         else
         {
-            if (!button.gameObject.activeInHierarchy)
+            CanvasGroup buttonCg = button.GetComponent<CanvasGroup>();
+            if (!buttonCg.interactable)
             {
-                button.gameObject.SetActive(true);
+                buttonCg.interactable = true;
+                buttonCg.blocksRaycasts = true;
 
                 //Fade-In
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
@@ -103,42 +106,29 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             //If parent object of buttons (e.g. ActionButtons, ScrollButtons)
             foreach (Transform buttonChild in button)
             {
-                if (buttonChild.gameObject.activeInHierarchy)
+                CanvasGroup buttonCg = buttonChild.GetComponent<CanvasGroup>();
+                if (buttonCg.interactable)
                 {
-                    buttonChild.GetComponent<Button>().interactable = false;
-                    
-                    //Fade-Out
-                    CanvasGroup buttonCanvas = buttonChild.GetComponent<CanvasGroup>();
-                    LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
-                    
+                    buttonCg.interactable = false;
+                    buttonCg.blocksRaycasts = false;
+
+                    LeanTween.alphaCanvas(buttonCg, 0, disableTime - 0.05f);
+
                     yield return new WaitForSeconds(disableTime);
                 }
             }
-
-            foreach (Transform buttonChild in button)
-            {
-                if (buttonChild.gameObject.activeInHierarchy)
-                {
-                    buttonChild.GetComponent<Button>().interactable = true;
-                    buttonChild.gameObject.SetActive(false);
-                }
-            }
         }
-        
+
         else
         {
-            if (button.gameObject.activeInHierarchy)
+            if (button.GetComponent<CanvasGroup>().interactable)
             {
-                button.GetComponent<Button>().interactable = false;
-                
+                button.GetComponent<CanvasGroup>().interactable = false;
+                button.GetComponent<CanvasGroup>().blocksRaycasts = false;
+
                 //Fade-Out
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
                 LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
-
-                //Reset positions and disable
-                yield return new WaitForSeconds(disableTime);
-                button.GetComponent<Button>().interactable = true;
-                button.gameObject.SetActive(false);
             }
         }
     }
@@ -149,54 +139,118 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         {
             for (int i = 1; i < scrollButtons.childCount; i++)
             {
-                if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).gameObject.activeInHierarchy)
+                Debug.LogWarning(playerScrollArray.GetValue(i).name);
+                if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).GetComponent<CanvasGroup>().interactable)
                 {
                     scrollButtons.GetChild(i).gameObject.SetActive(true);
+                    CanvasGroup scrollCg = scrollButtons.GetChild(i).GetComponent<CanvasGroup>();
+                    scrollCg.interactable = true;
+                    scrollCg.alpha = 0;
+                    scrollCg.blocksRaycasts = true;
                 }
-            }           
+                else
+                {
+                    scrollButtons.GetChild(i).gameObject.SetActive(false);
+                    CanvasGroup scrollCg = scrollButtons.GetChild(i).GetComponent<CanvasGroup>();
+                    scrollCg.interactable = false;
+                    scrollCg.blocksRaycasts = false;
+                }
+            }
         }
-
+        
         if (playerManager != null)
         {
             if (!playerManager.hasRecommended)
             {
-                if (menuMode == 2 && !recommendButton.activeInHierarchy)
+                if (menuMode == 2 && !recommendButton.interactable)
                 {
-                    recommendButton.SetActive(true);
+                    recommendButton.gameObject.SetActive(true);
+                    recommendButton.alpha = 0;
+                    recommendButton.interactable = true;
+                    recommendButton.blocksRaycasts = true;
                 }
-            
-                else if (menuMode == 4 && !outRecommendButton.activeInHierarchy)
+
+                else if (menuMode == 4 && !outRecommendButton.interactable)
                 {
-                    outRecommendButton.SetActive(true);  
+                    outRecommendButton.gameObject.SetActive(true);
+                    outRecommendButton.alpha = 0;
+                    outRecommendButton.interactable = true;
+                    outRecommendButton.blocksRaycasts = true;
                 }
-            
+
             }
-        
+
+            else if (menuMode == 2 || menuMode == 4)
+            {
+                recommendButton.gameObject.SetActive(false);
+                recommendButton.interactable = false;
+                recommendButton.blocksRaycasts = false;
+
+                outRecommendButton.gameObject.SetActive(false);
+                outRecommendButton.alpha = 0;
+                outRecommendButton.interactable = false;
+                outRecommendButton.blocksRaycasts = false;
+            }
+
             if (!playerManager.hasTalked)
             {
-                if (menuMode == 2 && !talkButton.activeInHierarchy)
+                if (menuMode == 2 && !talkButton.interactable)
                 {
-                    talkButton.SetActive(true);
+                    talkButton.gameObject.SetActive(true);
+                    talkButton.alpha = 0;
+                    talkButton.interactable = true;
+                    talkButton.blocksRaycasts = true;
                 }
-            
-                else if (menuMode == 4 && !outTalkButton.activeInHierarchy)
+
+                else if (menuMode == 4 && !outTalkButton.interactable)
                 {
-                    outTalkButton.SetActive(true);  
+                    outTalkButton.gameObject.SetActive(true);
+                    outTalkButton.alpha = 0;
+                    outTalkButton.interactable = true;
+                    talkButton.blocksRaycasts = true;
                 }
-            
-            }   
+
+            }
+
+            else if (menuMode == 2 || menuMode == 4)
+            {
+                talkButton.gameObject.SetActive(false);
+                talkButton.interactable = false;
+                talkButton.blocksRaycasts = false;
+
+                outTalkButton.gameObject.SetActive(false);
+                outTalkButton.alpha = 0;
+                outTalkButton.interactable = false;
+                outTalkButton.blocksRaycasts = false;
+            }
         }
 
-        if (menuMode == 4 && playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
+        if (menuMode == 4)
         {
-            slapButton.SetActive(true);
+            if (playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
+            {
+                slapButton.gameObject.SetActive(true);
+                slapButton.alpha = 0;
+                slapButton.interactable = true;
+                slapButton.blocksRaycasts = true;
+            }
+
+            else
+            {
+                slapButton.gameObject.SetActive(false);
+                slapButton.interactable = false;
+                slapButton.blocksRaycasts = false;
+            }
         }
 
-        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.activeInHierarchy)
+        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.interactable)
         {
             if (menuMode == 1)
             {
-                skipButton.SetActive(true);
+                skipButton.gameObject.SetActive(true);
+                skipButton.alpha = 0;
+                skipButton.interactable = true;
+                skipButton.blocksRaycasts = true;
             }
 
             if (menuMode == 5)
@@ -204,12 +258,21 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 StartCoroutine(ButtonEnable(skipButton.transform));
             }
         }
+
+        else if (menuMode == 1 || menuMode == 5)
+        {
+            skipButton.gameObject.SetActive(false);
+            skipButton.interactable = false;
+            skipButton.blocksRaycasts = false;
+        }
+
     }
 
     [Client]
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
+        Debug.LogWarning("MenuMode is: " + menuMode);
 
         CheckConditions();
 
