@@ -256,16 +256,16 @@ public class GameManager : NetworkManager
             conn.identity.name = playerName + i;
             playerManager.RpcAddPlayerModel(i);
             playerManager.RpcStartOnLocal();
-            stateManager.activePlayers.Add(conn.identity);
+            stateManager.connectedPlayers.Add(conn.identity);
             i++;
         }
     }
 
     private bool HasChangedRoomToGamePlayers()
     {
-        foreach (var player in stateManager.activePlayers)
+        foreach (var player in stateManager.connectedPlayers)
         {
-            if (stateManager.activePlayers.Count != playerCount && player.GetComponent<PlayerLobby>() != null)
+            if (stateManager.connectedPlayers.Count != playerCount && player.GetComponent<PlayerLobby>() != null)
             {
                 return false;
             }
@@ -296,13 +296,14 @@ public class GameManager : NetworkManager
     public void StartGame()
     {
         playerCount = roomPlayers.Count;
+        networkDiscovery.StopAdvertising();
         localRoomPlayer.RpcFade();
     }
 
 
     private IEnumerator PostStartCall()
     {
-        //Delayed call to ensure start order of Restaurant, Player, PlayerUI, StateManager, and finally MealManager
+        //Delayed call to ensure start order of Restaurant, Player, PlayerUI, StateManager, and finally MealManager 
 
         currentRestaurant = mealManager.restaurant.gameObject;
         GameObject gameRestaurant =
@@ -314,14 +315,16 @@ public class GameManager : NetworkManager
         stateManager.transform.position = GameObject.Find("StateManagerPos").transform.position;
         ReplacePlayers();
 
+        yield return new WaitUntil(HasChangedRoomToGamePlayers);
+
+        stateManager.SyncToActivePlayers();
+        
         foreach (NetworkIdentity activePlayer in stateManager.activePlayers)
         {
             PlayerManager playerManager = activePlayer.GetComponent<PlayerManager>();
             playerManager.RpcRenamePlayer(activePlayer.name);
         }
-
-        yield return new WaitUntil(HasChangedRoomToGamePlayers);
-
+        
         stateManager.OnStartGame();
 
         if (stateManager.activePlayers.Count >= minPlayers)

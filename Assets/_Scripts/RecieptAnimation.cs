@@ -72,7 +72,7 @@ public class RecieptAnimation : MonoBehaviour
         
 
         //Reveal quit button
-        if (playerFunctions.stateManager.activePlayers.Count == 0 || playerFunctions.player.isServer == false)
+        if (playerFunctions.stateManager.activePlayers.Count == 0)
         {
             yield return new WaitForSeconds(1f);
             LeanTween.alphaCanvas(exitButton, 1f, 0.5f);

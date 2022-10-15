@@ -634,9 +634,11 @@ public class PlayerFunctions : NetworkBehaviour
 
     public IEnumerator SpawnBillboard(GameObject billboard, Transform parent)
     {
-        uiAudio.PlayOneShot(flagSfx);
-        billboard.transform.SetParent(parent);
+        uiAudio.PlayOneShot(flagSfx); 
+        billboard.transform.SetParent(parent, false);
         billboard.transform.LookAt(player.playerCam.transform.position);
+        billboard.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+        billboard.transform.localPosition = new Vector3(-0.069f, 0.264f, 0.21f);
         Vector3 goalPos = billboard.transform.position;
         Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
         billboard.transform.position = startPos;

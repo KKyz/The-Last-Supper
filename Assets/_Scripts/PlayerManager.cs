@@ -29,15 +29,15 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar(hook=nameof(SyncRecommended))]
     public GameObject recommendedPiece;
 
-    public GameObject currentRecommend;
+    private GameObject currentRecommendFlag;
     
-    [HideInInspector]
     public GameObject playerCam;
     
-    private PlayerFunctions playerCanvas;
+    public PlayerFunctions playerCanvas;
 
     public void Start()
     {
+        Debug.LogWarning("PM: Start: " + gameObject.name);
         canContinue = false;
         health = 2;
         scrollCount = 0;
@@ -55,6 +55,12 @@ public class PlayerManager : NetworkBehaviour
         {
             psnArray[i] = false;
         }
+
+        if (!isLocalPlayer)
+        {
+            playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
+            playerCam.SetActive(false);
+        }
     }
     
     [Command(requiresAuthority = false)]
@@ -66,11 +72,10 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     public void RpcStartOnLocal()
     {
-        playerCam = transform.Find("Camera").gameObject;
-        playerCam.SetActive(false);
-        
         if (isLocalPlayer)
         {
+            playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
+
             Transform playerModel = transform.Find("Model").GetChild(0);
             
             playerCam.SetActive(true);
@@ -85,7 +90,6 @@ public class PlayerManager : NetworkBehaviour
             
             PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
             
-            playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
             playerCanvas.OnStartGame(this);
         }
     }
@@ -96,7 +100,7 @@ public class PlayerManager : NetworkBehaviour
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
         Transform modelContainer = transform.Find("Model");
         GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], modelContainer, false);
-        //NetworkServer.Spawn(newPlayerModel);
+        //NetworkServer.Spawn(newPlayerModel); 
     }
 
     public void SyncPsn(bool oldValue, bool newValue)
@@ -126,37 +130,48 @@ public class PlayerManager : NetworkBehaviour
         netIdentity.name = newName;
         gameObject.name = netIdentity.name;
     }
-
+    
+    [ClientRpc]
+    private void RpcNameRecommend(string newName, GameObject recommend)
+    {
+        recommend.transform.Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
+    }
+    
     public void SyncRecommended(GameObject oldValue, GameObject newValue)
     {
         if (oldValue == null)
         {
-            //If the piece doesn't have any flags already, create one
+            //If the piece doesn't have any flags already, create one 
             Vector3 pTrans = recommendedPiece.transform.position;
-            Debug.LogWarning(pTrans);
-            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
-            NetworkServer.Spawn(currentRecommend);
-            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = "Taxi";
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
+            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, new Vector3(), Quaternion.identity);
+            if (isServer)
+            {
+                NetworkServer.Spawn(currentRecommendFlag);
+                RpcNameRecommend(netIdentity.name, currentRecommendFlag);
+            }
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag, recommendedPiece.transform));
+
         }
         
         else if (newValue == null)
         {
             //If destroying pre-existing recommend
-            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommend));
-            currentRecommend = null;
+            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommendFlag));
+            currentRecommendFlag = null;
         }
         
         else
         {
             //Replace flag with a new one at a different piece
-            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommend));
+            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommendFlag));
             Vector3 pTrans = recommendedPiece.transform.position;
-            currentRecommend = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
-            currentRecommend.transform.SetParent(recommendedPiece.transform);
-            NetworkServer.Spawn(currentRecommend);
-            //currentRecommend.transform.Find("PlayerName").GetComponent<TextMeshProUGUI>().text = "Taxi";
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommend, recommendedPiece.transform));
+            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            if (isServer)
+            {
+                NetworkServer.Spawn(currentRecommendFlag);
+                RpcNameRecommend(netIdentity.name, currentRecommendFlag);
+            }
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag, recommendedPiece.transform));
         }
         hasRecommended = true;
     }

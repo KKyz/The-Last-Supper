@@ -40,6 +40,7 @@ public class TalkMenu : NetworkBehaviour
     {
         Toggle playerToggle = playerToggles.ActiveToggles().FirstOrDefault();
         targetPlayer = players[playerToggle.transform.GetSiblingIndex()];
+        Debug.Log(targetPlayer.name);
         UpdateTalkButtons();
     }
 
@@ -48,7 +49,7 @@ public class TalkMenu : NetworkBehaviour
         message = button.GetComponentInChildren<TextMeshProUGUI>().text;
     }
 
-    public void UpdateTalkButtons()
+    private void UpdateTalkButtons()
     {
         //Attack Row
         Transform attackRow = talkButtons.Find("AttackRow");

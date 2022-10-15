@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.SceneManagement;
@@ -17,6 +18,8 @@ public class StateManager : NetworkBehaviour
     [SyncVar]
     public int turn;
     
+    public List<NetworkIdentity> connectedPlayers = new();
+    
     public readonly SyncList<NetworkIdentity> activePlayers = new();
 
     public void Start()
@@ -32,31 +35,11 @@ public class StateManager : NetworkBehaviour
         gameCanEnd = false;
     }
 
-    public void Update()
+    public void SyncToActivePlayers()
     {
-        //Code to add back players if they randomly get disconnected
-        if (SceneManager.GetActiveScene().name != "StartMenu" && !isServer)
+        foreach (var player in connectedPlayers)
         {
-            foreach (NetworkIdentity player in activePlayers)
-            {
-                if (player == null)
-                {
-                    CmdResyncActivePlayers(activePlayers.IndexOf(player));
-                }
-            }
-        }
-    }
-
-    [Command]
-    private void CmdResyncActivePlayers(int index)
-    {
-        GameObject[] allPlayers = GameObject.FindGameObjectsWithTag("Player");
-        foreach (GameObject allPlayer in allPlayers)
-        {
-            if (!activePlayers.Contains(allPlayer.GetComponent<NetworkIdentity>()))
-            {
-                activePlayers[index] = allPlayer.GetComponent<NetworkIdentity>();
-            }
+            activePlayers.Add(player);
         }
     }
 

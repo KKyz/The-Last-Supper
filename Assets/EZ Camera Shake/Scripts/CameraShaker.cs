@@ -32,7 +32,7 @@ namespace EZCameraShake
         void Start()
         {
             Instance = this;
-            instanceList.Add(gameObject.name, this);
+            //instanceList.Add(gameObject.name, this); 
         }
 
         void Update()
