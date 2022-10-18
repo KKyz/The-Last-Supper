@@ -134,7 +134,7 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     private void RpcNameRecommend(string newName, GameObject recommend)
     {
-        recommend.transform.Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
+        recommend.transform.Find("FlagSprite").Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
     }
     
     public void SyncRecommended(GameObject oldValue, GameObject newValue)

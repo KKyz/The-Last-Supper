@@ -627,7 +627,6 @@ public class PlayerFunctions : NetworkBehaviour
         LeanTween.move(billboard, goalPos, 0.6f);
         yield return new WaitForSeconds(0.6f);
         if (billboard != null)
-        {
             NetworkServer.Destroy(billboard);
         }
     }
@@ -635,14 +634,13 @@ public class PlayerFunctions : NetworkBehaviour
     public IEnumerator SpawnBillboard(GameObject billboard, Transform parent)
     {
         uiAudio.PlayOneShot(flagSfx); 
-        billboard.transform.SetParent(parent, false);
         billboard.transform.LookAt(player.playerCam.transform.position);
-        billboard.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        billboard.transform.localPosition = new Vector3(-0.069f, 0.264f, 0.21f);
+        billboard.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f); 
+        //billboard.transform.localPosition = new Vector3(-0.069f, 0.264f, 0.21f);
         Vector3 goalPos = billboard.transform.position;
         Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
-        billboard.transform.position = startPos;
-        billboard.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+        billboard.transform.position = startPos; 
+        billboard.GetComponent<SpriteRenderer>().color = new  Color(1, 1, 1, 0);
         LeanTween.alpha(billboard, 1, 0.9f);
         LeanTween.move(billboard, goalPos, 0.6f);
         yield return 0;
