@@ -36,7 +36,7 @@ public class SpawnPiece : NetworkBehaviour
         }
     }
     
-    private void RefreshPieceList()
+    public void RefreshPieceList()
     {
         piecePos.Clear();
         pieceRot.Clear();

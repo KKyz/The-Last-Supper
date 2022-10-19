@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -50,23 +49,14 @@ public class SettingsMenu : MonoBehaviour
     
     public void BgmVolume (float sliderValue)
     {
-        bgmMixer.SetFloat("BGMVolume", Mathf.Log10(sliderValue) * 20);
+        bgmMixer.SetFloat("BGMVolume", sliderValue);
         PlayerPrefs.SetFloat("BGMVolPref", sliderValue);
     }
 
     public void SfxVolume (float sliderValue)
     {
-        sfxMixer.SetFloat("SFXVolume", Mathf.Log10(sliderValue) * 20);
+        sfxMixer.SetFloat("SFXVolume", sliderValue);
         PlayerPrefs.SetFloat("SFXVolPref", sliderValue);
-    }
-    
-    public void ToggleMinScroll()
-    {
-        // if (minScrollBtn.isOn)//
-        // {PlayerPrefs.SetInt("MinScrollInfo", 1);}
-        // else
-        // {PlayerPrefs.SetInt("MinScrollInfo", 0);}
-        // Debug.Log(PlayerPrefs.GetInt("MinScrollInfo"));.
     }
     
     public void SetQuality(int qualityIndex)

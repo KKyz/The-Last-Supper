@@ -5,6 +5,7 @@ using Mirror;
 using TMPro;
 using Unity.Mathematics;
 using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class PlayerFunctions : NetworkBehaviour
 {
@@ -69,9 +70,14 @@ public class PlayerFunctions : NetworkBehaviour
     private ShowHealth healthBar;
     private Animator playerAnim;
     private AudioSource uiAudio;
+    [SerializeField]private SpawnPiece plate;
     private readonly List<GameObject> smellTargets = new();
     private readonly List<Transform> swapTargets = new();
     private bool startCourse;
+    
+    private TextMeshProUGUI normCounter;
+    private Color normTop;
+    private Color normBottom;
 
     private void DebugAnim(string name)
     {
@@ -82,6 +88,9 @@ public class PlayerFunctions : NetworkBehaviour
     public void OnStartGame(PlayerManager localPlayer)
     {
         GameObject stateManagerObj = GameObject.Find("StateManager(Clone)");
+        normCounter = transform.Find("NormCounter").GetComponent<TextMeshProUGUI>();
+        normTop = normCounter.colorGradient.topLeft;
+        normBottom = normCounter.colorGradient.bottomRight;
         stateManager = stateManagerObj.GetComponent<StateManager>();
         mealManager = stateManagerObj.GetComponent<MealManager>();
         musicManager = stateManagerObj.GetComponent<MusicManager>();
@@ -191,7 +200,7 @@ public class PlayerFunctions : NetworkBehaviour
         
         if (stateManager.currentPlayer == player.gameObject)
         {
-            GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>().Shuffle();
+            plate.Shuffle();
             playerScrolls.RemoveScrollAmount("Quake");
             player.scrollCount += 1;
         }
@@ -229,7 +238,7 @@ public class PlayerFunctions : NetworkBehaviour
     }
     
     [Client]
-    public void ConfirmSmell()
+    public void ConfirmSmell(bool removeScroll)
     {
         //DebugAnim("SmellTr");
         foreach (GameObject piece in smellTargets)
@@ -242,11 +251,15 @@ public class PlayerFunctions : NetworkBehaviour
                 }
             }
         }
+
+        if (removeScroll)
+        {
+            StartCoroutine(buttonToggle.ButtonDisable(smellConfirm.transform));
+            playerScrolls.RemoveScrollAmount("Smell");
+            player.scrollCount += 1;   
+        }
         
-        StartCoroutine(buttonToggle.ButtonDisable(smellConfirm.transform));
-        playerScrolls.RemoveScrollAmount("Smell");
-        player.scrollCount += 1;
-        ResetActions(true);
+        ResetActions(false);
     }
     
     public void ConfirmFake()
@@ -521,6 +534,7 @@ public class PlayerFunctions : NetworkBehaviour
             player.CmdSwitchContinueState(false);
         
             SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
+            plate = chalkData;
             openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
             openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = chalkData.courseName;
             chalkDescription += "- " + chalkData.pieceTypes[0] + " Empty Pieces";
@@ -528,6 +542,11 @@ public class PlayerFunctions : NetworkBehaviour
             chalkDescription += "\n - " + chalkData.pieceTypes[2] + " Special Pieces";
             chalkDescription += "\n - " + (chalkData.pieceTypes[0] +  chalkData.pieceTypes[1] + chalkData.pieceTypes[2]) +" Total Pieces";
             openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = chalkDescription;
+
+            if (isServer)
+            {
+                RpcCheckNPieces();
+            }
         }
     }
 
@@ -591,19 +610,7 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
 
-        if (openPopup == null)
-        {
-            if (stateManager.currentPlayer == player.gameObject && stateManager.AllPlayersCanContinue())
-            {
-                buttonToggle.ToggleButtons(2);
-            }
-
-            else
-            {
-                buttonToggle.ToggleButtons(4);
-            }
-        }
-
+        buttonToggle.ToggleButtons(6);
         smellTargets.Clear();
         swapTargets.Clear();
         StartCoroutine(buttonToggle.ButtonDisable(swapConfirm.transform));
@@ -615,7 +622,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void CmdDestroyPiece(GameObject piece)
     {
         NetworkServer.Destroy(piece);
-        mealManager.CmdCheckNPieces();
+        RpcCheckNPieces();
     }
     
     public IEnumerator DespawnBillboard(GameObject billboard)
@@ -637,8 +644,8 @@ public class PlayerFunctions : NetworkBehaviour
         uiAudio.PlayOneShot(flagSfx); 
         billboard.transform.SetParent(parent, false);
         billboard.transform.LookAt(player.playerCam.transform.position);
-        billboard.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-        billboard.transform.localPosition = new Vector3(-0.069f, 0.264f, 0.21f);
+        billboard.transform.localScale = new Vector3(0.06f, 0.06f, 0.06f);
+        billboard.transform.localPosition = new Vector3(0.027f, 0.2f, 0.275f);
         Vector3 goalPos = billboard.transform.position;
         Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
         billboard.transform.position = startPos;
@@ -648,10 +655,50 @@ public class PlayerFunctions : NetworkBehaviour
         yield return 0;
     }
 
-    [Command]
-    private void CmdRemoveNPiece()
+
+    [ClientRpc]
+    private void RpcCheckNPieces()
     {
-        mealManager.nPieces -= 1;
+        StartCoroutine(CheckNPieces());
+    }
+
+    private IEnumerator CheckNPieces()
+    {
+        //Find Number Of Missing Pieces
+        for (int i = 0; i < 3; i++)
+        {
+            yield return 0;
+        }
+        
+        mealManager.nPieces = 0;
+        foreach (Transform piece in plate.transform)
+        {
+            if (piece.CompareTag("FoodPiece") && piece.GetComponent<FoodPiece>().type == "Normal")
+            {
+                mealManager.nPieces += 1;
+            }
+        }
+        
+        //Update NPiece Counters
+        
+        Color lastTop = Color.red;
+        Color lastBottom = Color.red;
+        if (mealManager.nPieces <= 1)
+        {
+            normCounter.colorGradient = new VertexGradient(lastTop, lastTop, lastBottom, lastBottom);
+        }
+        else
+        {
+            normCounter.colorGradient = new VertexGradient(normTop, normTop, normBottom, normBottom);
+        }
+
+        normCounter.text = "# Of Empty Pieces Left: " + mealManager.nPieces;
+        
+        if (mealManager.nPieces <= 0)
+        {
+            Debug.LogWarning("DisableAll");
+            CmdNextCourse();
+        }
     }
     
     [Command]
@@ -682,6 +729,52 @@ public class PlayerFunctions : NetworkBehaviour
         stateManager.netIdentity.RemoveClientAuthority(); 
     }
 
+    private bool PlateIsPresent()
+    {
+        return plate != null;
+    }
+    
+    private IEnumerator AddOneSmellFlag()
+    {
+        yield return new WaitUntil(PlateIsPresent);
+        
+        //Select a random piece from plate 
+        plate.RefreshPieceList();
+        List<Transform> unknownPieces = new();
+
+        foreach (Transform piece in plate.transform)
+        {
+            if (piece.CompareTag("FoodPiece"))
+            {
+                unknownPieces.Add(piece);
+            }
+        
+            foreach (Transform content in piece)
+            {
+                if (content.CompareTag("TypeFlag"))
+                {
+                    unknownPieces.Remove(piece);
+                }
+            }
+        }
+
+        if (unknownPieces.Count > 0)
+        {
+            Transform selectedPiece = unknownPieces[Random.Range(0, unknownPieces.Count - 1)];
+
+
+            //Add a type flag to it
+
+            Vector3 pTrans = selectedPiece.Find("FlagCenter").transform.position;
+            smellTarget = Instantiate(typeFlag, new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            smellTarget.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 0);
+            smellTarget.transform.SetParent(selectedPiece);
+            smellTargets.Add(selectedPiece.gameObject);
+
+            ConfirmSmell(false);
+        }
+    }
+
     void Update()
     {
         if (countTime && player != null)
@@ -705,6 +798,7 @@ public class PlayerFunctions : NetworkBehaviour
                     //DebugAnim("ActiveTr");
                     CmdRemoveAuthority();
                     CmdAddAuthority(player.connectionToClient);
+                    StartCoroutine(AddOneSmellFlag());
                 }
 
                 if (!fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
@@ -737,7 +831,7 @@ public class PlayerFunctions : NetworkBehaviour
                 Die();
             }
             
-            else if (stateManager.activePlayers.Count == 0 && openPopup != null && openPopup.name == "LoseScreen" && player.isServer)
+            else if (stateManager.activePlayers.Count == 0 && openPopup != null && openPopup.name == "LoseScreen")
             {
                 Destroy(openPopup);
                 ServerGameEnd();
@@ -790,7 +884,7 @@ public class PlayerFunctions : NetworkBehaviour
                         
                         else if (player.actionable)
                         {
-                            //Where the player is eating
+                            //Where the player is eating 
                             if (currentState == "Eating")
                             {
                                 string pieceType = piece.transform.gameObject.GetComponent<FoodPiece>().type;
@@ -811,20 +905,10 @@ public class PlayerFunctions : NetworkBehaviour
                                     Health();
                                 }
 
-                                else if (pieceType == "Normal")
-                                {
-                                    CmdRemoveNPiece();
-                                }
-
-                                else
+                                else if (pieceType != "Normal")
                                 {
                                     ShowScrollInfo(pieceType);
                                     playerScrolls.AddScrollAmount(pieceType); 
-                                }
-
-                                if (mealManager.nPieces <= 0)
-                                {
-                                    CmdNextCourse();
                                 }
 
                                 if (player.nPiecesEaten >= 10)
@@ -833,10 +917,10 @@ public class PlayerFunctions : NetworkBehaviour
                                     player.nPiecesEaten = 0;
                                 }
                                 
+                                Destroy(piece.transform.gameObject);
                                 CmdDestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;
                                 uiAudio.PlayOneShot(eatingSfx);
-                                currentState = "Idle";
                                 stateManager.CmdNextPlayer();
                                 ResetActions(false);
                             }

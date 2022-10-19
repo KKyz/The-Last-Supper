@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using Mirror;
-using UnityEngine.UI;
 
 public class EnableDisableScrollButtons : NetworkBehaviour
 {
@@ -17,6 +16,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
     public int menuMode;
     public float disableTime, enableTime;
+
+    private IEnumerator currentAnimation;
 
     public void OnStartGame()
     {
@@ -69,16 +70,16 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
                 if (buttonCg.interactable)
                 {
+                    Debug.LogWarning("Enabled: " + buttonCg.name + ", menuMode: " + menuMode);
                     buttonCg.interactable = false;
+                    buttonCg.blocksRaycasts = true;
 
                     //Sets Fade-In
-                    LeanTween.alphaCanvas(buttonCg, 1f, 0.6f);
+                    LeanTween.alphaCanvas(buttonCg, 1, 0.6f);
                     sfxPlayer.PlayOneShot(buttonSfx);
 
                     yield return new WaitForSeconds(enableTime);
                     buttonCg.interactable = true;
-                    buttonCg.blocksRaycasts = true;
-                    buttonChild.GetComponent<AwakePos>().UpdatePos(buttonChild.position);
                 }
             }
         }
@@ -93,7 +94,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
                 //Fade-In
                 CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
-                LeanTween.alphaCanvas(buttonCanvas, 1f, 0.6f);
+                LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
                 sfxPlayer.PlayOneShot(buttonSfx);
             }
         }
@@ -107,8 +108,9 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             foreach (Transform buttonChild in button)
             {
                 CanvasGroup buttonCg = buttonChild.GetComponent<CanvasGroup>();
-                if (buttonCg.interactable)
+                if (buttonCg.blocksRaycasts)
                 {
+                    Debug.LogWarning("Disabled: " + buttonCg.name + ", menuMode: " + menuMode);
                     buttonCg.interactable = false;
                     buttonCg.blocksRaycasts = false;
 
@@ -139,7 +141,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         {
             for (int i = 1; i < scrollButtons.childCount; i++)
             {
-                Debug.LogWarning(playerScrollArray.GetValue(i).name);
                 if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).GetComponent<CanvasGroup>().interactable)
                 {
                     scrollButtons.GetChild(i).gameObject.SetActive(true);
@@ -272,16 +273,20 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
-        Debug.LogWarning("MenuMode is: " + menuMode);
 
         CheckConditions();
+            
+        if (currentAnimation != null)
+        {
+            StopCoroutine(currentAnimation);   
+        }
 
         // Opens Scrolls Menu
         if (isActive == 1)
         {
-            StartCoroutine(ButtonDisable(outsideButtons));
+            currentAnimation = ButtonEnable(scrollButtons);
             
-            StartCoroutine(ButtonEnable(scrollButtons));
+            StartCoroutine(ButtonDisable(outsideButtons));
 
             StartCoroutine(ButtonDisable(actionButtons));
 
@@ -293,11 +298,11 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         // Opens Actions Menu
         else if (isActive == 2)
         {
+            currentAnimation = ButtonEnable(actionButtons);
+            
             StartCoroutine(ButtonDisable(outsideButtons));
 
             StartCoroutine(ButtonDisable(scrollButtons));
-
-            StartCoroutine(ButtonEnable(actionButtons));
 
             StartCoroutine(ButtonDisable(cancelButton));
             
@@ -307,21 +312,21 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         //Enables Cancel Button
         else if (isActive == 3)
         {
+            currentAnimation = ButtonEnable(cancelButton);
+            
             StartCoroutine(ButtonDisable(outsideButtons));
             
             StartCoroutine(ButtonDisable(scrollButtons));
 
             StartCoroutine(ButtonDisable(actionButtons));
 
-            StartCoroutine(ButtonEnable(cancelButton));
-            
         }
 
-        //Disables everything (except for Slap, recommend, and Talk)
+        //Enables non-action state buttons
 
         else if (isActive == 4)
         {
-            StartCoroutine(ButtonEnable(outsideButtons));
+            currentAnimation = ButtonEnable(outsideButtons);
             
             StartCoroutine(ButtonDisable(scrollButtons));
 
@@ -336,6 +341,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
         else if (isActive == 5)
         {
+            currentAnimation = null;
+            
             StartCoroutine(ButtonDisable(outsideButtons));
             
             StartCoroutine(ButtonDisable(scrollButtons));
@@ -349,6 +356,8 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
         else if (isActive == 6)
         {
+            currentAnimation = null;
+            
             StartCoroutine(ButtonDisable(outsideButtons));
             
             StartCoroutine(ButtonDisable(scrollButtons));
@@ -356,6 +365,11 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             StartCoroutine(ButtonDisable(actionButtons));
 
             StartCoroutine(ButtonDisable(cancelButton));
+        }
+
+        if (currentAnimation != null)
+        {
+            StartCoroutine(currentAnimation);
         }
     }
 }

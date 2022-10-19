@@ -15,8 +15,11 @@ public class SetFlagType : MonoBehaviour
     public IEnumerator SetFlag()
     {
         transform.name = "PlantedFlag";
-        LeanTween.alpha(gameObject, 0, 0.7f);
-        yield return new WaitForSeconds(0.71f);
+        if (gameObject.GetComponent<SpriteRenderer>().color.a > 0)
+        {
+            LeanTween.alpha(gameObject, 0, 0.7f); 
+            yield return new WaitForSeconds(0.71f);
+        }
 
         string type = transform.parent.GetComponent<FoodPiece>().type;
         if (type == "Poison" || type == "FakePoison")

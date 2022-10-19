@@ -37,7 +37,6 @@ public class PlayerManager : NetworkBehaviour
 
     public void Start()
     {
-        Debug.LogWarning("PM: Start: " + gameObject.name);
         canContinue = false;
         health = 2;
         scrollCount = 0;

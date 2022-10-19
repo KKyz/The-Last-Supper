@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using UnityEngine.SceneManagement;
 
 public class StateManager : NetworkBehaviour
 {

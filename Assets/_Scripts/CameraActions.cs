@@ -35,7 +35,7 @@ public class CameraActions : MonoBehaviour
         Vector3 direction = zoomOutPos - plateCorrectedPos;
         Vector3 zoomInPos = zoomOutPos - (direction * 0.4f);
         LeanTween.move(playerCam.gameObject, zoomInPos, 1f).setEaseOutSine();
-        Debug.LogWarning(playerCam.position + ", " + plateCorrectedPos + ", " + direction);
+        //Debug.LogWarning(playerCam.position + ", " + plateCorrectedPos + ", " + direction);
     }
     
     public void ZoomOut()

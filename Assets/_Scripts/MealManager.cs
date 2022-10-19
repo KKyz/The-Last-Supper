@@ -6,7 +6,7 @@ using TMPro;
 
 public class MealManager : NetworkBehaviour
 {
-    [SyncVar] public int nPieces;
+    public int nPieces;
     public RestaurantContents restaurant;
     public GameObject platterTop;
     public int menuIndex = 0;
