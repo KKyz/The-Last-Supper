@@ -30,6 +30,8 @@ public class PlayerManager : NetworkBehaviour
     public GameObject recommendedPiece;
 
     private GameObject currentRecommendFlag;
+
+    private CameraActions camActions;
     
     public GameObject playerCam;
     
@@ -71,6 +73,9 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     public void RpcStartOnLocal()
     {
+        camActions = GetComponent<CameraActions>();
+        camActions.OnStartGame(); 
+        
         if (isLocalPlayer)
         {
             playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
@@ -142,7 +147,7 @@ public class PlayerManager : NetworkBehaviour
         {
             //If the piece doesn't have any flags already, create one 
             Vector3 pTrans = recommendedPiece.transform.position;
-            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, new Vector3(), Quaternion.identity);
+            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
             if (isServer)
             {
                 NetworkServer.Spawn(currentRecommendFlag);

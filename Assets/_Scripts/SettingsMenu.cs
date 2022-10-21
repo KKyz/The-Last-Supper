@@ -8,15 +8,14 @@ using UnityEngine.SceneManagement;
 public class SettingsMenu : MonoBehaviour
 {
     public AudioMixer bgmMixer, sfxMixer;
-    
-    Resolution[] resolutions;
 
     private TMP_Dropdown resolutionDropdown;
     private TMP_InputField nameInput;
 
     private Slider bgmSlider, sfxSlider;
-    //public Toggle minScrollBtn;
-
+    
+    private List<Resolution> availableResolutions;
+    
     void Start()
     {
         nameInput = GameObject.Find("NameInput").GetComponent<TMP_InputField>();
@@ -24,17 +23,31 @@ public class SettingsMenu : MonoBehaviour
         resolutionDropdown = GameObject.Find("Resolutions").GetComponent<TMP_Dropdown>();
         bgmSlider = GameObject.Find("BGMSlider").GetComponent<Slider>();
         sfxSlider = GameObject.Find("SFXSlider").GetComponent<Slider>();
-        resolutions = Screen.resolutions;
+        
+        Resolution[] resolutions = Screen.resolutions;
+        availableResolutions = new List<Resolution>();
         resolutionDropdown.ClearOptions();
+        
+        int currentRefreshRate = Screen.currentResolution.refreshRate;
+
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            if (resolutions[i].refreshRate == currentRefreshRate)
+            {
+                availableResolutions.Add(resolutions[i]);
+            }
+        }
+        
+        
         List<string> options = new List<string>();
 
         int currentResolutionIndex = 0;
         for (int i = 0; i < resolutions.Length; i++)
         {
-            string option = resolutions[i].width + "x" + resolutions[i].height;
+            string option = availableResolutions[i].width + "x" + availableResolutions[i].height;
             options.Add(option);
 
-            if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
+            if (availableResolutions[i].width == Screen.currentResolution.width && availableResolutions[i].height == Screen.currentResolution.height)
             {
                 currentResolutionIndex = i;
             }
@@ -43,20 +56,27 @@ public class SettingsMenu : MonoBehaviour
         resolutionDropdown.AddOptions(options);
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
+        
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolPref", 1f);
         bgmSlider.value = PlayerPrefs.GetFloat("BGMVolPref", 0.5f);
+    }
+
+    public void SetResolution(int resolutionIndex)
+    {
+        Resolution resolution = availableResolutions[resolutionIndex];
+        Screen.SetResolution(resolution.width, resolution.height, true);
     }
     
     public void BgmVolume (float sliderValue)
     {
-        bgmMixer.SetFloat("BGMVolume", sliderValue);
-        PlayerPrefs.SetFloat("BGMVolPref", sliderValue);
+        bgmMixer.SetFloat("BGMVolume", Mathf.Log10(sliderValue) * 20);
+        PlayerPrefs.SetFloat("BGMVolPref", Mathf.Log10(sliderValue) * 20);
     }
 
     public void SfxVolume (float sliderValue)
     {
-        sfxMixer.SetFloat("SFXVolume", sliderValue);
-        PlayerPrefs.SetFloat("SFXVolPref", sliderValue);
+        sfxMixer.SetFloat("SFXVolume", Mathf.Log10(sliderValue) * 20);
+        PlayerPrefs.SetFloat("SFXVolPref", Mathf.Log10(sliderValue) * 20);
     }
     
     public void SetQuality(int qualityIndex)

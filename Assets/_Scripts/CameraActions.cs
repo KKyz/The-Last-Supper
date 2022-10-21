@@ -1,4 +1,6 @@
+using System;
 using EZCameraShake;
+using UnityEditor.Search.Providers;
 using UnityEngine;
 
 public class CameraActions : MonoBehaviour
@@ -6,15 +8,18 @@ public class CameraActions : MonoBehaviour
     public Transform playerCam;
     private Vector3 zoomOutPos, plateCorrectedPos, centerPos;
     private CameraShaker camShaker;
+    public float value = 0.01f;
 
-    public void Start()
+    public void OnStartGame()
     {
         camShaker = GetComponent<CameraShaker>();
+        centerPos = GameObject.Find("StateManager(Clone)").transform.position;
+        Debug.LogWarning(centerPos);
         
         //Player model should be facing the food, so it is rotated across y-axis
-        centerPos = GameObject.Find("StateManager(Clone)").transform.position;
-        Vector3 lookTowards = new Vector3(0, centerPos.y, 0);
-        //transform.LookAt(lookTowards);
+        Vector3 lookDir = (centerPos - transform.position) * 0.01f;
+        Transform playerModel = transform.Find("Model").GetChild(0);
+        playerModel.LookAt(transform.position +  lookDir);
         
         //Camera is looking ath the food more directly, so it should transform everything
         playerCam = transform.Find("Camera");
@@ -28,6 +33,10 @@ public class CameraActions : MonoBehaviour
         plateCorrectedPos = new Vector3(platePos.x + 1f, platePos.y + 2.5f, platePos.z);
         Quaternion rotation = Quaternion.LookRotation (plateCorrectedPos - transform.position);
         playerCam.rotation = Quaternion.Slerp (playerCam.rotation, rotation, Time.deltaTime);
+        
+        Vector3 lookDir = (centerPos - transform.position) * 0.01f;
+        Transform playerModel = transform.Find("Model").GetChild(0);
+        playerModel.LookAt(transform.position +  lookDir);
     }
 
     public void ZoomIn()

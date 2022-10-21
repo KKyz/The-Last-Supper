@@ -88,7 +88,7 @@ public class PlayerFunctions : NetworkBehaviour
     public void OnStartGame(PlayerManager localPlayer)
     {
         GameObject stateManagerObj = GameObject.Find("StateManager(Clone)");
-        normCounter = transform.Find("NormCounter").GetComponent<TextMeshProUGUI>();
+        normCounter = transform.Find("NormCounter").GetComponentInChildren<TextMeshProUGUI>();
         normTop = normCounter.colorGradient.topLeft;
         normBottom = normCounter.colorGradient.bottomRight;
         stateManager = stateManagerObj.GetComponent<StateManager>();
@@ -521,6 +521,9 @@ public class PlayerFunctions : NetworkBehaviour
 
     public void ShowChalk()
     {
+        SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
+        plate = chalkData;
+        
         if (stateManager.activePlayers.Contains(player.netIdentity))
         {
             string chalkDescription = ""; 
@@ -532,9 +535,7 @@ public class PlayerFunctions : NetworkBehaviour
             uiAudio.PlayOneShot(nextCourseSfx);
             buttonToggle.ToggleButtons(6);
             player.CmdSwitchContinueState(false);
-        
-            SpawnPiece chalkData = GameObject.FindWithTag("Plate").GetComponent<SpawnPiece>();
-            plate = chalkData;
+            
             openPopup.transform.Find("Image").GetComponent<Image>().sprite = chalkData.chalkSprite;
             openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = chalkData.courseName;
             chalkDescription += "- " + chalkData.pieceTypes[0] + " Empty Pieces";
@@ -641,11 +642,12 @@ public class PlayerFunctions : NetworkBehaviour
 
     public IEnumerator SpawnBillboard(GameObject billboard, Transform parent)
     {
-        uiAudio.PlayOneShot(flagSfx); 
-        billboard.transform.SetParent(parent, false);
+        uiAudio.PlayOneShot(flagSfx);
+        Vector3 pTrans = parent.position;
+        billboard.transform.position = new Vector3(pTrans.x + 0.75f, pTrans.y + 1f, pTrans.z);
+        billboard.transform.SetParent(parent);
         billboard.transform.LookAt(player.playerCam.transform.position);
         billboard.transform.localScale = new Vector3(0.06f, 0.06f, 0.06f);
-        billboard.transform.localPosition = new Vector3(0.027f, 0.2f, 0.275f);
         Vector3 goalPos = billboard.transform.position;
         Vector3 startPos = new Vector3(goalPos.x, (goalPos.y + 1f), goalPos.z);
         billboard.transform.position = startPos;

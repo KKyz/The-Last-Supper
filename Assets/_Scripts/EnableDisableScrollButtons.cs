@@ -65,10 +65,10 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 CanvasGroup buttonCg = buttonChild.GetComponent<CanvasGroup>();
                 if (!buttonChild.CompareTag("ConditionButton"))
                 {
-                    buttonCg.interactable = true;
+                    buttonCg.blocksRaycasts = true;
                 }
 
-                if (buttonCg.interactable)
+                if (buttonCg.blocksRaycasts)
                 {
                     Debug.LogWarning("Enabled: " + buttonCg.name + ", menuMode: " + menuMode);
                     buttonCg.interactable = false;
@@ -87,14 +87,13 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         else
         {
             CanvasGroup buttonCg = button.GetComponent<CanvasGroup>();
-            if (!buttonCg.interactable)
+            if (!buttonCg.blocksRaycasts)
             {
                 buttonCg.interactable = true;
                 buttonCg.blocksRaycasts = true;
 
                 //Fade-In
-                CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
-                LeanTween.alphaCanvas(buttonCanvas, 1, 0.6f);
+                LeanTween.alphaCanvas(buttonCg, 1, 0.6f);
                 sfxPlayer.PlayOneShot(buttonSfx);
             }
         }
@@ -123,14 +122,12 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
         else
         {
-            if (button.GetComponent<CanvasGroup>().interactable)
+            CanvasGroup buttonCg = button.GetComponent<CanvasGroup>();
+            if (buttonCg.blocksRaycasts)
             {
-                button.GetComponent<CanvasGroup>().interactable = false;
-                button.GetComponent<CanvasGroup>().blocksRaycasts = false;
-
-                //Fade-Out
-                CanvasGroup buttonCanvas = button.GetComponent<CanvasGroup>();
-                LeanTween.alphaCanvas(buttonCanvas, 0, disableTime - 0.05f);
+                buttonCg.interactable = false;
+                buttonCg.blocksRaycasts = false;
+                LeanTween.alphaCanvas(buttonCg, 0, disableTime - 0.05f);
             }
         }
     }
@@ -141,11 +138,10 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         {
             for (int i = 1; i < scrollButtons.childCount; i++)
             {
-                if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).GetComponent<CanvasGroup>().interactable)
+                if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).GetComponent<CanvasGroup>().blocksRaycasts)
                 {
                     scrollButtons.GetChild(i).gameObject.SetActive(true);
                     CanvasGroup scrollCg = scrollButtons.GetChild(i).GetComponent<CanvasGroup>();
-                    scrollCg.interactable = true;
                     scrollCg.alpha = 0;
                     scrollCg.blocksRaycasts = true;
                 }
@@ -153,7 +149,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 {
                     scrollButtons.GetChild(i).gameObject.SetActive(false);
                     CanvasGroup scrollCg = scrollButtons.GetChild(i).GetComponent<CanvasGroup>();
-                    scrollCg.interactable = false;
                     scrollCg.blocksRaycasts = false;
                 }
             }
@@ -163,19 +158,17 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         {
             if (!playerManager.hasRecommended)
             {
-                if (menuMode == 2 && !recommendButton.interactable)
+                if (menuMode == 2 && !recommendButton.blocksRaycasts)
                 {
                     recommendButton.gameObject.SetActive(true);
                     recommendButton.alpha = 0;
-                    recommendButton.interactable = true;
                     recommendButton.blocksRaycasts = true;
                 }
 
-                else if (menuMode == 4 && !outRecommendButton.interactable)
+                else if (menuMode == 4 && !outRecommendButton.blocksRaycasts)
                 {
                     outRecommendButton.gameObject.SetActive(true);
                     outRecommendButton.alpha = 0;
-                    outRecommendButton.interactable = true;
                     outRecommendButton.blocksRaycasts = true;
                 }
 
@@ -184,30 +177,26 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             else if (menuMode == 2 || menuMode == 4)
             {
                 recommendButton.gameObject.SetActive(false);
-                recommendButton.interactable = false;
                 recommendButton.blocksRaycasts = false;
 
                 outRecommendButton.gameObject.SetActive(false);
                 outRecommendButton.alpha = 0;
-                outRecommendButton.interactable = false;
                 outRecommendButton.blocksRaycasts = false;
             }
 
             if (!playerManager.hasTalked)
             {
-                if (menuMode == 2 && !talkButton.interactable)
+                if (menuMode == 2 && !talkButton.blocksRaycasts)
                 {
                     talkButton.gameObject.SetActive(true);
                     talkButton.alpha = 0;
-                    talkButton.interactable = true;
                     talkButton.blocksRaycasts = true;
                 }
 
-                else if (menuMode == 4 && !outTalkButton.interactable)
+                else if (menuMode == 4 && !outTalkButton.blocksRaycasts)
                 {
                     outTalkButton.gameObject.SetActive(true);
                     outTalkButton.alpha = 0;
-                    outTalkButton.interactable = true;
                     talkButton.blocksRaycasts = true;
                 }
 
@@ -216,12 +205,10 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             else if (menuMode == 2 || menuMode == 4)
             {
                 talkButton.gameObject.SetActive(false);
-                talkButton.interactable = false;
                 talkButton.blocksRaycasts = false;
 
                 outTalkButton.gameObject.SetActive(false);
                 outTalkButton.alpha = 0;
-                outTalkButton.interactable = false;
                 outTalkButton.blocksRaycasts = false;
             }
         }
@@ -232,30 +219,23 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             {
                 slapButton.gameObject.SetActive(true);
                 slapButton.alpha = 0;
-                slapButton.interactable = true;
                 slapButton.blocksRaycasts = true;
             }
 
             else
             {
                 slapButton.gameObject.SetActive(false);
-                slapButton.interactable = false;
                 slapButton.blocksRaycasts = false;
             }
         }
 
-        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.interactable)
+        if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.blocksRaycasts)
         {
-            if (menuMode == 1)
+            if (menuMode == 5)
             {
                 skipButton.gameObject.SetActive(true);
                 skipButton.alpha = 0;
-                skipButton.interactable = true;
                 skipButton.blocksRaycasts = true;
-            }
-
-            if (menuMode == 5)
-            {
                 StartCoroutine(ButtonEnable(skipButton.transform));
             }
         }
@@ -273,13 +253,13 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
-
-        CheckConditions();
-            
+        
         if (currentAnimation != null)
         {
-            StopCoroutine(currentAnimation);   
+            StopCoroutine(currentAnimation);
         }
+        
+        CheckConditions();
 
         // Opens Scrolls Menu
         if (isActive == 1)

@@ -26,7 +26,7 @@ public class MealManager : NetworkBehaviour
     {
         stateManager = GetComponent<StateManager>();
         musicManager = GetComponent<MusicManager>();
-        normCounter = GameObject.Find("NormCounter").GetComponent<TextMeshProUGUI>();
+        normCounter = GameObject.Find("NormCounter").GetComponentInChildren<TextMeshProUGUI>();
         normTop = normCounter.colorGradient.topLeft;
         normBottom = normCounter.colorGradient.bottomRight;
         

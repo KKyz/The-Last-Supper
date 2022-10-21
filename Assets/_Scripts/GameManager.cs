@@ -148,18 +148,13 @@ public class GameManager : NetworkManager
 
     public void OnDiscoverServer(DiscoveryResponse info)
     {
-        // Note that you can check the versioning to decide if you can connect to the server or not using this method
+        //Note that you can check the versioning to decide if you can connect to the server or not using this method
         discoveredServers[info.serverId] = info;
 
         if (!spawnedButtons.ContainsKey(info.serverId))
         {
             GameObject newDiscoveryButton = Instantiate(discoveryButton, discoveryList, false);
             spawnedButtons[info.serverId] = newDiscoveryButton;
-
-            if (info.hostName == PlayerPrefs.GetString("PlayerName"))
-            {
-                //newDiscoveryButton.GetComponent<Button>().interactable = false;
-            }
         }
 
         if (spawnedButtons.ContainsKey(info.serverId))
@@ -253,7 +248,13 @@ public class GameManager : NetworkManager
             NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
             conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
             PlayerManager playerManager = conn.identity.GetComponent<PlayerManager>();
-            conn.identity.name = playerName + i;
+
+            for (int j = 0; j < i; j++)
+            {
+                playerName += (" ");
+            }
+            
+            conn.identity.name = playerName;
             playerManager.RpcAddPlayerModel(i);
             playerManager.RpcStartOnLocal();
             stateManager.connectedPlayers.Add(conn.identity);
