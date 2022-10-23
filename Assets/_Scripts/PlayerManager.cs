@@ -104,7 +104,7 @@ public class PlayerManager : NetworkBehaviour
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
         Transform modelContainer = transform.Find("Model");
         GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], modelContainer, false);
-        //NetworkServer.Spawn(newPlayerModel); 
+        //NetworkServer.Spawn(newPlayerModel);
     }
 
     public void SyncPsn(bool oldValue, bool newValue)
@@ -138,7 +138,7 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     private void RpcNameRecommend(string newName, GameObject recommend)
     {
-        recommend.transform.Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
+        recommend.transform.Find("FlagSprite").Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
     }
     
     public void SyncRecommended(GameObject oldValue, GameObject newValue)
@@ -146,15 +146,15 @@ public class PlayerManager : NetworkBehaviour
         if (oldValue == null)
         {
             //If the piece doesn't have any flags already, create one 
-            Vector3 pTrans = recommendedPiece.transform.position;
-            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, recommendedPiece.transform, false);
+            
             if (isServer)
             {
                 NetworkServer.Spawn(currentRecommendFlag);
                 RpcNameRecommend(netIdentity.name, currentRecommendFlag);
             }
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag, recommendedPiece.transform));
-
+            
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag.transform));
         }
         
         else if (newValue == null)
@@ -168,14 +168,13 @@ public class PlayerManager : NetworkBehaviour
         {
             //Replace flag with a new one at a different piece
             StartCoroutine(playerCanvas.DespawnBillboard(currentRecommendFlag));
-            Vector3 pTrans = recommendedPiece.transform.position;
-            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, new Vector3(pTrans.x - 0.75f, pTrans.y + 1f, pTrans.z), Quaternion.identity);
+            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, recommendedPiece.transform, false);
             if (isServer)
             {
-                NetworkServer.Spawn(currentRecommendFlag);
+                //NetworkServer.Spawn(currentRecommendFlag);
                 RpcNameRecommend(netIdentity.name, currentRecommendFlag);
             }
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag, recommendedPiece.transform));
+            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag.transform));
         }
         hasRecommended = true;
     }

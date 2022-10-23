@@ -255,8 +255,6 @@ public class GameManager : NetworkManager
             }
             
             conn.identity.name = playerName;
-            playerManager.RpcAddPlayerModel(i);
-            playerManager.RpcStartOnLocal();
             stateManager.connectedPlayers.Add(conn.identity);
             i++;
         }
@@ -319,11 +317,15 @@ public class GameManager : NetworkManager
         yield return new WaitUntil(HasChangedRoomToGamePlayers);
 
         stateManager.SyncToActivePlayers();
-        
+
+        int i = 0;
         foreach (NetworkIdentity activePlayer in stateManager.activePlayers)
         {
             PlayerManager playerManager = activePlayer.GetComponent<PlayerManager>();
             playerManager.RpcRenamePlayer(activePlayer.name);
+            playerManager.RpcAddPlayerModel(i);
+            playerManager.RpcStartOnLocal();
+            i++;
         }
         
         stateManager.OnStartGame();

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SetFlagType : MonoBehaviour
 {
-    public List<Sprite> flags = new List<Sprite>();
+    public List<Sprite> flags = new();
     private Sprite currentFlag;
 
     void Start()
@@ -14,14 +14,15 @@ public class SetFlagType : MonoBehaviour
 
     public IEnumerator SetFlag()
     {
-        transform.name = "PlantedFlag";
+        transform.parent.name = "PlantedFlag";
         if (gameObject.GetComponent<SpriteRenderer>().color.a > 0)
         {
             LeanTween.alpha(gameObject, 0, 0.7f); 
             yield return new WaitForSeconds(0.71f);
         }
-
-        string type = transform.parent.GetComponent<FoodPiece>().type;
+        
+        string type = transform.parent.parent.GetComponent<FoodPiece>().type;
+        
         if (type == "Poison" || type == "FakePoison")
         {
             currentFlag = flags[0];

@@ -148,14 +148,22 @@ public class SpawnPiece : NetworkBehaviour
                 child.rotation = newRandRot;
                 randPos.Remove(newRandPos);
                 randRot.Remove(newRandRot);
+            }
+        }
+        
+        RpcDestroyFlags();
+    }
 
-                foreach (Transform grandchild in child)
-                { 
-                    if (grandchild.CompareTag("Recommend") || grandchild.CompareTag("TypeFlag"))
-                    {
-                        Destroy(grandchild.gameObject);
-                        NetworkServer.Destroy(grandchild.gameObject);
-                    }
+    [ClientRpc]
+    private void RpcDestroyFlags()
+    {
+        foreach (Transform piece in transform)
+        {
+            foreach (Transform grandchild in piece)
+            { 
+                if (grandchild.CompareTag("Recommend") || grandchild.CompareTag("TypeFlag"))
+                {
+                    Destroy(grandchild.gameObject);
                 }
             }
         }

@@ -17,7 +17,7 @@ public class TalkMenu : NetworkBehaviour
     void Start()
     {
         message = null;
-        int playerCount = 0;
+        int playerCount = 0; 
         stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
         playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
         talkButtons = transform.Find("TalkButtons");
@@ -38,8 +38,18 @@ public class TalkMenu : NetworkBehaviour
     
     public void SelectPlayer()
     {
-        Toggle playerToggle = playerToggles.ActiveToggles().FirstOrDefault();
-        targetPlayer = players[playerToggle.transform.GetSiblingIndex()];
+        Transform playerToggle = null;
+        
+        foreach (Transform toggle in playerToggles.transform)
+        {
+            if (toggle.GetComponent<Toggle>().isOn)
+            {
+                playerToggle = toggle;
+                break;
+            }
+        }
+        
+        targetPlayer = players[playerToggle.GetSiblingIndex()];
         Debug.Log(targetPlayer.name);
         UpdateTalkButtons();
     }
@@ -56,20 +66,17 @@ public class TalkMenu : NetworkBehaviour
 
         for (int i = 0; i < players.Count; i++)
         {
-            if (players[i] != targetPlayer)
-            {
-                GameObject talkButton = attackRow.GetChild(i).gameObject;
-                talkButton.SetActive(true);
-                string buttonText = GetComponentInChildren<TextMeshProUGUI>().text;
+            GameObject talkButton = attackRow.GetChild(i).gameObject;
+            talkButton.SetActive(true);
+            string buttonText = talkButton.GetComponentInChildren<TextMeshProUGUI>().text;
 
-                if (players[i].isLocalPlayer)
-                {
-                    buttonText = "I am targeting you";
-                }
-                else
-                {
-                    buttonText = players[i] + " is targeting you";
-                }
+            if (players[i].isLocalPlayer)
+            {
+                buttonText = "I am targeting you";
+            }
+            else
+            {
+                buttonText = players[i] + " is targeting you";
             }
         }
         
@@ -82,7 +89,7 @@ public class TalkMenu : NetworkBehaviour
             {
                 GameObject talkButton = supportRow.GetChild(i).gameObject;
                 talkButton.SetActive(true);
-                string buttonText = GetComponentInChildren<TextMeshProUGUI>().text;
+                string buttonText = talkButton.GetComponentInChildren<TextMeshProUGUI>().text;
 
                 if (players[i].isLocalPlayer)
                 {
@@ -104,7 +111,7 @@ public class TalkMenu : NetworkBehaviour
             {
                 GameObject talkButton = teamRow.GetChild(i).gameObject;
                 talkButton.SetActive(true);
-                talkButton.transform.GetComponentInChildren<TextMeshProUGUI>().text = "let's team up on " + players[i];
+                talkButton.transform.GetComponentInChildren<TextMeshProUGUI>().text = "let's team up on " + players[i].name;
             }
         }
 

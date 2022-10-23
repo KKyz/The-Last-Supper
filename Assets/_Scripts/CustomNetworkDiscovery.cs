@@ -133,7 +133,6 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
     /// <param name="endpoint">Address of the server that replied</param>
     protected override void ProcessResponse(DiscoveryResponse response, IPEndPoint endpoint)
     {
-            Debug.LogWarning("processRes:" + response);
             response.EndPoint = endpoint;
             UriBuilder realUri = new UriBuilder(response.uri)
             {

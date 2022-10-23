@@ -17,7 +17,7 @@ public class StateManager : NetworkBehaviour
     [SyncVar]
     public int turn;
     
-    public List<NetworkIdentity> connectedPlayers = new();
+    [HideInInspector] public List<NetworkIdentity> connectedPlayers = new();
     
     public readonly SyncList<NetworkIdentity> activePlayers = new();
 
