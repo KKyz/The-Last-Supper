@@ -17,8 +17,6 @@ public class PlayerManager : NetworkBehaviour
 
     [SyncVar] 
     public bool isEncouraged, hasRecommended, hasTalked, orderVictim, canContinue;
-    
-    public float accumulatedTime;
 
     [SyncVar(hook=nameof(SyncPsn))] 
     public bool psn0, psn1, psn2, psn3;
@@ -33,6 +31,7 @@ public class PlayerManager : NetworkBehaviour
 
     private CameraActions camActions;
     
+    [HideInInspector]
     public GameObject playerCam;
     
     public PlayerFunctions playerCanvas;
@@ -45,7 +44,6 @@ public class PlayerManager : NetworkBehaviour
         courseCount = 0;
         pieceCount = 0;
         nPiecesEaten = 0;
-        accumulatedTime = 0;
         actionable = false;
         hasTalked = false;
         isEncouraged = false;
@@ -74,10 +72,12 @@ public class PlayerManager : NetworkBehaviour
     public void RpcStartOnLocal()
     {
         camActions = GetComponent<CameraActions>();
-        camActions.OnStartGame(); 
+        camActions.playerCam = playerCam.transform;
         
         if (isLocalPlayer)
         {
+            camActions.zoomOutPos = playerCam.transform.position;
+            
             playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
 
             Transform playerModel = transform.Find("Model").GetChild(0);
@@ -96,6 +96,8 @@ public class PlayerManager : NetworkBehaviour
             
             playerCanvas.OnStartGame(this);
         }
+        
+        camActions.OnStartGame();
     }
 
     [ClientRpc]
@@ -136,9 +138,19 @@ public class PlayerManager : NetworkBehaviour
     }
     
     [ClientRpc]
-    private void RpcNameRecommend(string newName, GameObject recommend)
+    private void RpcAddRecommend(string newName, Transform recommend, Transform piece)
     {
-        recommend.transform.Find("FlagSprite").Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
+        currentRecommendFlag = recommend.gameObject;
+        recommend.Find("FlagSprite").Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
+        recommend.SetParent(piece, false);
+        StartCoroutine(playerCanvas.SpawnBillboard(recommend));
+    }
+    
+    [ClientRpc]
+    private void RpcDestroyRecommend(GameObject flag)
+    {
+        StartCoroutine(playerCanvas.DespawnBillboard(flag));
+        currentRecommendFlag = null;
     }
     
     public void SyncRecommended(GameObject oldValue, GameObject newValue)
@@ -146,35 +158,40 @@ public class PlayerManager : NetworkBehaviour
         if (oldValue == null)
         {
             //If the piece doesn't have any flags already, create one 
-            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, recommendedPiece.transform, false);
-            
+
             if (isServer)
             {
+                currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, recommendedPiece.transform, false);
                 NetworkServer.Spawn(currentRecommendFlag);
-                RpcNameRecommend(netIdentity.name, currentRecommendFlag);
+                RpcAddRecommend(netIdentity.name, currentRecommendFlag.transform, recommendedPiece.transform);
             }
             
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag.transform));
+            
         }
         
         else if (newValue == null)
         {
             //If destroying pre-existing recommend
-            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommendFlag));
-            currentRecommendFlag = null;
+
+            if (isServer)
+            {
+               RpcDestroyRecommend(currentRecommendFlag); 
+            }
+            
         }
         
         else
         {
             //Replace flag with a new one at a different piece
-            StartCoroutine(playerCanvas.DespawnBillboard(currentRecommendFlag));
-            currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, recommendedPiece.transform, false);
+
             if (isServer)
             {
-                //NetworkServer.Spawn(currentRecommendFlag);
-                RpcNameRecommend(netIdentity.name, currentRecommendFlag);
+                RpcDestroyRecommend(currentRecommendFlag);
+                
+                currentRecommendFlag = Instantiate(playerCanvas.recommendFlag, recommendedPiece.transform, false);
+                NetworkServer.Spawn(currentRecommendFlag);
+                RpcAddRecommend(netIdentity.name, currentRecommendFlag.transform, recommendedPiece.transform);
             }
-            StartCoroutine(playerCanvas.SpawnBillboard(currentRecommendFlag.transform));
         }
         hasRecommended = true;
     }

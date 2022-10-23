@@ -64,6 +64,9 @@ public class PlayerFunctions : NetworkBehaviour
     [HideInInspector]
     public bool countTime;
 
+    [HideInInspector]
+    public float accumulatedTime;
+
     private EnableDisableScrollButtons buttonToggle;
     private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
     private FadeInOut fade;
@@ -109,6 +112,7 @@ public class PlayerFunctions : NetworkBehaviour
         player = null;
         openPopup = null;
         fakeTarget = null;
+        accumulatedTime = 0;
         chatPanel.SetActive(false);
         smellTargets.Clear();
         swapTargets.Clear();
@@ -120,7 +124,7 @@ public class PlayerFunctions : NetworkBehaviour
         playerAnim = localPlayer.GetComponentInChildren<Animator>();
 
         countTime = true;
-        //playerScrolls.ResetScrollAmount();
+        playerScrolls.ResetScrollAmount();
         buttonToggle.OnStartGame();
     }
 
@@ -559,7 +563,11 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Idle";
         player.orderVictim = false;
-        camActions.ZoomOut();
+
+        if (plate != null)
+        {
+            camActions.ZoomOut();  
+        }
 
         if (player.actionable)
         {
@@ -775,7 +783,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         if (countTime && player != null)
         {
-            player.accumulatedTime += Time.deltaTime;
+            accumulatedTime += Time.deltaTime;
             PlayerPrefs.SetFloat("playTime", PlayerPrefs.GetInt("playTime", 0) + Time.deltaTime);
         }
 
@@ -836,7 +844,7 @@ public class PlayerFunctions : NetworkBehaviour
 
             else if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
             {
-                Win();
+                //Win();
             }
             
             if (player.actionable)

@@ -57,6 +57,14 @@ public class OrderDrink : NetworkBehaviour
     public void SelectVictim()
     {
         Toggle playerToggle = playerToggles.ActiveToggles().FirstOrDefault();
+
+        foreach (Transform toggle in playerToggles.transform)
+        {
+            if (toggle.GetComponent<Toggle>().isOn)
+            {
+                playerToggle = toggle.GetComponent<Toggle>();
+            }
+        }
         victim = victims[playerToggle.transform.GetSiblingIndex()];
         takeHealth = true;
         ChangeAmount();

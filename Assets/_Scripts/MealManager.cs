@@ -185,6 +185,8 @@ public class MealManager : NetworkBehaviour
         }
         
         currentPlate = Instantiate(courseStack.Peek(), transform.position, Quaternion.identity);
+        Vector3 platePos = currentPlate.transform.position;
+        stateManager.platePos = new Vector3(platePos.x, platePos.y + 2.5f, platePos.z);
         firstPlate = false;
         NetworkServer.Spawn(currentPlate);
 

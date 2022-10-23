@@ -12,7 +12,7 @@ using Object = UnityEngine.Object;
 public class GameManager : NetworkManager
 {
     [Header("Lobby")] [Scene] public string gameScene;
-    public int minPlayers;
+    [HideInInspector] public int minPlayers = 2;
     public GameObject playerLobby;
     public GameObject discoveryButton;
     public List<PlayerLobby> roomPlayers = new();

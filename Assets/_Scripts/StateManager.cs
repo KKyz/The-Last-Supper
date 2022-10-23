@@ -17,6 +17,12 @@ public class StateManager : NetworkBehaviour
     [SyncVar]
     public int turn;
     
+    [SyncVar]
+    public Vector3 centerPos;
+    
+    [SyncVar]
+    public Vector3 platePos;
+    
     [HideInInspector] public List<NetworkIdentity> connectedPlayers = new();
     
     public readonly SyncList<NetworkIdentity> activePlayers = new();
@@ -45,6 +51,7 @@ public class StateManager : NetworkBehaviour
     [ServerCallback]
     public void OnStartGame()
     {
+        centerPos = transform.position;
         currentPlayer = null;
         playerScript = null;
         turn = 0;

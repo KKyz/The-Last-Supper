@@ -255,21 +255,19 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             slapButton.blocksRaycasts = false;
         }
 
-        if (menuMode == 1 || menuMode == 5)
+        if (menuMode == 5)
         {
-            if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0 && !skipButton.blocksRaycasts)
+            if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0)
             {
-                skipButton.gameObject.SetActive(true);
-                skipButton.alpha = 0;
-
-                if (menuMode == 5)
+                if (!skipButton.blocksRaycasts)
                 {
-                    StartCoroutine(ButtonEnable(skipButton.transform));
-                }  
+                    StartCoroutine(ButtonEnable(skipButton.transform));  
+                }
             }
             
             else
             {
+                Debug.LogWarning("Skip unactive");
                 skipButton.gameObject.SetActive(false);
                 skipButton.interactable = false;
                 skipButton.blocksRaycasts = false;
