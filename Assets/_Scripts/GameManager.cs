@@ -243,11 +243,8 @@ public class GameManager : NetworkManager
             NetworkConnectionToClient conn = player.netIdentity.connectionToClient;
             conn.isReady = true;
             string playerName = conn.identity.name;
-            int playerIndex = roomPlayers.IndexOf(player);
 
             NetworkServer.ReplacePlayerForConnection(conn, Instantiate(playerPrefab), true);
-            conn.identity.GetComponent<Transform>().position = startPositions[playerIndex].position;
-            PlayerManager playerManager = conn.identity.GetComponent<PlayerManager>();
 
             for (int j = 0; j < i; j++)
             {
@@ -257,6 +254,16 @@ public class GameManager : NetworkManager
             conn.identity.name = playerName;
             stateManager.connectedPlayers.Add(conn.identity);
             i++;
+        }
+    }
+
+    private void SetPlayerPositions()
+    {
+        int i = 0;
+        foreach (NetworkIdentity player in stateManager.connectedPlayers)
+        {
+           player.transform.position =  startPositions[i].position;
+           i++;
         }
     }
 
@@ -315,7 +322,8 @@ public class GameManager : NetworkManager
         ReplacePlayers();
 
         yield return new WaitUntil(HasChangedRoomToGamePlayers);
-
+        
+        SetPlayerPositions();
         stateManager.SyncToActivePlayers();
 
         int i = 0;
@@ -327,7 +335,7 @@ public class GameManager : NetworkManager
             playerManager.RpcStartOnLocal();
             i++;
         }
-        
+
         stateManager.OnStartGame();
 
         if (stateManager.activePlayers.Count >= minPlayers)

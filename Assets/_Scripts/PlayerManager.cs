@@ -28,8 +28,6 @@ public class PlayerManager : NetworkBehaviour
     public GameObject recommendedPiece;
 
     private GameObject currentRecommendFlag;
-
-    private CameraActions camActions;
     
     [HideInInspector]
     public GameObject playerCam;
@@ -71,13 +69,8 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     public void RpcStartOnLocal()
     {
-        camActions = GetComponent<CameraActions>();
-        camActions.playerCam = playerCam.transform;
-        
         if (isLocalPlayer)
         {
-            camActions.zoomOutPos = playerCam.transform.position;
-            
             playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
 
             Transform playerModel = transform.Find("Model").GetChild(0);
@@ -97,7 +90,7 @@ public class PlayerManager : NetworkBehaviour
             playerCanvas.OnStartGame(this);
         }
         
-        camActions.OnStartGame();
+        GetComponent<CameraActions>().OnStartGame();
     }
 
     [ClientRpc]

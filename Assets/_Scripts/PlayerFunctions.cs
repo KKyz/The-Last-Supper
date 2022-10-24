@@ -68,7 +68,8 @@ public class PlayerFunctions : NetworkBehaviour
     public float accumulatedTime;
 
     private EnableDisableScrollButtons buttonToggle;
-    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
+    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel, playerCam;
+    private Vector3 zoomOutPos;
     private FadeInOut fade;
     private CameraActions camActions;
     private ShowHealth healthBar;
@@ -120,18 +121,35 @@ public class PlayerFunctions : NetworkBehaviour
 
         player = localPlayer;
         camActions = localPlayer.GetComponent<CameraActions>();
+        playerCam = localPlayer.transform.Find("Camera").gameObject;
         playerScrolls = localPlayer.GetComponent<ScrollArray>();
         playerAnim = localPlayer.GetComponentInChildren<Animator>();
 
+        zoomOutPos = playerCam.transform.position;
         countTime = true;
         playerScrolls.ResetScrollAmount();
+        camActions.OnStartGame();
         buttonToggle.OnStartGame();
+    }
+    
+    [Client]
+    private void ZoomIn()
+    {
+        Vector3 direction = zoomOutPos - stateManager.platePos;
+        Vector3 zoomInPos = zoomOutPos - (direction * 0.4f);
+        LeanTween.move(playerCam, zoomInPos, 1f).setEaseOutSine();
+    }
+
+    public void SetZoomOut()
+    {
+        zoomOutPos = playerCam.transform.position;
     }
 
     [Client]
     private void ShowInfoText(string info)
-    {
+    { 
         infoText.text = info;
+        infoText.GetComponent<CanvasGroup>().alpha = 0;
         infoText.GetComponent<InfoText>().ShowInfoText();
     }
 
@@ -139,7 +157,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void StartAction()
     {
         buttonToggle.ToggleButtons(3);
-        camActions.ZoomIn();
+        ZoomIn();
     }
 
     [Client]
@@ -563,11 +581,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Idle";
         player.orderVictim = false;
-
-        if (plate != null)
-        {
-            camActions.ZoomOut();  
-        }
+        LeanTween.move(playerCam, zoomOutPos, 1f).setEaseOutSine();
 
         if (player.actionable)
         {
@@ -824,6 +838,11 @@ public class PlayerFunctions : NetworkBehaviour
                 if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
                 {
                     buttonToggle.ToggleButtons(4);
+                    ShowInfoText("Waiting for other players' turns..");
+                    if (!infoText.gameObject.activeInHierarchy)
+                    {
+                        
+                    }
                 }
             }
         }
@@ -844,7 +863,7 @@ public class PlayerFunctions : NetworkBehaviour
 
             else if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
             {
-                //Win();
+                Win();
             }
             
             if (player.actionable)

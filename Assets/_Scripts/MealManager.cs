@@ -123,12 +123,13 @@ public class MealManager : NetworkBehaviour
     {
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.ShowChalk();
+        playerCanvas.SetZoomOut();
 
         currentPlate = GameObject.FindWithTag("Plate");
 
         musicManager.PlayBGM(bgmStack.Peek());
 
-        playerCanvas.player.GetComponent<CameraActions>().UpdateCameraLook();
+        playerCanvas.player.GetComponent<CameraActions>().UpdatePlayerLook();
 
         if (isServer)
         {

@@ -3,7 +3,6 @@ using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System.Linq;
 
 public class TalkMenu : NetworkBehaviour
 {

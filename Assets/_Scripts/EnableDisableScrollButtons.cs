@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using Mirror;
+using UnityEngine.UI;
 
 public class EnableDisableScrollButtons : NetworkBehaviour
 {
@@ -239,13 +240,22 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             }
         }
 
-        if (playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0 && !slapButton.blocksRaycasts)
+        if (menuMode == 4)
         {
-            if (menuMode == 4)
+            if (playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
             {
-                slapButton.gameObject.SetActive(true);
-                slapButton.alpha = 0;
-                slapButton.blocksRaycasts = true;
+                if (!slapButton.blocksRaycasts)
+                {
+                    slapButton.gameObject.SetActive(true);
+                    slapButton.alpha = 0;
+                    slapButton.blocksRaycasts = true;
+                }
+            }
+
+            else
+            {
+                slapButton.gameObject.SetActive(false);
+                slapButton.blocksRaycasts = false;
             }
         }
         

@@ -17,9 +17,7 @@ GameObject:
   - component: {fileID: 8732499030961596611}
   - component: {fileID: 8262548222001227528}
   - component: {fileID: 5044029737296358253}
-  - component: {fileID: 5321846680204744639}
   - component: {fileID: 2648410864039311251}
-  - component: {fileID: 7950894595126798715}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -121,7 +119,6 @@ MonoBehaviour:
   hasTalked: 0
   orderVictim: 0
   canContinue: 0
-  accumulatedTime: 0
   psn0: 0
   psn1: 0
   psn2: 0
@@ -190,8 +187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acc1bd17e12431d49ab83c8b4428f679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerCam: {fileID: 0}
-  value: 0.01
 --- !u!114 &8732499030961596611
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,41 +253,6 @@ MonoBehaviour:
   DefaultPosInfluence: {x: 0, y: 0, z: 0}
   DefaultRotInfluence: {x: 1, y: 1, z: 1}
   RestRotationOffset: {x: 0, y: 0, z: 0}
---- !u!114 &5321846680204744639
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 554996796167789163}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 734b48bea0b204338958ee3d885e11f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  sendInterval: 0.05
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 0
-  bufferTimeMultiplier: 1
-  bufferSizeLimit: 64
-  catchupThreshold: 4
-  catchupMultiplier: 0.1
-  onlySyncOnChange: 1
-  bufferResetMultiplier: 5
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  target: {fileID: 1581792745571666265}
 --- !u!114 &2648410864039311251
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -309,41 +269,6 @@ MonoBehaviour:
   syncInterval: 0.1
   clientAuthority: 0
   animator: {fileID: 3971818850708863530}
---- !u!114 &7950894595126798715
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 554996796167789163}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 734b48bea0b204338958ee3d885e11f0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  sendInterval: 0.05
-  syncPosition: 1
-  syncRotation: 1
-  syncScale: 0
-  interpolatePosition: 1
-  interpolateRotation: 1
-  interpolateScale: 0
-  bufferTimeMultiplier: 1
-  bufferSizeLimit: 64
-  catchupThreshold: 4
-  catchupMultiplier: 0.1
-  onlySyncOnChange: 1
-  bufferResetMultiplier: 5
-  positionSensitivity: 0.01
-  rotationSensitivity: 0.01
-  scaleSensitivity: 0.01
-  showGizmos: 0
-  showOverlay: 0
-  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  target: {fileID: 554996796174229467}
 --- !u!1 &554996796174229470
 GameObject:
   m_ObjectHideFlags: 0

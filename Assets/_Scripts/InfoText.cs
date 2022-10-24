@@ -11,7 +11,7 @@ public class InfoText : MonoBehaviour
     
     public void ShowInfoText()
     {
-        LeanTween.alphaCanvas(infoTextCanvas, 2f, 0.5f);
+        LeanTween.alphaCanvas(infoTextCanvas, 1f, 0.5f);
     }
     
     public void CloseInfoText()
