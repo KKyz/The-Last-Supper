@@ -130,6 +130,16 @@ public class PlayerFunctions : NetworkBehaviour
         playerScrolls.ResetScrollAmount();
         camActions.OnStartGame();
         buttonToggle.OnStartGame();
+        StartCoroutine(FaceCenter());
+    }
+
+    private IEnumerator FaceCenter()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            yield return 0;
+            playerCam.transform.LookAt(stateManager.centerPos);
+        }
     }
     
     [Client]

@@ -16,9 +16,6 @@ public class CameraActions : MonoBehaviour
         Vector3 lookDir = (stateManager.centerPos - transform.position) * 0.01f;
         Transform playerModel = transform.Find("Model").GetChild(0);
         playerModel.LookAt(transform.position +  lookDir);
-        
-        //Camera is looking ath the food more directly, so it should transform everything
-        transform.Find("Camera").LookAt(stateManager.centerPos);
     }
 
     public void UpdatePlayerLook()
