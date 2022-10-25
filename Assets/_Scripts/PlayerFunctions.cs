@@ -125,7 +125,7 @@ public class PlayerFunctions : NetworkBehaviour
         playerScrolls = localPlayer.GetComponent<ScrollArray>();
         playerAnim = localPlayer.GetComponentInChildren<Animator>();
 
-        zoomOutPos = playerCam.transform.position;
+        zoomOutPos = new Vector3(0, 0, 0);
         countTime = true;
         playerScrolls.ResetScrollAmount();
         camActions.OnStartGame();
@@ -152,7 +152,10 @@ public class PlayerFunctions : NetworkBehaviour
 
     public void SetZoomOut()
     {
-        zoomOutPos = playerCam.transform.position;
+        if (zoomOutPos == new Vector3(0, 0, 0))
+        {
+            zoomOutPos = playerCam.transform.position;
+        }
     }
 
     [Client]
