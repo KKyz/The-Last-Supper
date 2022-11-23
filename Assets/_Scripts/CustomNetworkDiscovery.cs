@@ -31,6 +31,7 @@ public class DiscoveryResponse : NetworkMessage
 
     public int playerCount;
     public string hostName;
+    public string gameVersion;
 }
 
 public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse>
@@ -83,6 +84,7 @@ public class CustomNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Dis
             {
                 hostName = PlayerPrefs.GetString("PlayerName"),
                 playerCount = GameManager.singleton.numPlayers,
+                gameVersion = Application.version,
                 serverId = serverId,
                 uri = transport.ServerUri()
             };

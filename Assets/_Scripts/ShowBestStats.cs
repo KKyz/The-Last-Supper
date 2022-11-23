@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -18,7 +16,7 @@ public class ShowBestStats : MonoBehaviour
         
         
         
-        float playTime = PlayerPrefs.GetInt("playTime", 0);
+        float playTime = PlayerPrefs.GetFloat("playTime", 0);
         float minutes = Mathf.FloorToInt(playTime / 60);
         float seconds = Mathf.FloorToInt(playTime % 60);
         

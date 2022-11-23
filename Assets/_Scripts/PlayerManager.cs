@@ -4,10 +4,12 @@ using TMPro;
 
 public class PlayerManager : NetworkBehaviour
 {
-
+    #region Attributes
+    
     [HideInInspector]
     public int scrollCount, courseCount, pieceCount, nPiecesEaten;
     
+    [SyncVar]
     public int health;
 
     [SyncVar]
@@ -32,8 +34,18 @@ public class PlayerManager : NetworkBehaviour
     [HideInInspector]
     public GameObject playerCam;
     
+    [HideInInspector]
     public PlayerFunctions playerCanvas;
+    
+    [Header("Health Bar")]
+    public Color[] barGradient = new Color[4]; 
+    private SpriteRenderer fill;
+    public float[] fillLengths = new float[4];
 
+    #endregion
+
+    #region Setup
+    
     public void Start()
     {
         canContinue = false;
@@ -47,6 +59,7 @@ public class PlayerManager : NetworkBehaviour
         isEncouraged = false;
         hasRecommended = false;
         orderVictim = false;
+        fill = transform.Find("PlayerTag").Find("PlayerHealth").Find("Fill").GetComponent<SpriteRenderer>();
 
         for (int i = 0; i < 4; i++)
         {
@@ -58,12 +71,21 @@ public class PlayerManager : NetworkBehaviour
             playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
             playerCam.SetActive(false);
         }
+        
     }
     
     [Command(requiresAuthority = false)]
     public void CmdSwitchContinueState(bool state)
     {
         canContinue = state;
+    }
+    
+    [ClientRpc]
+    public void RpcRenamePlayer(string newName)
+    {
+        netIdentity.name = newName;
+        gameObject.name = netIdentity.name;
+        transform.Find("PlayerTag").Find("Name").GetComponent<TextMeshPro>().text = newName;
     }
 
     [ClientRpc]
@@ -76,6 +98,7 @@ public class PlayerManager : NetworkBehaviour
             Transform playerModel = transform.Find("Model").GetChild(0);
             
             playerCam.SetActive(true);
+            transform.Find("PlayerTag").gameObject.SetActive(false);
             
             foreach (Transform child in playerModel)
             {
@@ -102,6 +125,25 @@ public class PlayerManager : NetworkBehaviour
         //NetworkServer.Spawn(newPlayerModel);
     }
 
+    #endregion
+
+    #region Player Health
+
+    [Command(requiresAuthority = false)]
+    public void CmdChangeHealth(int value)
+    {
+        health = value;
+        RpcSetHealth(value);
+    }
+
+    [ClientRpc]
+    private void RpcSetHealth(int value) 
+    {
+        Vector3 fillLocalScale = fill.transform.localScale;
+        fill.color = barGradient[value];
+        
+        fill.transform.localScale = new Vector3(fillLengths[value], fillLocalScale.y, fillLocalScale.z);
+    }
     public void SyncPsn(bool oldValue, bool newValue)
     {
         psnArray[0] = psn0;
@@ -110,6 +152,10 @@ public class PlayerManager : NetworkBehaviour
         psnArray[3] = psn3;
     }
 
+    #endregion
+
+    #region Recommend
+    
     [Command(requiresAuthority = false)]
     public void CmdCreateRecommend(GameObject piece)
     {
@@ -122,14 +168,7 @@ public class PlayerManager : NetworkBehaviour
             recommendedPiece = piece;
         }
     }
-    
-    [ClientRpc]
-    public void RpcRenamePlayer(string newName)
-    {
-        netIdentity.name = newName;
-        gameObject.name = netIdentity.name;
-    }
-    
+
     [ClientRpc]
     private void RpcAddRecommend(string newName, Transform recommend, Transform piece)
     {
@@ -188,4 +227,6 @@ public class PlayerManager : NetworkBehaviour
         }
         hasRecommended = true;
     }
+    
+    #endregion
 }

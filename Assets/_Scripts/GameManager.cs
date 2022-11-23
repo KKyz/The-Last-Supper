@@ -160,11 +160,19 @@ public class GameManager : NetworkManager
         if (spawnedButtons.ContainsKey(info.serverId))
         {
             GameObject button = spawnedButtons[info.serverId];
-            button.gameObject.SetActive(true);
-            button.transform.Find("TableName").GetComponent<TextMeshProUGUI>().text = info.hostName + "'s Table";
-            button.transform.Find("PlayerCount").GetComponent<TextMeshProUGUI>().text = info.playerCount + "/" + maxConnections;
-            button.GetComponent<Button>().onClick.AddListener(delegate { menuManager.Connect(info); });
-            button.GetComponent<DiscoveryButton>().ResetTimer();
+            if (button != null)
+            {
+                button.gameObject.SetActive(true);
+                button.transform.Find("TableName").GetComponent<TextMeshProUGUI>().text = info.hostName + "'s Table";
+                button.transform.Find("PlayerCount").GetComponent<TextMeshProUGUI>().text = info.playerCount + "/" + maxConnections;
+                button.GetComponent<Button>().onClick.AddListener(delegate { menuManager.Connect(info); });
+                button.GetComponent<DiscoveryButton>().ResetTimer();
+
+                if (info.playerCount >= 4 || info.gameVersion != Application.version)
+                {
+                    button.GetComponent<Button>().enabled = false;
+                }
+            }
         }
     }
 
@@ -296,7 +304,6 @@ public class GameManager : NetworkManager
         {
             ServerChangeScene(gameScene);
         }
-
     }
 
     public void StartGame()
@@ -312,8 +319,7 @@ public class GameManager : NetworkManager
         //Delayed call to ensure start order of Restaurant, Player, PlayerUI, StateManager, and finally MealManager 
 
         currentRestaurant = mealManager.restaurant.gameObject;
-        GameObject gameRestaurant =
-            Instantiate(currentRestaurant, currentRestaurant.transform.position, quaternion.identity);
+        GameObject gameRestaurant = Instantiate(currentRestaurant, currentRestaurant.transform.position, quaternion.identity);
         NetworkServer.Spawn(gameRestaurant);
 
         yield return new WaitUntil(IsRestaurantInstantiated);

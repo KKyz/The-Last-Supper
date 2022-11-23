@@ -16,6 +16,7 @@ public class ShowStats : MonoBehaviour
         float minutes = Mathf.FloorToInt(player.playerCanvas.accumulatedTime / 60);
         float seconds = Mathf.FloorToInt(player.playerCanvas.accumulatedTime % 60);
         timeCounter.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        PlayerPrefs.SetFloat("playTime", PlayerPrefs.GetFloat("playTime", 0) + player.playerCanvas.accumulatedTime);
 
         if (player.pieceCount > PlayerPrefs.GetInt("recordPieces", 0))
         {

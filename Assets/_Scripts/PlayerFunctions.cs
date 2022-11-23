@@ -67,8 +67,11 @@ public class PlayerFunctions : NetworkBehaviour
     [HideInInspector]
     public float accumulatedTime;
 
+    [HideInInspector] 
+    public GameObject playerCam;
+
     private EnableDisableScrollButtons buttonToggle;
-    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel, playerCam;
+    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
     private Vector3 zoomOutPos;
     private FadeInOut fade;
     private CameraActions camActions;
@@ -130,18 +133,8 @@ public class PlayerFunctions : NetworkBehaviour
         playerScrolls.ResetScrollAmount();
         camActions.OnStartGame();
         buttonToggle.OnStartGame();
-        StartCoroutine(FaceCenter());
     }
 
-    private IEnumerator FaceCenter()
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            yield return 0;
-            playerCam.transform.LookAt(stateManager.centerPos);
-        }
-    }
-    
     [Client]
     private void ZoomIn()
     {
@@ -187,6 +180,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (player.health >= 1)
         {
             player.health -= 1;
+            player.CmdChangeHealth(player.health);
             healthBar.SetHealth(player.health);
             if (splash)
             { 
@@ -206,6 +200,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (player.health < 3)
         {
             player.health += 1;
+            player.CmdChangeHealth(player.health);
             uiAudio.PlayOneShot(healthSfx);
             healthBar.SetHealth(player.health);
             
@@ -808,10 +803,24 @@ public class PlayerFunctions : NetworkBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown("1"))
+        {
+            //Poison(true);
+        }
+
+        if (Input.GetKeyDown("2"))
+        {
+            //Health();
+        }
+        
+        if (Input.GetKeyDown("c"))
+        {
+            //CmdNextCourse();
+        }
+        
         if (countTime && player != null)
         {
             accumulatedTime += Time.deltaTime;
-            PlayerPrefs.SetFloat("playTime", PlayerPrefs.GetInt("playTime", 0) + Time.deltaTime);
         }
 
         //Manages player options when playing 
@@ -874,14 +883,14 @@ public class PlayerFunctions : NetworkBehaviour
             }
 
 
-            else if (stateManager.activePlayers.Count == 1 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
+            else if (stateManager.activePlayers.Count < 2 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
             {
                 Win();
             }
             
             if (player.actionable)
             {
-                if (player.orderVictim && openPopup == null)
+                if (player.orderVictim && openPopup == null && stateManager.AllPlayersCanContinue())
                 {
                     ReceiveDrink();
                 }

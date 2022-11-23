@@ -6,6 +6,9 @@ using TMPro;
 
 public class MealManager : NetworkBehaviour
 {
+    [SyncVar]
+    private bool firstPlate;
+    
     public int nPieces;
     public RestaurantContents restaurant;
     public GameObject platterTop;
@@ -16,9 +19,8 @@ public class MealManager : NetworkBehaviour
     private MusicManager musicManager;
     private Color normTop, normBottom;
     private readonly Stack<GameObject> courseStack = new();
-    private readonly Stack<AudioClip> bgmStack = new();
+    public readonly Stack<AudioClip> bgmStack = new();
     private GameObject currentPlate;
-    private bool firstPlate;
     public PlayerManager localPlayer;
 
     [ClientRpc]
@@ -36,7 +38,11 @@ public class MealManager : NetworkBehaviour
         }
         
         PopulateCourses(menuIndex);
-        firstPlate = true;
+
+        if (isServer)
+        {
+            firstPlate = true;
+        }
     }
 
     public void Reset()
@@ -126,10 +132,15 @@ public class MealManager : NetworkBehaviour
         playerCanvas.SetZoomOut();
 
         currentPlate = GameObject.FindWithTag("Plate");
+        playerCanvas.playerCam.transform.LookAt(currentPlate.transform);
+        
+        if (!firstPlate)
+        {
+            bgmStack.Pop();
+            Debug.LogWarning("Next Song");
+        }
 
         musicManager.PlayBGM(bgmStack.Peek());
-
-        playerCanvas.player.GetComponent<CameraActions>().UpdatePlayerLook();
 
         if (isServer)
         {
@@ -144,6 +155,15 @@ public class MealManager : NetworkBehaviour
         {
             localPlayer.courseCount += 1;
         }
+    }
+
+    [ClientRpc]
+    private void RpcFaceCenter()
+    {
+        PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
+        playerCanvas.player.GetComponent<CameraActions>().FaceCenter();
+        playerCanvas.playerCam.transform.LookAt(stateManager.transform.position);
+        playerCanvas.player.CmdChangeHealth(playerCanvas.player.health);
     }
 
     [Command(requiresAuthority = false)]
@@ -167,7 +187,14 @@ public class MealManager : NetworkBehaviour
 
         RpcAddCourseCounter();
         
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(0.5f);
+        
+        if (firstPlate)
+        {
+            RpcFaceCenter();
+        }
+
+        yield return new WaitForSeconds(2f);
 
         if (currentPlate != null)
         {
@@ -179,16 +206,14 @@ public class MealManager : NetworkBehaviour
             NetworkServer.Destroy(currentPlate);
         }
         
-        if (courseStack.Count > 1 && !firstPlate)
+        if (!firstPlate)
         {
             courseStack.Pop();
-            bgmStack.Pop();
         }
         
         currentPlate = Instantiate(courseStack.Peek(), transform.position, Quaternion.identity);
         Vector3 platePos = currentPlate.transform.position;
         stateManager.platePos = new Vector3(platePos.x, platePos.y + 2.5f, platePos.z);
-        firstPlate = false;
         NetworkServer.Spawn(currentPlate);
 
         yield return new WaitForSeconds(0.5f);
@@ -203,6 +228,7 @@ public class MealManager : NetworkBehaviour
         currentPlate.transform.position = managerPos;
         yield return new WaitForSeconds(1f);
         NetworkServer.Destroy(platterInstance);
+        firstPlate = false;
     }
     
     private bool PlateSpawnedOnAllPlayers()

@@ -17,7 +17,7 @@ public class PlayerNameMaker : MonoBehaviour
     }
     void Update()
     {
-        if (newPlayerName.text.Length > 0 && newPlayerName.text.Length <= 5)
+        if (newPlayerName.text.Length > 0 && newPlayerName.text.Length <= 7)
         {
             confirmButton.interactable = true;
             warningMessage.SetActive(false);

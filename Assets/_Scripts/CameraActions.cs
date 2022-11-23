@@ -9,16 +9,11 @@ public class CameraActions : MonoBehaviour
 
     public void OnStartGame()
     {
-        camShaker = GetComponent<CameraShaker>();
         stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
-
-        //Player model should be facing the center
-        Vector3 lookDir = (stateManager.centerPos - transform.position) * 0.01f;
-        Transform playerModel = transform.Find("Model").GetChild(0);
-        playerModel.LookAt(transform.position +  lookDir);
+        camShaker = GetComponent<CameraShaker>();
     }
 
-    public void UpdatePlayerLook()
+    public void FaceCenter()
     {
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
@@ -27,8 +22,6 @@ public class CameraActions : MonoBehaviour
             Vector3 lookDir = (stateManager.centerPos - player.transform.position) * 0.01f;
             Transform playerModel = player.transform.Find("Model").GetChild(0);
             playerModel.LookAt(player.transform.position + lookDir);
-
-            player.transform.Find("Camera").LookAt(stateManager.platePos);
         }
     }
 

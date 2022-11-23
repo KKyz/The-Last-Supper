@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class MenuManager : MonoBehaviour
@@ -35,6 +36,7 @@ public class MenuManager : MonoBehaviour
         gameFind = transform.Find("GameSearch");
         OpenSubMenu(startMenu);
         blur.SetActive(false);
+        GameObject.Find("Version").GetComponent<TextMeshProUGUI>().text = "Ver. " + Application.version;
         
         titleCam = Camera.main;
         Vector3 camGoalPos = titleCam.transform.position;
@@ -135,7 +137,7 @@ public class MenuManager : MonoBehaviour
 
     public void ConditionStartHost(Transform subMenu)
     {
-        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 5)
+        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 7)
         {
             OpenSubMenu(settingsMenu);
         }
@@ -149,7 +151,7 @@ public class MenuManager : MonoBehaviour
     
     public void ConditionStartClient(Transform subMenu)
     {
-        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 5)
+        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 7)
         {
             OpenSubMenu(settingsMenu);
         }
@@ -160,10 +162,9 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    private IEnumerator SetActiveOff(GameObject menuObj)
+    private IEnumerator SetActiveOff()
     {
         yield return new WaitForSeconds(1f);
-        //menuObj.SetActive(false);
     }
 
     public void CloseSubMenu(Transform subMenu)
@@ -173,7 +174,7 @@ public class MenuManager : MonoBehaviour
         foreach (Transform menuObj in subMenu)
         {
             menuObj.GetComponent<MenuAnimations>().ExitAnim();
-            StartCoroutine(SetActiveOff(menuObj.gameObject));
+            StartCoroutine(SetActiveOff());
         }
     }
 

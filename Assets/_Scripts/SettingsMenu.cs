@@ -28,14 +28,11 @@ public class SettingsMenu : MonoBehaviour
         availableResolutions = new List<Resolution>();
         resolutionDropdown.ClearOptions();
         
-        int currentRefreshRate = Screen.currentResolution.refreshRate;
+        //int currentRefreshRate = Screen.currentResolution.refreshRate;
 
         for (int i = 0; i < resolutions.Length; i++)
         {
-            if (resolutions[i].refreshRate == currentRefreshRate)
-            {
-                availableResolutions.Add(resolutions[i]);
-            }
+            availableResolutions.Add(resolutions[i]);
         }
         
         
@@ -65,6 +62,7 @@ public class SettingsMenu : MonoBehaviour
     {
         Resolution resolution = availableResolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, true);
+        SetFullscreen(true);
     }
     
     public void BgmVolume (float sliderValue)
