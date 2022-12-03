@@ -15,7 +15,6 @@ public class FadeInOut : MonoBehaviour
         gameObject.SetActive(true);
         canvasGroup.blocksRaycasts = false;
         canvasGroup.alpha = 1f;
-        LeanTween.alphaCanvas(canvasGroup, 0, time);
         StartCoroutine(DisableFade(time));
     }
 
@@ -29,6 +28,8 @@ public class FadeInOut : MonoBehaviour
     
     private IEnumerator DisableFade(float time)
     {
+        yield return new WaitForSeconds(0.6f);
+        LeanTween.alphaCanvas(canvasGroup, 0, time);
         yield return new WaitForSeconds(time + 1f);
         gameObject.SetActive(false);
     }

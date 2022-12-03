@@ -134,10 +134,9 @@ public class MealManager : NetworkBehaviour
         currentPlate = GameObject.FindWithTag("Plate");
         playerCanvas.playerCam.transform.LookAt(currentPlate.transform);
         
-        if (!firstPlate)
+        if (!firstPlate && bgmStack.Count > 1)
         {
             bgmStack.Pop();
-            Debug.LogWarning("Next Song");
         }
 
         musicManager.PlayBGM(bgmStack.Peek());
@@ -186,9 +185,9 @@ public class MealManager : NetworkBehaviour
         LeanTween.moveY(platterInstance, managerPos.y, 1.8f).setEaseInSine();
 
         RpcAddCourseCounter();
-        
+
         yield return new WaitForSeconds(0.5f);
-        
+
         if (firstPlate)
         {
             RpcFaceCenter();
@@ -202,11 +201,11 @@ public class MealManager : NetworkBehaviour
             {
                 NetworkServer.Destroy(obj);
             }
-            
+
             NetworkServer.Destroy(currentPlate);
         }
-        
-        if (!firstPlate)
+
+        if (!firstPlate && courseStack.Count > 1)
         {
             courseStack.Pop();
         }

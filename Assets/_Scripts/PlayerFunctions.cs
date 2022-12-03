@@ -120,7 +120,7 @@ public class PlayerFunctions : NetworkBehaviour
         chatPanel.SetActive(false);
         smellTargets.Clear();
         swapTargets.Clear();
-        fade.FadeOut(1.5f);
+        fade.FadeOut(3f);
 
         player = localPlayer;
         camActions = localPlayer.GetComponent<CameraActions>();
