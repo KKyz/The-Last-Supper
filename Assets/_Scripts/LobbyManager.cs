@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,13 +9,53 @@ public class LobbyManager: MonoBehaviour
     public TMP_Text[] playerNames = new TMP_Text[4];
     public Toggle[] playerReadyToggles = new Toggle[4];
     public Button startGameButton;
-    public Transform setupButtons;
+    public Transform setupButtons, tableSetup;
     
     private GameManager room;
+    private TMP_Dropdown restaurantDropdown;
+    private TMP_Dropdown menuDropdown;
 
-    public void Start()
+    public void Init()
     {
         room = GameObject.Find("GameManager").GetComponent<GameManager>();
+        tableSetup = transform.Find("TableSetup");
+        restaurantDropdown = tableSetup.Find("RestaurantDropdown").GetComponent<TMP_Dropdown>();
+        menuDropdown = tableSetup.Find("MenuDropdown").GetComponent<TMP_Dropdown>();
+        
+        //Add restaurants and menus
+        restaurantDropdown.ClearOptions();
+        menuDropdown.ClearOptions();
+        List<string> restaurantNames = new List<string>();
+        foreach (var restaurant in room.restaurants)
+        {
+            restaurantNames.Add(restaurant.name);
+        }
+        
+        restaurantDropdown.AddOptions(restaurantNames);
+        SelectRestaurant(0);
+    }
+
+    public void SelectRestaurant(int index)
+    {
+        room.currentRestaurant = room.restaurants[index].gameObject;
+        UpdateMenus();
+    }
+
+    public void SelectMenu(int index)
+    {
+        room.currentMenu = index;
+    }
+
+    private void UpdateMenus()
+    {
+        List<string> menuNames = new List<string>();
+
+        foreach (var menu in room.currentRestaurant.GetComponent<RestaurantContents>().menus)
+        {
+            menuNames.Add(menu.menuName);
+        }
+        
+        menuDropdown.AddOptions(menuNames);
     }
 
     public void DisableSetupButtons()

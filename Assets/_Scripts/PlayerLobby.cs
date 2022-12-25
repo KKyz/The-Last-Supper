@@ -33,7 +33,7 @@ public class PlayerLobby : NetworkBehaviour
         room = GameObject.Find("GameManager").GetComponent<GameManager>();
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
-            lobbyManager = GameObject.Find("Guests").GetComponent<LobbyManager>();
+            lobbyManager = GameObject.Find("GameSetup").GetComponent<LobbyManager>();
             room.roomPlayers.Add(this);
         }
     }
@@ -114,8 +114,8 @@ public class PlayerLobby : NetworkBehaviour
         if (!isLeader)
         {
             lobbyManager.startGameButton.gameObject.SetActive(false);
+            lobbyManager.tableSetup.gameObject.SetActive(false);
         }
-            //lobbyManager.tableSetUp.SetActive(false);
         
         if (room.localRoomPlayer == null)
         {
@@ -123,7 +123,7 @@ public class PlayerLobby : NetworkBehaviour
         }
         
         lobbyManager.startGameButton.gameObject.SetActive(isLeader);
-        //lobbyManager.tableSetUp.SetActive(isLeader);
+        lobbyManager.tableSetup.gameObject.SetActive(isLeader);
     } 
 
 }

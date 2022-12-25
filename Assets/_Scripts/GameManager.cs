@@ -11,7 +11,8 @@ using Object = UnityEngine.Object;
 
 public class GameManager : NetworkManager
 {
-    [Header("Lobby")] [Scene] public string gameScene;
+    [Header("Lobby")] 
+    [Scene] public string gameScene;
     [HideInInspector] public int minPlayers = 2;
     public GameObject playerLobby;
     public GameObject discoveryButton;
@@ -23,12 +24,16 @@ public class GameManager : NetworkManager
     private GameObject stateManagerInstance;
     private MenuManager menuManager;
 
-    [Header("Game")] public GameObject stateManagerObj;
-    private StateManager stateManager;
+    [Header("Game")] 
+    public GameObject stateManagerObj;
+    [HideInInspector]public StateManager stateManager;
     private MealManager mealManager;
-    private GameObject currentRestaurant;
+    public RestaurantContents[] restaurants;
+    [HideInInspector]public GameObject currentRestaurant;
+    [HideInInspector]public int currentMenu;
 
-    [Header("Network Discovery")] public CustomNetworkDiscovery networkDiscovery;
+    [Header("Network Discovery")] 
+    public CustomNetworkDiscovery networkDiscovery;
     public Dictionary<long, DiscoveryResponse> discoveredServers = new();
     public Dictionary<long, GameObject> spawnedButtons = new();
     [HideInInspector]public float cleanupTimer;
@@ -318,7 +323,8 @@ public class GameManager : NetworkManager
     {
         //Delayed call to ensure start order of Restaurant, Player, PlayerUI, StateManager, and finally MealManager 
 
-        currentRestaurant = mealManager.restaurant.gameObject;
+        mealManager.restaurant = currentRestaurant.GetComponent<RestaurantContents>();
+        mealManager.menuIndex = currentMenu;
         GameObject gameRestaurant = Instantiate(currentRestaurant, currentRestaurant.transform.position, quaternion.identity);
         NetworkServer.Spawn(gameRestaurant);
 

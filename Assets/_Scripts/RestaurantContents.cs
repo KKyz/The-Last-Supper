@@ -13,7 +13,7 @@ public class RestaurantContents : MonoBehaviour
     [System.Serializable]
     public class Menus
     {
-        public string mealName;
+        public string menuName;
         public GameObject[] meals;
     }
     
@@ -24,7 +24,7 @@ public class RestaurantContents : MonoBehaviour
     
     public string GetNames(int index)
     {
-        return menus[index].mealName;
+        return menus[index].menuName;
     }
     
     [System.Serializable]

@@ -18,10 +18,16 @@ public class MenuManager : MonoBehaviour
     public void Start()
     {
         GameObject gm = GameObject.Find("GameManager");
-        if (gm == null || !gm.TryGetComponent<GameManager>(out gameManager))
+        if (gm == null)
         { 
             gameManager = Instantiate(gameManagerPrefab).GetComponent<GameManager>();
             gameManager.gameObject.name = "GameManager";
+        }
+        
+        GameObject sm = GameObject.Find("StateManager");
+        if (sm != null)
+        {
+            DestroyImmediate(sm);
         }
         
         gameManager.Init();
