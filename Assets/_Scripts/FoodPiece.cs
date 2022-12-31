@@ -39,14 +39,6 @@ public class FoodPiece : NetworkBehaviour
                 accScrollProb.Add(accProb);
             }
 
-            // string scrollResult = "piecePos: ";
-            // foreach (var item in accScrollProb)
-            // {
-            //     scrollResult += item.ToString() + ", ";
-            // }
-            // Debug.LogWarning(scrollResult);
-
-
             //Setting random.range as float as dividing integer by integer results in rounding to 0
 
             float prob = (float)Random.Range(0, 100)/100;

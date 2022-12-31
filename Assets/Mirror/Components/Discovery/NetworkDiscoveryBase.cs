@@ -160,7 +160,6 @@ namespace Mirror.Discovery
                 catch (ObjectDisposedException)
                 {
                     // socket has been closed
-                    Debug.LogWarning("Socket has been closed");
                     break;
                 }
                 catch (Exception)

@@ -151,7 +151,7 @@ public class MenuManager : MonoBehaviour
         {
             gameManager.StartHost();
             networkDiscovery.AdvertiseServer();
-            OpenSubMenu(gameSetup);
+            OpenSubMenu(gameSetup); 
         }
     }
     
