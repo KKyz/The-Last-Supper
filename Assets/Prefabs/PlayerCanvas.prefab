@@ -2629,8 +2629,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0.00015258789}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -213.79517, y: -59.078323}
+  m_SizeDelta: {x: 248.6146, y: 154.6999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4074930142345500611
 CanvasRenderer:
@@ -3782,6 +3782,8 @@ MonoBehaviour:
   dropdownDown: {fileID: 21300000, guid: bb5e1f88b24588d4285e17f7b5708646, type: 3}
   currentState: 
   countTime: 0
+  accumulatedTime: 0
+  playerCam: {fileID: 0}
   plate: {fileID: 0}
 --- !u!114 &8698564207709150152
 MonoBehaviour:
@@ -5859,7 +5861,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5337929142577168654
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5991,7 +5993,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4313146038996898456
 RectTransform:
   m_ObjectHideFlags: 0
