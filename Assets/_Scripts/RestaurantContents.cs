@@ -5,6 +5,7 @@ public class RestaurantContents : MonoBehaviour
     public Material skyBox;
     public Sprite thumbnail;
     public string restaurantName;
+    public int estPlayTime;
     public Menus[] menus;
     public PieceTypes[] pieceTypes;
     public AudioClip[] bgmClips;

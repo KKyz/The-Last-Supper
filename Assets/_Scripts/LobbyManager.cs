@@ -4,58 +4,119 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LobbyManager: MonoBehaviour
+public class LobbyManager : MonoBehaviour
 {
     public TMP_Text[] playerNames = new TMP_Text[4];
     public Toggle[] playerReadyToggles = new Toggle[4];
     public Button startGameButton;
-    public Transform setupButtons, tableSetup;
-    
-    private GameManager room;
+    public Transform setupButtons, tableSetup, customizeButton;
+
+    private GameManager gameManager;
     private TMP_Dropdown restaurantDropdown;
     private TMP_Dropdown menuDropdown;
+    private TMP_Text estTimeText;
+    private Image restaurantThumbnail;
 
     public void Init()
     {
-        room = GameObject.Find("GameManager").GetComponent<GameManager>();
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         tableSetup = transform.Find("TableSetup");
+        customizeButton = transform.Find("CustomizeBtn");
         restaurantDropdown = tableSetup.Find("RestaurantDropdown").GetComponent<TMP_Dropdown>();
         menuDropdown = tableSetup.Find("MenuDropdown").GetComponent<TMP_Dropdown>();
-        
+        estTimeText = tableSetup.Find("EstTimeText").GetComponent<TMP_Text>();
+        restaurantThumbnail = tableSetup.Find("Thumbnail").GetComponent<Image>();
+
+        estTimeText.text = "Est. Play Time: 0 Mins. Per Session";
+
         //Add restaurants and menus
         restaurantDropdown.ClearOptions();
         menuDropdown.ClearOptions();
         List<string> restaurantNames = new List<string>();
-        foreach (var restaurant in room.restaurants)
+        foreach (var restaurant in gameManager.restaurants)
         {
-            restaurantNames.Add(restaurant.name);
+            restaurantNames.Add(restaurant.restaurantName);
         }
-        
+
         restaurantDropdown.AddOptions(restaurantNames);
         SelectRestaurant(0);
     }
 
+    public void ToggleTagMode(bool toggle)
+    {
+        int team1Length = (int)(gameManager.roomPlayers.Count / 2);
+        int team2Length = gameManager.roomPlayers.Count - team1Length;
+
+        if (toggle)
+        {
+            for (int i = 0; i < team1Length; i++)
+            {
+                gameManager.team1.Add(gameManager.roomPlayers[i]);
+            }
+
+            if (gameManager.roomPlayers.Count > 1)
+            {
+                for (int i = team1Length; i < team2Length; i++)
+                {
+                    gameManager.team2.Add(gameManager.roomPlayers[i]);
+                }
+            }
+        }
+        
+        UpdatePlayerTeams();
+    }
+
+    public void ChangePlayerTeams(String parentName)
+    {
+        
+    }
+
+    public void UpdatePlayerTeams()
+    {
+        for (int i = 0; i < gameManager.team1.Count; i++)
+        {
+            Button TeamToggle = playerNames[i].transform.Find("TeamColour").GetComponent<Button>();
+            TeamToggle.gameObject.SetActive(true);
+            TeamToggle.image.color = Color.red;
+        }
+        
+        for (int i = 0; i < gameManager.team2.Count; i++)
+        {
+            Button TeamToggle = playerNames[i].transform.Find("TeamColour").GetComponent<Button>();
+            TeamToggle.gameObject.SetActive(true);
+            TeamToggle.image.color = Color.blue;
+        }
+    }
+
     public void SelectRestaurant(int index)
     {
-        room.currentRestaurant = room.restaurants[index].gameObject;
+        gameManager.currentRestaurant = gameManager.restaurants[index].gameObject;
         UpdateMenus();
     }
 
     public void SelectMenu(int index)
     {
-        room.currentMenu = index;
+        gameManager.currentMenu = index;
     }
 
     private void UpdateMenus()
     {
+        RestaurantContents currentRestaurant = gameManager.currentRestaurant.GetComponent<RestaurantContents>(); 
         List<string> menuNames = new List<string>();
 
-        foreach (var menu in room.currentRestaurant.GetComponent<RestaurantContents>().menus)
+        foreach (var menu in currentRestaurant.menus)
         {
             menuNames.Add(menu.menuName);
         }
-        
+        menuDropdown.ClearOptions();
         menuDropdown.AddOptions(menuNames);
+        
+        estTimeText.text = "Est. Play Time: " + currentRestaurant.estPlayTime + " Mins. Per Session";
+
+        if (currentRestaurant.thumbnail != null)
+        {
+            restaurantThumbnail.sprite = currentRestaurant.thumbnail; 
+        }
     }
 
     public void DisableSetupButtons()
@@ -74,15 +135,15 @@ public class LobbyManager: MonoBehaviour
             playerReadyToggles[i].isOn = false;
         }
 
-        for (int i = 0; i < room.roomPlayers.Count; i++)
+        for (int i = 0; i < gameManager.roomPlayers.Count; i++)
         {
-            playerNames[i].text = room.roomPlayers[i].displayName;
-            playerReadyToggles[i].isOn = room.roomPlayers[i].isReady;
+            playerNames[i].text = gameManager.roomPlayers[i].displayName;
+            playerReadyToggles[i].isOn = gameManager.roomPlayers[i].isReady;
         }
     }
 
     public void ReadyUp()
     {
-        room.localRoomPlayer.CmdReadyUp();
+        gameManager.localRoomPlayer.CmdReadyUp();
     }
 }

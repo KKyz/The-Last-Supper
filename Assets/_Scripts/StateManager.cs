@@ -12,7 +12,7 @@ public class StateManager : NetworkBehaviour
     public PlayerManager playerScript;
 
     [SyncVar] 
-    public bool gameCanEnd;
+    public bool gameCanEnd, stealActive;
     
     [SyncVar]
     public int turn;

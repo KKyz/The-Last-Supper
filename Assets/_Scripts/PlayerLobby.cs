@@ -34,6 +34,7 @@ public class PlayerLobby : NetworkBehaviour
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
             lobbyManager = GameObject.Find("GameSetup").GetComponent<LobbyManager>();
+            lobbyManager.Init();
             room.roomPlayers.Add(this);
         }
     }
@@ -111,12 +112,6 @@ public class PlayerLobby : NetworkBehaviour
     [TargetRpc]
     public void TargetFindLocalPlayer(NetworkConnection conn)
     {
-        if (!isLeader)
-        {
-            lobbyManager.startGameButton.gameObject.SetActive(false);
-            lobbyManager.tableSetup.gameObject.SetActive(false);
-        }
-        
         if (room.localRoomPlayer == null)
         {
             room.localRoomPlayer = NetworkClient.localPlayer.GetComponent<PlayerLobby>();
@@ -124,6 +119,6 @@ public class PlayerLobby : NetworkBehaviour
         
         lobbyManager.startGameButton.gameObject.SetActive(isLeader);
         lobbyManager.tableSetup.gameObject.SetActive(isLeader);
-    } 
-
+        lobbyManager.customizeButton.gameObject.SetActive(isLeader);
+    }
 }

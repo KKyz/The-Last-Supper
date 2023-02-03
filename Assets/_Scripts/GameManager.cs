@@ -31,6 +31,10 @@ public class GameManager : NetworkManager
     public RestaurantContents[] restaurants;
     [HideInInspector]public GameObject currentRestaurant;
     [HideInInspector]public int currentMenu;
+    public float scrollProb;
+    public bool stealActive;
+    public List<PlayerLobby> team1, team2;
+    public List<string> availableScrolls;
 
     [Header("Network Discovery")] 
     public CustomNetworkDiscovery networkDiscovery;
@@ -83,10 +87,15 @@ public class GameManager : NetworkManager
         cleanupTimer = 0;
         autoCreatePlayer = false;
         currentRestaurant = null;
+        team1.Clear();
+        team2.Clear();
         fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
         menuManager = GameObject.Find("StartCanvas").GetComponent<MenuManager>();
 
         spawnPrefabs.Clear();
+        scrollProb = 0;
+        availableScrolls.Clear();
+        stealActive = true;
         GameObject[] spawnablePrefabs = Resources.LoadAll<GameObject>("NetworkPrefabs");
 
         foreach (GameObject prefab in spawnablePrefabs)
@@ -325,11 +334,14 @@ public class GameManager : NetworkManager
 
         mealManager.restaurant = currentRestaurant.GetComponent<RestaurantContents>();
         mealManager.menuIndex = currentMenu;
+        RenderSettings.skybox = mealManager.restaurant.skyBox;
+        
         GameObject gameRestaurant = Instantiate(currentRestaurant, currentRestaurant.transform.position, quaternion.identity);
         NetworkServer.Spawn(gameRestaurant);
 
         yield return new WaitUntil(IsRestaurantInstantiated);
 
+        stateManager.stealActive = stealActive;
         stateManager.transform.position = GameObject.Find("StateManagerPos").transform.position;
         ReplacePlayers();
 

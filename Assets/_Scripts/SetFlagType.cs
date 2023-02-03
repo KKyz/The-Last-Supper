@@ -55,7 +55,7 @@ public class SetFlagType : MonoBehaviour
         {
             currentFlag = flags[7];
         }
-        else if (type == "Fake")
+        else if (type == "Decoy")
         {
             currentFlag = flags[8];
         }

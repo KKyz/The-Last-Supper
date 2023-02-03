@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using kcp2k;
-using UnityEngine;
 using Mirror;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FoodPiece : NetworkBehaviour
 {
@@ -10,7 +9,7 @@ public class FoodPiece : NetworkBehaviour
     public string type;
 
     [Server]
-    public void SetType(int mode, float[] scrollProb)
+    public void SetType(int mode, float scrollProb, string[] activeScrolls)
     {
         if (mode == 0)
         {
@@ -24,69 +23,41 @@ public class FoodPiece : NetworkBehaviour
 
         else
         {
-            List<float> accScrollProb = new List<float>();
+            List<float> scrollProbs = new List<float>();
             //For every probability in scrollProb...
             //Start from beginning of list and add up every element until current index
             //Add new number into accScrollProb
 
-            for (int i = 1; i <= scrollProb.Length; i++)
+            float accScrollProb = 0f;
+            for (int i = 1; i <= activeScrolls.Length; i++)
             {
-                float accProb = 0;
-                for (int j = 0; j < i; j++)
-                {
-                    accProb += scrollProb[j];
-                }
-                accScrollProb.Add(accProb);
-            }
-
-            //Setting random.range as float as dividing integer by integer results in rounding to 0
-
-            float prob = (float)Random.Range(0, 100)/100;
-            if (prob < accScrollProb[0])
-            {
-                type = "Health";
-            }
-
-            else if (prob < accScrollProb[1])
-            {
-                type = "Quake";
-            }
-
-            else if (prob < accScrollProb[2])
-            {
-                type = "Smell";
-            }
-
-            else if (prob < accScrollProb[3])
-            {
-                type = "Order";
-            }
-
-            else if (prob < accScrollProb[4])
-            {
-                type = "Slap";
-            }
-
-            else if (prob < accScrollProb[5])
-            {
-                type = "Skip";
-            }
-
-            else if (prob < accScrollProb[6])
-            {
-                type = "Taunt";
+                accScrollProb += scrollProb;
+                scrollProbs.Add(accScrollProb);
             }
             
-            else if (prob < accScrollProb[7])
-            {
-                type = "Swap";
-            }
+            type = RandomScroll(activeScrolls, scrollProbs);
+        }
+    }
+
+    private string RandomScroll(string[] activeScrolls, List<float> scrollProbs)
+    {
+        float random = 1f;
+        
+        if (activeScrolls.Length > 1)
+        {
+            random = (float)Random.Range(0, 100)/100;
+        }
             
-            else if (prob <= accScrollProb[8])
+        foreach (float prob in scrollProbs)
+        {
+            if (random <= prob)
             {
-                type = "Decoy";
+                return activeScrolls[scrollProbs.IndexOf(prob)];
             }
-        }     
+        }
+
+        return RandomScroll(activeScrolls, scrollProbs);
+
     }
 
     [Command(requiresAuthority = false)]

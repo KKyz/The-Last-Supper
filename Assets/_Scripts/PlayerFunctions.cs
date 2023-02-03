@@ -52,6 +52,7 @@ public class PlayerFunctions : NetworkBehaviour
     public AudioClip flagSfx;
     public AudioClip playerActiveSfx;
     public AudioClip quakeSfx;
+    public AudioClip fakePoisonSfx;
     
 
     [Header("Miscellaneous")] 
@@ -130,7 +131,7 @@ public class PlayerFunctions : NetworkBehaviour
 
         zoomOutPos = new Vector3(0, 0, 0);
         countTime = true;
-        playerScrolls.ResetScrollAmount();
+        //playerScrolls.ResetScrollAmount();
         camActions.OnStartGame();
         buttonToggle.OnStartGame();
     }
@@ -170,6 +171,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void FakeSplash()
     {
         GameObject sSplash = Instantiate(smokeSplash, Vector2.zero, quaternion.identity);
+        uiAudio.PlayOneShot(fakePoisonSfx);
         sSplash.transform.SetParent(transform, false);
         camActions.ShakeCamera(1.5f);
     }
@@ -941,12 +943,17 @@ public class PlayerFunctions : NetworkBehaviour
                                     playerScrolls.AddScrollAmount(pieceType); 
                                 }
 
-                                if (player.nPiecesEaten >= 10)
+                                else
                                 {
-                                    Health();
+                                    player.nPiecesEaten += 1;
+                                }
+
+                                if (player.nPiecesEaten >= 1)
+                                { 
+                                    player.canSteal = true;
                                     player.nPiecesEaten = 0;
                                 }
-                                
+
                                 Destroy(piece.transform.gameObject);
                                 CmdDestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;

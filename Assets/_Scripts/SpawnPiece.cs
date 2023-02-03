@@ -7,8 +7,6 @@ public class SpawnPiece : NetworkBehaviour
 {
     //[HideInInspector] 
     public readonly SyncList<int> pieceTypes = new();
-    
-    public float[] scrollProbability;
     public Sprite chalkSprite;
     public string courseName;
     public GameObject[] pieces;
@@ -22,6 +20,7 @@ public class SpawnPiece : NetworkBehaviour
     private Quaternion newRandRot;
     private PlayerManager playerManager;
     private RestaurantContents restaurant;
+    private GameManager gameManager;
 
     public void Start()
     {
@@ -29,7 +28,8 @@ public class SpawnPiece : NetworkBehaviour
         
         restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
         playerManager = GameObject.FindWithTag("Player").GetComponent<PlayerManager>();
-        
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+
         if (isServer)
         {
             InitPlate();
@@ -72,7 +72,7 @@ public class SpawnPiece : NetworkBehaviour
 
             foreach (int amount in types)
             {
-                pieceTypes.Add(amount);
+                pieceTypes.Add(amount); 
             }
         }
 
@@ -94,7 +94,7 @@ public class SpawnPiece : NetworkBehaviour
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
-            newPiece.GetComponent<FoodPiece>().SetType(0, null);
+            newPiece.GetComponent<FoodPiece>().SetType(0, 0, null);
         }
 
         for (int i = pieceTypes[1]; i > 0; i--)
@@ -105,7 +105,7 @@ public class SpawnPiece : NetworkBehaviour
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
-            newPiece.GetComponent<FoodPiece>().SetType(1, null);
+            newPiece.GetComponent<FoodPiece>().SetType(1, 0, null);
         }
 
         for (int i = pieceTypes[2] - 1; i >= 0; i--)
@@ -116,7 +116,7 @@ public class SpawnPiece : NetworkBehaviour
             NetworkServer.Spawn(newPiece);
             piecePos.RemoveAt(j);
             pieceRot.RemoveAt(j);
-            newPiece.GetComponent<FoodPiece>().SetType(2, scrollProbability);
+            newPiece.GetComponent<FoodPiece>().SetType(2, gameManager.scrollProb, gameManager.availableScrolls.ToArray());
         }
         
         RpcUpdatePieceParent();

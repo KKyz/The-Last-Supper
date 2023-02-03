@@ -18,7 +18,7 @@ public class PlayerManager : NetworkBehaviour
     public bool actionable;
 
     [SyncVar] 
-    public bool isEncouraged, hasRecommended, hasTalked, orderVictim, canContinue;
+    public bool isEncouraged, hasRecommended, hasTalked, orderVictim, canContinue, canSteal;
 
     [SyncVar(hook=nameof(SyncPsn))] 
     public bool psn0, psn1, psn2, psn3;
@@ -36,7 +36,7 @@ public class PlayerManager : NetworkBehaviour
     
     [HideInInspector]
     public PlayerFunctions playerCanvas;
-    
+
     [Header("Health Bar")]
     public Color[] barGradient = new Color[4]; 
     private SpriteRenderer fill;

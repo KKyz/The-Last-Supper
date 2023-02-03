@@ -5,7 +5,7 @@ public class ScrollArray : MonoBehaviour
 {
     [SerializeField] private PlayerScrolls[] playerScrolls;
     
-    public void SetValue(PlayerScrolls item, int index) 
+    private void SetValue(PlayerScrolls item, int index) 
     {
         playerScrolls[index] = item;
     }
@@ -15,7 +15,7 @@ public class ScrollArray : MonoBehaviour
         return playerScrolls[index];
     }
 
-    public int GetIndex(string scrollName)
+    private int GetIndex(string scrollName)
     {
         for (int i = 0; i < playerScrolls.Length; i++)
         {

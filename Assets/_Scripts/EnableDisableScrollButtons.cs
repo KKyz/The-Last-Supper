@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using Mirror;
-using UnityEngine.UI;
 
 public class EnableDisableScrollButtons : NetworkBehaviour
 {
@@ -12,7 +11,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
     public ScrollArray playerScrollArray;
     private PlayerManager playerManager;
 
-    private CanvasGroup slapButton, recommendButton, talkButton, outTalkButton, outRecommendButton, skipButton;
+    private CanvasGroup slapButton, recommendButton, talkButton, outTalkButton, outRecommendButton, skipButton, stealButton;
     private Transform actionButtons, scrollButtons, outsideButtons, cancelButton;
 
     public int menuMode;
@@ -34,6 +33,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         outRecommendButton = outsideButtons.Find("RecommendButton").GetComponent<CanvasGroup>();
         outTalkButton = outsideButtons.Find("TalkButton").GetComponent<CanvasGroup>();
         skipButton = scrollButtons.Find("SkipButton").GetComponent<CanvasGroup>();
+        stealButton = actionButtons.Find("StealButton").GetComponent<CanvasGroup>();
 
         StartCoroutine(PostStartCall());
     }
@@ -47,6 +47,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         
         outTalkButton.gameObject.SetActive(false);
         talkButton.gameObject.SetActive(false);
+        stealButton.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -199,7 +200,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                     outRecommendButton.alpha = 0;
                     outRecommendButton.blocksRaycasts = true;
                 }
-
             }
 
             else if (menuMode == 2 || menuMode == 4)
@@ -208,7 +208,6 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 recommendButton.blocksRaycasts = false;
 
                 outRecommendButton.gameObject.SetActive(false);
-                outRecommendButton.alpha = 0;
                 outRecommendButton.blocksRaycasts = false;
             }
 
@@ -216,16 +215,16 @@ public class EnableDisableScrollButtons : NetworkBehaviour
             {
                 if (menuMode == 2 && !talkButton.blocksRaycasts)
                 {
-                    //talkButton.gameObject.SetActive(true);
+                    talkButton.gameObject.SetActive(true);
                     talkButton.alpha = 0;
-                    //talkButton.blocksRaycasts = true;
+                    talkButton.blocksRaycasts = true;
                 }
 
                 else if (menuMode == 4 && !outTalkButton.blocksRaycasts)
                 {
-                    //outTalkButton.gameObject.SetActive(true);
+                    outTalkButton.gameObject.SetActive(true);
                     outTalkButton.alpha = 0;
-                    //outTalkButton.blocksRaycasts = true;
+                    outTalkButton.blocksRaycasts = true;
                 }
 
             }
@@ -237,6 +236,22 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
                 outTalkButton.gameObject.SetActive(false);
                 outTalkButton.blocksRaycasts = false;
+            }
+            
+            if (playerManager.canSteal && playerFunctions.stateManager.stealActive)
+            {
+                if (menuMode == 2)
+                {
+                    stealButton.gameObject.SetActive(true);
+                    stealButton.alpha = 0;
+                    stealButton.blocksRaycasts = true;
+                }
+
+                else
+                {
+                    stealButton.gameObject.SetActive(false);
+                    stealButton.blocksRaycasts = false;
+                }
             }
         }
 

@@ -30,7 +30,7 @@ public class MenuManager : MonoBehaviour
             DestroyImmediate(sm);
         }
         
-        gameManager.Init();
+        gameManager.Init(); 
         gameManager.discoveryList = content;
         blur = transform.Find("Blur").gameObject;
         FadeInOut fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
@@ -120,10 +120,7 @@ public class MenuManager : MonoBehaviour
         
         foreach (Transform menuObj in subMenu)
         {
-            if (menuObj.name != "TableSetUp")
-            {
-                menuObj.gameObject.SetActive(true);
-            }
+            menuObj.gameObject.SetActive(true);
         }
         
         foreach (Transform menuObj in subMenu)
