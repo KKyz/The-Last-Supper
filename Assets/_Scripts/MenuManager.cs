@@ -18,10 +18,9 @@ public class MenuManager : MonoBehaviour
     public void Start()
     {
         GameObject gm = GameObject.Find("GameManager");
-        if (gm == null)
-        { 
-            gameManager = Instantiate(gameManagerPrefab).GetComponent<GameManager>();
-            gameManager.gameObject.name = "GameManager";
+        if (gm != null)
+        {
+            DestroyImmediate(gm);
         }
         
         GameObject sm = GameObject.Find("StateManager");
@@ -30,8 +29,12 @@ public class MenuManager : MonoBehaviour
             DestroyImmediate(sm);
         }
         
+        gameManager = Instantiate(gameManagerPrefab).GetComponent<GameManager>();
+        gameManager.gameObject.name = "GameManager";
+        
         gameManager.Init(); 
         gameManager.discoveryList = content;
+        
         blur = transform.Find("Blur").gameObject;
         FadeInOut fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
         networkDiscovery = GameObject.Find("GameManager").GetComponent<CustomNetworkDiscovery>();

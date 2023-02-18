@@ -15,10 +15,15 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar]
     public string currentPlate;
 
+    public readonly SyncList<PlayerManager> myTeam = new();
+
     public bool actionable;
 
     [SyncVar] 
     public bool isEncouraged, hasRecommended, hasTalked, orderVictim, canContinue, canSteal;
+
+    [SyncVar] 
+    public string stolenScroll;
 
     [SyncVar(hook=nameof(SyncPsn))] 
     public bool psn0, psn1, psn2, psn3;
@@ -30,6 +35,8 @@ public class PlayerManager : NetworkBehaviour
     public GameObject recommendedPiece;
 
     private GameObject currentRecommendFlag;
+
+    private ScrollArray scrollArray;
     
     [HideInInspector]
     public GameObject playerCam;
@@ -59,8 +66,10 @@ public class PlayerManager : NetworkBehaviour
         isEncouraged = false;
         hasRecommended = false;
         orderVictim = false;
+        stolenScroll = null;
         fill = transform.Find("PlayerTag").Find("PlayerHealth").Find("Fill").GetComponent<SpriteRenderer>();
-
+        scrollArray = GetComponent<ScrollArray>();
+        
         for (int i = 0; i < 4; i++)
         {
             psnArray[i] = false;
@@ -226,6 +235,16 @@ public class PlayerManager : NetworkBehaviour
             }
         }
         hasRecommended = true;
+    }
+    
+    #endregion
+
+    #region Steal
+
+    [Command]
+    public void CmdRemoveVictim()
+    {
+        stolenScroll = null;
     }
     
     #endregion

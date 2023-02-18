@@ -15,14 +15,14 @@ public class GameManager : NetworkManager
     [Scene] public string gameScene;
     [HideInInspector] public int minPlayers = 2;
     public GameObject playerLobby;
-    public GameObject discoveryButton;
+    public GameObject discoveryButton; 
     public List<PlayerLobby> roomPlayers = new();
     [HideInInspector] public PlayerLobby localRoomPlayer;
     private Transform playerList;
     private int playerCount;
     private FadeInOut fade;
     private GameObject stateManagerInstance;
-    private MenuManager menuManager;
+    private MenuManager menuManager; 
 
     [Header("Game")] 
     public GameObject stateManagerObj;
@@ -33,8 +33,9 @@ public class GameManager : NetworkManager
     [HideInInspector]public int currentMenu;
     public float scrollProb;
     public bool stealActive;
-    public List<PlayerLobby> team1, team2;
+    public List<PlayerLobby> team1, team2 = new();
     public List<string> availableScrolls;
+    private string GameMode;
 
     [Header("Network Discovery")] 
     public CustomNetworkDiscovery networkDiscovery;
@@ -275,6 +276,11 @@ public class GameManager : NetworkManager
             
             conn.identity.name = playerName;
             stateManager.connectedPlayers.Add(conn.identity);
+
+            //if (team1.Contains(player))
+            {
+                //conn.identity.transform.GetComponent<PlayerManager>().myTeam.Add(player);
+            }
             i++;
         }
     }

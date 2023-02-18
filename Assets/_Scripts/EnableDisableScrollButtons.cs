@@ -243,7 +243,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 if (menuMode == 2)
                 {
                     stealButton.gameObject.SetActive(true);
-                    stealButton.alpha = 0;
+                    stealButton.alpha = 1;
                     stealButton.blocksRaycasts = true;
                 }
 

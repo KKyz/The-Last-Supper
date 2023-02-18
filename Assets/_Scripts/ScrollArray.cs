@@ -28,6 +28,20 @@ public class ScrollArray : MonoBehaviour
         return 0;
     }
 
+    public int NumberOfScrolls()
+    {
+        int counter = 0;
+        foreach (PlayerScrolls scroll in playerScrolls)
+        {
+            if (scroll.amount > 0 && (scroll.name != "Steal" || scroll.name != "Health"))
+            {
+                counter += 1;
+            }
+        }
+
+        return counter;
+    }
+
     public void AddScrollAmount(string scrollName)
     {
         int index = GetIndex(scrollName); 
@@ -59,6 +73,12 @@ public class ScrollArray : MonoBehaviour
         PlayerScrolls item = GetValue(index); 
         return item.description;
     }
+    
+    public string GetName(int index)
+    { 
+        return playerScrolls[index].description;
+    }
+
     
     public Sprite GetSprite(string scrollName)
     {

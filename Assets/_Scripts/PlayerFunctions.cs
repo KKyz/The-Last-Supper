@@ -41,11 +41,13 @@ public class PlayerFunctions : NetworkBehaviour
     public GameObject healthSplash;
     public GameObject smokeSplash;
     public GameObject scrollInfo;
+    public GameObject stealMenu;
 
     [Header("SFX")] 
     public AudioClip poisonSfx;
     public AudioClip healthSfx;
     public AudioClip scrollGetSfx;
+    public AudioClip scrollLoseSfx;
     public AudioClip nextCourseSfx;
     public AudioClip popupSfx;
     public AudioClip eatingSfx;
@@ -134,6 +136,8 @@ public class PlayerFunctions : NetworkBehaviour
         //playerScrolls.ResetScrollAmount();
         camActions.OnStartGame();
         buttonToggle.OnStartGame();
+        
+        player.canSteal = true;
     }
 
     [Client]
@@ -357,7 +361,7 @@ public class PlayerFunctions : NetworkBehaviour
         ResetActions();
     }
 
-    [Command(requiresAuthority = false)]
+    [Command]
     private void CmdSyncSwap(FoodPiece target1, FoodPiece target2, NetworkIdentity playerID, Transform[] targets)
     {
         (target1.type, target2.type) = (target2.type, target1.type);
@@ -422,13 +426,20 @@ public class PlayerFunctions : NetworkBehaviour
         playerScrolls.RemoveScrollAmount("Order");
         player.scrollCount += 1;
     }
+
+    [Client]
+    public void RemoveStealScroll(string scroll)
+    {
+        player.canSteal = false;
+        player.scrollCount += 1;
+        ShowScrollInfo(scroll);
+    }
     
     [Client]
     private void ReceiveDrink()
     {
-        Debug.LogWarning("SpawnMenu");
         openPopup = Instantiate(drinkPlate, Vector2.zero, quaternion.identity);
-        openPopup.transform.name = "DrinkMenu";
+        openPopup.name = "DrinkMenu";
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -438,6 +449,24 @@ public class PlayerFunctions : NetworkBehaviour
         ShowInfoText("Select a glass to drink from");
     }
     
+    [Client]
+    private void StealResults(string pieceType)
+    {
+        openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
+        openPopup.name = "StealResults";
+        
+        uiAudio.PlayOneShot(scrollLoseSfx);
+        openPopup.transform.SetParent(transform, false);
+        openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+
+        openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
+        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("Your " + pieceType + " scroll was stolen...");
+        openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = "You have lost a " + pieceType + " scroll.";
+        buttonToggle.ToggleButtons(6);
+        player.CmdRemoveVictim();
+    }
+
     [Client]
     public void Eat()
     {
@@ -452,6 +481,17 @@ public class PlayerFunctions : NetworkBehaviour
         currentState = "Recommending";
         StartAction();
         ShowInfoText("Select a piece to recommend");
+    }
+    
+    [Client]
+    public void Steal()
+    {
+        openPopup = Instantiate(stealMenu, Vector2.zero, quaternion.identity);
+        uiAudio.PlayOneShot(popupSfx);
+        openPopup.transform.SetParent(transform, false);
+        openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+        buttonToggle.ToggleButtons(6);
     }
 
     [Client]
@@ -496,6 +536,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         ResetActions();
         stateManager.CmdRemovePlayer(player.netIdentity);
+        if (openPopup != null){Destroy(openPopup);}
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
         openPopup.name = "LoseScreen";
 
@@ -527,6 +568,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void ServerGameEnd()
     {
         ResetActions();
+        if (openPopup != null){Destroy(openPopup);}
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
         openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "This Game Has Ended";
 
@@ -542,6 +584,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         ResetActions();
         stateManager.CmdRemovePlayer(player.netIdentity);
+        if (openPopup != null){Destroy(openPopup);}
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
         openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "You Win!";
         openPopup.GetComponent<ShowStats>().LoadStats(player);
@@ -642,7 +685,7 @@ public class PlayerFunctions : NetworkBehaviour
         StartCoroutine(buttonToggle.ButtonDisable(fakeConfirm.transform));
     }
     
-    [Command(requiresAuthority = false)]
+    [Command]
     private void CmdDestroyPiece(GameObject piece)
     {
         NetworkServer.Destroy(piece);
@@ -743,14 +786,14 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.ToggleButtons(6);
     }
 
-    [Command(requiresAuthority = false)]
+    [Command(requiresAuthority =  false)]
     private void CmdAddAuthority(NetworkConnectionToClient conn)
     {
         netIdentity.AssignClientAuthority(conn);
         stateManager.netIdentity.AssignClientAuthority(conn);
     }
     
-    [Command(requiresAuthority = false)]
+    [Command(requiresAuthority =  false)]
     private void CmdRemoveAuthority()
     {
         netIdentity.RemoveClientAuthority();
@@ -803,6 +846,12 @@ public class PlayerFunctions : NetworkBehaviour
         }
     }
 
+    [Command]
+    private void UpdateMaxPiecesEaten(int pieceCount)
+    {
+        stateManager.maxPiecesEaten = pieceCount;
+    }
+
     void Update()
     {
         if (Input.GetKeyDown("1"))
@@ -813,6 +862,16 @@ public class PlayerFunctions : NetworkBehaviour
         if (Input.GetKeyDown("2"))
         {
             //Health();
+        }
+        
+        if (Input.GetKeyDown("3"))
+        {
+            //Skip();
+        }
+        
+        if (Input.GetKeyDown("4"))
+        {
+            //Steal();
         }
         
         if (Input.GetKeyDown("c"))
@@ -885,9 +944,17 @@ public class PlayerFunctions : NetworkBehaviour
             }
 
 
-            else if (stateManager.activePlayers.Count < 2 && stateManager.gameCanEnd && player.health >= 1 && openPopup == null)
+            else if (stateManager.gameCanEnd)
             {
-                Win();
+                if (stateManager.gameMode == "Free-For-All" && stateManager.activePlayers.Count < 2 && player.health >= 1 && openPopup == null)
+                {
+                    Win();  
+                }
+                
+                else if (stateManager.gameMode == "Most Pieces" && player.pieceCount == stateManager.maxPiecesEaten)
+                {
+                    Win();  
+                }
             }
             
             if (player.actionable)
@@ -896,6 +963,11 @@ public class PlayerFunctions : NetworkBehaviour
                 {
                     ReceiveDrink();
                 }
+            }
+
+            if (openPopup == null && player.stolenScroll != null)
+            {
+                StealResults(player.stolenScroll);
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -948,7 +1020,7 @@ public class PlayerFunctions : NetworkBehaviour
                                     player.nPiecesEaten += 1;
                                 }
 
-                                if (player.nPiecesEaten >= 1)
+                                if (player.nPiecesEaten >= 0)
                                 { 
                                     player.canSteal = true;
                                     player.nPiecesEaten = 0;
@@ -958,6 +1030,12 @@ public class PlayerFunctions : NetworkBehaviour
                                 CmdDestroyPiece(piece.transform.gameObject);
                                 player.pieceCount += 1;
                                 uiAudio.PlayOneShot(eatingSfx);
+
+                                if (player.pieceCount > stateManager.maxPiecesEaten)
+                                {
+                                    UpdateMaxPiecesEaten(player.pieceCount);
+                                }
+                                
                                 stateManager.CmdNextPlayer();
                                 ResetActions();
                             }
@@ -1051,7 +1129,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                             else if (currentState != "Idle")
                             {
-                                Debug.LogWarning("STATE NOT FOUND");
+                                Debug.LogError("STATE NOT FOUND");
                             }
                         }
                     }

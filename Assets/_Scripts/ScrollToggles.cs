@@ -32,7 +32,7 @@ public class ScrollToggles : MonoBehaviour
         {
             if (toggle.name != "Steal")
             {
-                if (!gameManager.availableScrolls.Contains(scrollToggles[toggleIndex]))
+                if (gameManager != null && !gameManager.availableScrolls.Contains(scrollToggles[toggleIndex]))
                 {
                     gameManager.availableScrolls.Add(scrollToggles[toggleIndex]);
                 }
@@ -60,7 +60,7 @@ public class ScrollToggles : MonoBehaviour
             
             else
             {
-                toggle.isOn = true;
+                toggle.isOn = true; 
             }
         }
 

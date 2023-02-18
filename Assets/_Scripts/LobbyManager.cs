@@ -62,6 +62,12 @@ public class LobbyManager : MonoBehaviour
                 }
             }
         }
+
+        else
+        {
+            gameManager.team1.Clear();
+            gameManager.team2.Clear();
+        }
         
         UpdatePlayerTeams();
     }

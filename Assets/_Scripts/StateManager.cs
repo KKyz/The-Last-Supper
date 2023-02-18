@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 
 public class StateManager : NetworkBehaviour
 {
@@ -22,6 +23,12 @@ public class StateManager : NetworkBehaviour
     
     [SyncVar]
     public Vector3 platePos;
+
+    [SyncVar] 
+    public string gameMode;
+
+    [SyncVar] 
+    public int maxPiecesEaten;
     
     [HideInInspector] public List<NetworkIdentity> connectedPlayers = new();
     
@@ -31,6 +38,8 @@ public class StateManager : NetworkBehaviour
     {
         DontDestroyOnLoad(this);
         gameCanEnd = false;
+        maxPiecesEaten = 0;
+        gameMode = "Free-For-All";
     }
 
     public void Reset()
@@ -70,27 +79,24 @@ public class StateManager : NetworkBehaviour
         {
             if (player == null)
             {
-                //Debug.LogWarning("Player Null");
                 return false;
             }
 
             if (player.GetComponent<PlayerManager>().canContinue == false)
             {
-                //Debug.LogWarning("player can't continue ");
                 return false;
             }
         }
         
-        //Debug.LogWarning("All Pass");
         return true;
     }
 
-    [Command(requiresAuthority = false)]
+    [Command]
     public void CmdRemovePlayer(NetworkIdentity player)
     {
         activePlayers.Remove(player);
     }
-    
+
     [Command(requiresAuthority = false)]
     public void CmdNextPlayer()
     {
@@ -135,5 +141,27 @@ public class StateManager : NetworkBehaviour
         victim.psn2 = psnArray[2];
         victim.psn3 = psnArray[3];
         victim.orderVictim = true;
+    }
+
+    [Command]
+    public void CmdSyncSteal(string scroll, NetworkIdentity victim, NetworkIdentity thief)
+    {
+        TargetChangeScroll(victim.connectionToClient, scroll, true);
+        TargetChangeScroll(thief.connectionToClient, scroll, false);
+    }
+
+    [TargetRpc]
+    private void TargetChangeScroll(NetworkConnection target, string scrollName, bool removing)
+    {
+        ScrollArray scrollArray = target.identity.GetComponent<ScrollArray>();
+        
+        if (removing)
+        {
+            scrollArray.RemoveScrollAmount(scrollName);
+        }
+        else
+        {
+            scrollArray.AddScrollAmount(scrollName);
+        }
     }
 }

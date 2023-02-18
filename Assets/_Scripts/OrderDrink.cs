@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mirror;
@@ -14,6 +13,7 @@ public class OrderDrink : NetworkBehaviour
     private PlayerManager victim;
     private readonly bool[] psnArray = new bool[4];
     private int psnMax;
+    public Queue<int> glassQueue = new();
     private Button orderButton, switchButton;
     private readonly List<PlayerManager> victims = new();
     private ToggleGroup playerToggles;
@@ -23,25 +23,21 @@ public class OrderDrink : NetworkBehaviour
     {
         victim = null;
         psnMax = 1;
-        
         int playerCount = 0;
         victims.Clear();
         switchButton = transform.Find("SwitchButton").GetComponent<Button>();
         playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
-        Debug.LogWarning(playerToggles.name);
         orderButton = transform.Find("OrderButton").GetComponent<Button>();
         glasses = transform.Find("Glasses");
         stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
         playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
-        
-        for (int i = 0; i < 4; i++)
-        {
-            psnArray[i] = false;
-        }
+        ResetPsnArray();
 
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
             PlayerManager playerManager = player.GetComponent<PlayerManager>();
+            playerToggles.transform.GetChild(playerCount).gameObject.SetActive(false);
+            
             if (player.gameObject != stateManager.currentPlayer)
             {
                 victims.Add(playerManager);
@@ -58,14 +54,14 @@ public class OrderDrink : NetworkBehaviour
     {
         if (victim != null)
         {
-            if (psnArray.Length > 0)
+            if (glassQueue.Count == psnMax)
             {
                 orderButton.interactable = true;
             }
-        }
-        else
-        {
-            orderButton.interactable = false;
+            else
+            {
+                orderButton.interactable = false;
+            }
         }
 
         if (victim != null && stateManager.currentPlayer.GetComponent<PlayerManager>().health >= 2)
@@ -102,38 +98,35 @@ public class OrderDrink : NetworkBehaviour
             psnArray[i] = false;
             glasses.GetChild(i).GetComponent<Image>().sprite = normalDrink;
         }
+        glassQueue.Clear();
     }
 
     // Updates drink sprites according to which booleans within psnArray are set to true
-
-    private int PoisonCount()
-    {
-        int counter = 0;
-        foreach (var drink in psnArray)
-        {
-            if (drink)
-            {
-                counter += 1;
-            }
-        }
-
-        return counter;
-    }
-    
     public void PsnGlass(int index)
     {
         if (!psnArray[index])
         {
-            if (PoisonCount() < psnMax)
+            if (glassQueue.Count <= psnMax)
             {
+                if (glassQueue.Count == psnMax)
+                {
+                    int removeGlass = glassQueue.Peek();
+                    psnArray[removeGlass] = false;
+                    glasses.GetChild(removeGlass).GetComponent<Image>().sprite = normalDrink;
+                    glassQueue.Dequeue();
+                }
+            
                 psnArray[index] = true;
                 glasses.GetChild(index).GetComponent<Image>().sprite = psnDrink;
+                glassQueue.Enqueue(glasses.GetChild(index).GetSiblingIndex());
             }
         }
+        
         else
         {
             psnArray[index] = false;
             glasses.GetChild(index).GetComponent<Image>().sprite = normalDrink;
+            glassQueue.Dequeue();
         }
     }
 
@@ -145,9 +138,6 @@ public class OrderDrink : NetworkBehaviour
 
     public void ChangeAmount()
     {
-        ResetPsnArray();
-        PsnGlass(0);
-
         if (psnMax == 1)
         {
             psnMax = 2;
@@ -156,6 +146,7 @@ public class OrderDrink : NetworkBehaviour
         {
             psnMax = 1;
             switchButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "Poison Two Drinks \n (Costs One Heart)";
+            ResetPsnArray();
         }
     }
     

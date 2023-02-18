@@ -2629,8 +2629,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1134.3367, y: 0.00015258789}
-  m_SizeDelta: {x: 372.9268, y: 100}
+  m_AnchoredPosition: {x: 7.8, y: 0.00015258789}
+  m_SizeDelta: {x: 646.1, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4074930142345500611
 CanvasRenderer:
@@ -3768,9 +3768,11 @@ MonoBehaviour:
   healthSplash: {fileID: 5686058715443865870, guid: 3cc6c61fc76440546af54f0c4adb67c0, type: 3}
   smokeSplash: {fileID: 5686058715443865870, guid: 86d2074b837f4ed45b4bf041c47436f8, type: 3}
   scrollInfo: {fileID: 4939486906135194192, guid: c9377fe98ed50cd4b9db998b29a731eb, type: 3}
+  stealMenu: {fileID: 1726764216373698842, guid: 1177c458d6e4b56469c933fe2400b84a, type: 3}
   poisonSfx: {fileID: 8300000, guid: 23e398fae579cb34ab5e152d8281027c, type: 3}
   healthSfx: {fileID: 8300000, guid: 382e8362c5181a948ac081ff7d40e817, type: 3}
   scrollGetSfx: {fileID: 8300000, guid: 8570d07a76adf6f4b9a34d6af623cc20, type: 3}
+  scrollLoseSfx: {fileID: 8300000, guid: 8570d07a76adf6f4b9a34d6af623cc20, type: 3}
   nextCourseSfx: {fileID: 8300000, guid: 64f7880386e7fe943a9f75b30135a7b6, type: 3}
   popupSfx: {fileID: 8300000, guid: dccf1138a1270084284bc8efa4d5a8e9, type: 3}
   eatingSfx: {fileID: 8300000, guid: 99d36ffd648672f4b94b8361fe5560dd, type: 3}
@@ -6493,7 +6495,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3809835300737322372}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 269979441813457103}
+        m_TargetAssemblyTypeName: PlayerFunctions, Assembly-CSharp
+        m_MethodName: Steal
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!225 &7567940226880558083
 CanvasGroup:
   m_ObjectHideFlags: 0
