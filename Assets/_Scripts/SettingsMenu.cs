@@ -89,7 +89,8 @@ public class SettingsMenu : MonoBehaviour
 
     public void DeletePlayerData()
     {
-        PlayerPrefs.DeleteAll();
+        SaveSystem.ClearPlayer();
+        PlayerPrefs.SetString("PlayerName", "");
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

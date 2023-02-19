@@ -14,9 +14,12 @@ public class MenuManager : MonoBehaviour
     private Camera titleCam;
     private Transform startMenu, settingsMenu, gameSetup, gameFind;
     private CustomNetworkDiscovery networkDiscovery;
+    private string playerName;
 
     public void Start()
     {
+        playerName = PlayerPrefs.GetString("PlayerName");
+        
         GameObject gm = GameObject.Find("GameManager");
         if (gm != null)
         {
@@ -143,7 +146,7 @@ public class MenuManager : MonoBehaviour
 
     public void ConditionStartHost(Transform subMenu)
     {
-        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 7)
+        if (String.IsNullOrEmpty(playerName) || playerName.Length > 7)
         {
             OpenSubMenu(settingsMenu);
         }
@@ -157,7 +160,7 @@ public class MenuManager : MonoBehaviour
     
     public void ConditionStartClient(Transform subMenu)
     {
-        if (PlayerPrefs.GetString("PlayerName") == null || PlayerPrefs.GetString("PlayerName") == "" || PlayerPrefs.GetString("PlayerName").Length > 7)
+        if (String.IsNullOrEmpty(playerName) || playerName.Length > 7)
         {
             OpenSubMenu(settingsMenu);
         }

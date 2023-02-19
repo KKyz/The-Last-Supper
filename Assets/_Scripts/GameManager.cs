@@ -43,6 +43,9 @@ public class GameManager : NetworkManager
     public Dictionary<long, GameObject> spawnedButtons = new();
     [HideInInspector]public float cleanupTimer;
     [HideInInspector]public Transform discoveryList;
+    
+    [HideInInspector]public float playTime;
+    [HideInInspector]public int maxCourse, maxPiece, maxScroll, gamesJoined, gamesWon;
 
 #if UNITY_EDITOR
     new void OnValidate()
@@ -103,6 +106,17 @@ public class GameManager : NetworkManager
         {
             GetComponent<NetworkManager>().spawnPrefabs.Add(prefab);
         }
+
+        SaveSystem.SaveCheck(this);
+        
+        PlayerData data = SaveSystem.LoadPlayer();
+
+        maxCourse = data.maxCourse;
+        maxPiece = data.maxPiece;
+        maxScroll = data.maxScroll;
+        playTime = data.playTime;
+        gamesWon = data.gamesWon;
+        gamesJoined = data.gamesJoined;
     }
 
     public void OnServerInitialized()

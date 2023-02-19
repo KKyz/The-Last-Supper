@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Mirror;
 using System.Linq;
+using Mono.Cecil.Cil;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,7 @@ public class StealScroll : MonoBehaviour
     private Button stealButton;
     private readonly List<ScrollArray> victims = new();
     private ToggleGroup playerToggles;
-    private List<TMP_Text> scrollLabels;
+    public List<TMP_Text> scrollLabels;
     private StateManager stateManager;
     private string selectedScroll;
     
@@ -27,17 +28,19 @@ public class StealScroll : MonoBehaviour
         stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
         playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
+        
+        //Add other player's names
 
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
-            ScrollArray scrollArray = player.GetComponent<ScrollArray>();
+            ScrollArray scrollArray = player.GetComponent<ScrollArray>(); //How to get scroll array from another client?
             playerToggles.transform.GetChild(playerCount).gameObject.SetActive(false);
             
             if (player.gameObject != stateManager.currentPlayer)
             {
                 victims.Add(scrollArray);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
-                playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TMPro.TextMeshProUGUI>().text = player.name; 
+                playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TextMeshProUGUI>().text = player.name; 
                 playerCount += 1;
             }
         }
@@ -51,8 +54,8 @@ public class StealScroll : MonoBehaviour
                 {
                     scrollLabels.Add(child.GetComponent<TMP_Text>());
                 }
-                
             }
+            
             toggle.gameObject.SetActive(false);
         }
     }
@@ -87,6 +90,7 @@ public class StealScroll : MonoBehaviour
 
         if (victim != null)
         {
+            Debug.LogWarning(victim.NumberOfScrolls());
             for (int i = 0; i < victim.NumberOfScrolls(); i++)
             {
                 scrollLabels[i].text = victim.GetName(i);
@@ -97,8 +101,8 @@ public class StealScroll : MonoBehaviour
 
     public void SelectScroll(int index)
     {
-        selectedScroll = scrollLabels[index].text;
-        Debug.LogWarning(selectedScroll);
+        Debug.LogWarning("Toggle index: " + index);
+        //selectedScroll = scrollLabels[index].text;
     }
 
     
@@ -127,8 +131,10 @@ public class StealScroll : MonoBehaviour
 
         var victimConnection = victim.GetComponent<PlayerManager>().netIdentity;
         var playerConnection = playerFunctions.player.netIdentity;
+        
+        //How to get scroll array from another client?
 
-        //stateManager.CmdSyncSteal(selectedScroll, victimConnection, playerConnection);
+        stateManager.CmdSyncSteal(selectedScroll, victimConnection, playerConnection);
         
         CloseMenu();
     }

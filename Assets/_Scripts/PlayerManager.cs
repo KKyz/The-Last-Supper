@@ -17,7 +17,7 @@ public class PlayerManager : NetworkBehaviour
 
     public readonly SyncList<PlayerManager> myTeam = new();
 
-    public bool actionable;
+    public bool actionable, hasWon;
 
     [SyncVar] 
     public bool isEncouraged, hasRecommended, hasTalked, orderVictim, canContinue, canSteal;
@@ -56,6 +56,7 @@ public class PlayerManager : NetworkBehaviour
     public void Start()
     {
         canContinue = false;
+        hasWon = false;
         health = 2;
         scrollCount = 0;
         courseCount = 0;

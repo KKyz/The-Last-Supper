@@ -593,7 +593,7 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.ToggleButtons(6);
         countTime = false;
         StartCoroutine(musicManager.PlayWinResultBGM());
-        PlayerPrefs.SetInt("gamesWon", PlayerPrefs.GetInt("gamesWon", 0) + 1);
+        player.hasWon = true;
     }
     
 

@@ -76,7 +76,7 @@ public class ScrollArray : MonoBehaviour
     
     public string GetName(int index)
     { 
-        return playerScrolls[index].description;
+        return playerScrolls[index].name;
     }
 
     

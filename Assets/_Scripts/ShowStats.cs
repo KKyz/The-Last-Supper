@@ -5,6 +5,20 @@ using TMPro;
 public class ShowStats : MonoBehaviour
 {
     public TextMeshProUGUI scrollCounter, courseCounter, pieceCounter, timeCounter;
+    private GameManager gameManager;
+
+    public void Start()
+    {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        PlayerData data = SaveSystem.LoadPlayer();
+
+        gameManager.maxCourse = data.maxCourse;
+        gameManager.maxPiece = data.maxPiece;
+        gameManager.maxScroll = data.maxScroll;
+        gameManager.playTime = data.playTime;
+        gameManager.gamesWon = data.gamesWon;
+        gameManager.gamesJoined = data.gamesJoined;
+    }
 
     public void LoadStats(PlayerManager player)
     {
@@ -16,27 +30,36 @@ public class ShowStats : MonoBehaviour
         float minutes = Mathf.FloorToInt(player.playerCanvas.accumulatedTime / 60);
         float seconds = Mathf.FloorToInt(player.playerCanvas.accumulatedTime % 60);
         timeCounter.text = string.Format("{0:00}:{1:00}", minutes, seconds);
-        PlayerPrefs.SetFloat("playTime", PlayerPrefs.GetFloat("playTime", 0) + player.playerCanvas.accumulatedTime);
+        gameManager.playTime += player.playerCanvas.accumulatedTime;
 
-        if (player.pieceCount > PlayerPrefs.GetInt("recordPieces", 0))
+        if (player.pieceCount >gameManager.maxPiece)
         {
-            PlayerPrefs.SetInt("recordPieces", player.pieceCount);
+            gameManager.maxPiece = player.pieceCount;
         }
         
-        if (player.scrollCount > PlayerPrefs.GetInt("recordScrolls", 0))
+        if (player.scrollCount > gameManager.maxScroll)
         {
-            PlayerPrefs.SetInt("recordScrolls", player.scrollCount);
+            gameManager.maxScroll = player.scrollCount;
         }
         
-        if (player.courseCount > PlayerPrefs.GetInt("recordCourse", 0))
+        if (player.courseCount > gameManager.maxCourse)
         {
-            PlayerPrefs.SetInt("recordCourse", player.courseCount);
+            gameManager.maxCourse = player.courseCount;
         }
+
+        if (player.hasWon)
+        {
+            gameManager.gamesWon += 1;
+        }
+
+        gameManager.gamesJoined += 1;
+
+        SaveSystem.SavePlayer(gameManager);
     }
 
     public void QuitToTitle()
     {
-        ((GameManager)GameManager.singleton).ReturnToTitle();
+        gameManager.ReturnToTitle(); 
         SceneManager.LoadScene("StartMenu");
     }
 }
