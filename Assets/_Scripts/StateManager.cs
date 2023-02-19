@@ -157,11 +157,11 @@ public class StateManager : NetworkBehaviour
         
         if (removing)
         {
-            scrollArray.RemoveScrollAmount(scrollName);
+            scrollArray.CmdRemoveScrollAmount(scrollName);
         }
         else
         {
-            scrollArray.AddScrollAmount(scrollName);
+            scrollArray.CmdAddScrollAmount(scrollName);
         }
     }
 }

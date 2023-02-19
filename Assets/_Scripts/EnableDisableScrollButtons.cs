@@ -167,7 +167,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         {
             for (int i = 1; i < scrollButtons.childCount; i++)
             {
-                if (playerScrollArray.GetValue((i)).amount > 0 && !scrollButtons.GetChild(i).GetComponent<CanvasGroup>().blocksRaycasts)
+                if (playerScrollArray.GetScrollAmount(i) > 0 && !scrollButtons.GetChild(i).GetComponent<CanvasGroup>().blocksRaycasts)
                 {
                     scrollButtons.GetChild(i).gameObject.SetActive(true);
                     CanvasGroup scrollCg = scrollButtons.GetChild(i).GetComponent<CanvasGroup>();
@@ -257,7 +257,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
         if (menuMode == 4)
         {
-            if (playerScrollArray != null && playerScrollArray.GetValue(0).amount > 0)
+            if (playerScrollArray != null && playerScrollArray.GetScrollAmount("Slap") > 0)
             {
                 if (!slapButton.blocksRaycasts)
                 {
@@ -282,7 +282,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
 
         if (menuMode == 5)
         {
-            if (playerScrollArray != null && playerScrollArray.GetValue(1).amount > 0)
+            if (playerScrollArray != null && playerScrollArray.GetScrollAmount("Skip") > 0)
             {
                 if (!skipButton.blocksRaycasts)
                 {

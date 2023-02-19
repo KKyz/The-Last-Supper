@@ -70,7 +70,7 @@ public class PlayerManager : NetworkBehaviour
         stolenScroll = null;
         fill = transform.Find("PlayerTag").Find("PlayerHealth").Find("Fill").GetComponent<SpriteRenderer>();
         scrollArray = GetComponent<ScrollArray>();
-        
+
         for (int i = 0; i < 4; i++)
         {
             psnArray[i] = false;
@@ -82,6 +82,10 @@ public class PlayerManager : NetworkBehaviour
             playerCam.SetActive(false);
         }
         
+        else
+        {
+            InitScrollArray();
+        }
     }
     
     [Command(requiresAuthority = false)]
@@ -240,9 +244,22 @@ public class PlayerManager : NetworkBehaviour
     
     #endregion
 
-    #region Steal
+    #region Scrolls
 
-    [Command]
+    [Command(requiresAuthority = false)]
+    private void InitScrollArray()
+    {
+        if (scrollArray.playerScrolls != null)
+        {
+            foreach (var scroll in scrollArray.allScrolls)
+            {
+                scrollArray.playerScrolls.Add(scroll);
+                scrollArray.scrollAmounts.Add(0);
+            }
+        }
+    }
+
+    [Command(requiresAuthority = false)]
     public void CmdRemoveVictim()
     {
         stolenScroll = null;

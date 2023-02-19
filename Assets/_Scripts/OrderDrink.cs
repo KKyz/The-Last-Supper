@@ -33,10 +33,14 @@ public class OrderDrink : NetworkBehaviour
         playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         ResetPsnArray();
 
+        for (int i = 0; i < 3; i++)
+        {
+            playerToggles.transform.GetChild(i).gameObject.SetActive(false); 
+        }
+
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
             PlayerManager playerManager = player.GetComponent<PlayerManager>();
-            playerToggles.transform.GetChild(playerCount).gameObject.SetActive(false);
             
             if (player.gameObject != stateManager.currentPlayer)
             {
@@ -141,12 +145,17 @@ public class OrderDrink : NetworkBehaviour
         if (psnMax == 1)
         {
             psnMax = 2;
-            switchButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "Poison One Drink \n (No Cost)"; }
+            switchButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "Poison One Drink \n (No Cost)";
+            ResetPsnArray();
+            PsnGlass(0);
+            PsnGlass(1);
+        }
         else
         {
             psnMax = 1;
             switchButton.transform.GetChild(0).GetComponent<TMPro.TextMeshProUGUI>().text = "Poison Two Drinks \n (Costs One Heart)";
             ResetPsnArray();
+            PsnGlass(0);
         }
     }
     

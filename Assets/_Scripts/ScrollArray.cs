@@ -1,23 +1,28 @@
-using System.Collections;
+using System;
+using Mirror;
+using UnityEditor.Localization.Plugins.XLIFF.V20;
 using UnityEngine;
 
-public class ScrollArray : MonoBehaviour
+public class ScrollArray : NetworkBehaviour
 {
-    [SerializeField] private PlayerScrolls[] playerScrolls;
-    
-    private void SetValue(PlayerScrolls item, int index) 
-    {
-        playerScrolls[index] = item;
-    }
+    public readonly SyncList<PlayerScrolls> playerScrolls = new();
+    public readonly SyncList<int> scrollAmounts = new();
+    public PlayerScrolls[] allScrolls;
+    public Sprite[] scrollSprites;
 
-    public PlayerScrolls GetValue (int index) 
+    public PlayerScrolls GetScroll(int index) 
     {
-        return playerScrolls[index];
+        if (index < playerScrolls.Count)
+        {
+            return playerScrolls[index];
+        }
+
+        return null;
     }
 
     private int GetIndex(string scrollName)
     {
-        for (int i = 0; i < playerScrolls.Length; i++)
+        for (int i = 0; i < playerScrolls.Count; i++)
         {
             if (playerScrolls[i].name == scrollName)
             {
@@ -31,46 +36,70 @@ public class ScrollArray : MonoBehaviour
     public int NumberOfScrolls()
     {
         int counter = 0;
+        int index = 0;
         foreach (PlayerScrolls scroll in playerScrolls)
         {
-            if (scroll.amount > 0 && (scroll.name != "Steal" || scroll.name != "Health"))
+            if (scrollAmounts[index] > 0)
             {
                 counter += 1;
             }
+
+            index++;
         }
 
         return counter;
     }
 
-    public void AddScrollAmount(string scrollName)
+    public int GetScrollAmount(int index)
     {
-        int index = GetIndex(scrollName); 
-        //find index of item in list
-        PlayerScrolls item = GetValue(index);
-        item.amount += 1;
-        SetValue(item, index);
+        return scrollAmounts[index];
+    }
+    
+    public int GetScrollAmount(string scrollName)
+    {
+        int index = GetIndex(name);
+        return scrollAmounts[index];
     }
 
-    public void RemoveScrollAmount(string scrollName)
+    [Command(requiresAuthority = false)]
+    public void CmdAddScrollAmount(string scrollName)
     {
         int index = GetIndex(scrollName);
-        PlayerScrolls item = GetValue(index);
-        item.amount -= 1;
-        SetValue(item, index); 
+        //find index of item in list
+        PlayerScrolls item = GetScroll(index);
+        scrollAmounts[index] += 1;
     }
 
-    public void ResetScrollAmount()
+    [Command(requiresAuthority = false)]
+    public void CmdRemoveScrollAmount(string scrollName)
     {
-        for (int i = 0; i < playerScrolls.Length; i++)
+        int index = GetIndex(scrollName);
+        PlayerScrolls item = GetScroll(index);
+        scrollAmounts[index] -= 1;
+    }
+    
+    [Command(requiresAuthority = false)]
+    public void CmdResetScrollAmount()
+    {
+        for (int index = 0; index < playerScrolls.Count; index++)
         {
-            playerScrolls[i].amount = 0;
+            scrollAmounts[index] = 0;
+        }
+    }
+    
+    [Command(requiresAuthority = false)]
+    public void CmdGiveAllScrolls()
+    {
+        for (int index = 0; index < playerScrolls.Count; index++)
+        {
+            scrollAmounts[index] = 1;
         }
     }
 
     public string GetDescription(string scrollName)
     {
         int index = GetIndex(scrollName);
-        PlayerScrolls item = GetValue(index); 
+        PlayerScrolls item = GetScroll(index); 
         return item.description;
     }
     
@@ -83,17 +112,15 @@ public class ScrollArray : MonoBehaviour
     public Sprite GetSprite(string scrollName)
     {
         int index = GetIndex(scrollName);
-        PlayerScrolls item = GetValue(index); 
-        return item.scroll;
+        PlayerScrolls item = GetScroll(index); 
+        return scrollSprites[index];
     }
 
-    [System.Serializable]
+    [Serializable]
     public class PlayerScrolls 
     {
-        public int amount;
         public string name;
         public string description;
-        public Sprite scroll;
     }
 }
 

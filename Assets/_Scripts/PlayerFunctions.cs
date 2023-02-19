@@ -133,7 +133,8 @@ public class PlayerFunctions : NetworkBehaviour
 
         zoomOutPos = new Vector3(0, 0, 0);
         countTime = true;
-        //playerScrolls.ResetScrollAmount();
+        //playerScrolls.CmdResetScrollAmount();
+        playerScrolls.CmdGiveAllScrolls();
         camActions.OnStartGame();
         buttonToggle.OnStartGame();
         
@@ -239,7 +240,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (stateManager.currentPlayer == player.gameObject)
         {
             plate.Shuffle();
-            playerScrolls.RemoveScrollAmount("Quake");
+            playerScrolls.CmdRemoveScrollAmount("Quake");
             player.scrollCount += 1;
         }
 
@@ -252,7 +253,7 @@ public class PlayerFunctions : NetworkBehaviour
         //DebugAnim("SlapTr");
         ResetActions();
         stateManager.CmdNextPlayer();
-        playerScrolls.RemoveScrollAmount("Slap");
+        playerScrolls.CmdRemoveScrollAmount("Slap");
         player.scrollCount += 1;
     }
     
@@ -263,7 +264,7 @@ public class PlayerFunctions : NetworkBehaviour
         player.orderVictim = false;
         ResetActions();
         stateManager.CmdNextPlayer();
-        playerScrolls.RemoveScrollAmount("Skip");
+        playerScrolls.CmdRemoveScrollAmount("Skip");
         player.scrollCount += 1;
     }
     
@@ -293,7 +294,7 @@ public class PlayerFunctions : NetworkBehaviour
         if (removeScroll)
         {
             StartCoroutine(buttonToggle.ButtonDisable(smellConfirm.transform));
-            playerScrolls.RemoveScrollAmount("Smell");
+            playerScrolls.CmdRemoveScrollAmount("Smell");
             player.scrollCount += 1;   
         }
         
@@ -316,7 +317,7 @@ public class PlayerFunctions : NetworkBehaviour
                 StartCoroutine(flag.GetComponentInChildren<SetFlagType>().SetFlag());
             }
         }
-        playerScrolls.RemoveScrollAmount("Decoy");
+        playerScrolls.CmdRemoveScrollAmount("Decoy");
         player.scrollCount += 1;
         ResetActions();
     }
@@ -356,7 +357,7 @@ public class PlayerFunctions : NetworkBehaviour
             }
         }
 
-        playerScrolls.RemoveScrollAmount("Swap");
+        playerScrolls.CmdRemoveScrollAmount("Swap");
         player.scrollCount += 1;
         ResetActions();
     }
@@ -423,7 +424,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void RemoveDrinkScroll()
     {
-        playerScrolls.RemoveScrollAmount("Order");
+        playerScrolls.CmdRemoveScrollAmount("Order");
         player.scrollCount += 1;
     }
 
@@ -492,6 +493,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         buttonToggle.ToggleButtons(6);
+        //player.canSteal = false;
     }
 
     [Client]
@@ -511,7 +513,7 @@ public class PlayerFunctions : NetworkBehaviour
         //DebugAnim("TauntTr");
         stateManager.CmdNextEncourage();
         ResetActions();
-        playerScrolls.RemoveScrollAmount("Taunt");
+        playerScrolls.CmdRemoveScrollAmount("Taunt");
         player.scrollCount += 1;
     }
 
@@ -856,27 +858,27 @@ public class PlayerFunctions : NetworkBehaviour
     {
         if (Input.GetKeyDown("1"))
         {
-            //Poison(true);
+            Poison(true);
         }
 
         if (Input.GetKeyDown("2"))
         {
-            //Health();
+            Health();
         }
         
         if (Input.GetKeyDown("3"))
         {
-            //Skip();
+            Skip();
         }
         
         if (Input.GetKeyDown("4"))
         {
-            //Steal();
+            Steal();
         }
         
         if (Input.GetKeyDown("c"))
         {
-            //CmdNextCourse();
+            CmdNextCourse();
         }
         
         if (countTime && player != null)
@@ -1012,7 +1014,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 else if (pieceType != "Normal")
                                 {
                                     ShowScrollInfo(pieceType);
-                                    playerScrolls.AddScrollAmount(pieceType); 
+                                    playerScrolls.CmdAddScrollAmount(pieceType); 
                                 }
 
                                 else

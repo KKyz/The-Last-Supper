@@ -324,7 +324,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7180617706542355833}
-  - component: {fileID: 1318409774636118683}
   m_Layer: 0
   m_Name: Scrolls
   m_TagString: Untagged
@@ -340,7 +339,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 702910264586011270}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -9, y: 153.56677, z: 106.73889}
+  m_LocalPosition: {x: -9, y: 153.56677, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -355,19 +354,6 @@ Transform:
   m_Father: {fileID: 1726764216373698845}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1318409774636118683
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 702910264586011270}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 1
 --- !u!1 &900287265259153154
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,7 +364,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4444517492897537498}
   - component: {fileID: 7284727903934634680}
-  - component: {fileID: 7490686984530900184}
   m_Layer: 0
   m_Name: Players
   m_TagString: Untagged
@@ -406,7 +391,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 148, y: 97.19699}
+  m_AnchoredPosition: {x: 127, y: 97.19699}
   m_SizeDelta: {x: 100, y: 121.2345}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7284727903934634680
@@ -435,19 +420,6 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &7490686984530900184
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 900287265259153154}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_AllowSwitchOff: 0
 --- !u!1 &984950714167603817
 GameObject:
   m_ObjectHideFlags: 0
@@ -540,7 +512,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &7189283959181927269
 RectTransform:
   m_ObjectHideFlags: 0
@@ -558,9 +530,9 @@ RectTransform:
   m_Father: {fileID: 4444517492897537498}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 3.8799973, y: -60.61725}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &4275682916512764330
@@ -606,18 +578,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8867676773438339382}
   toggleTransition: 1
   graphic: {fileID: 7005644853489140451}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
-        m_MethodName: SelectVictim
-        m_Mode: 1
+        m_MethodName: SelectScroll
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 1
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -1554,6 +1526,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  playerFunctions: {fileID: 0}
+  victim: {fileID: 0}
+  playerToggles: {fileID: 0}
+  playerToggle: {fileID: 0}
+  selectedScroll: {fileID: 0}
+  scrollToggles: []
 --- !u!1 &1726818762309545675
 GameObject:
   m_ObjectHideFlags: 0
@@ -1733,7 +1711,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2285286471328804359}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1790,7 +1768,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3366098946639941336}
   toggleTransition: 1
   graphic: {fileID: 7934067140667175918}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -2163,7 +2141,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2779764270391402812}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2220,7 +2198,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4930640859200335747}
   toggleTransition: 1
   graphic: {fileID: 6910020536183843711}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -2863,7 +2841,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2878916641682892248
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2881,9 +2859,9 @@ RectTransform:
   m_Father: {fileID: 4444517492897537498}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 186.76, y: -60.61725}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &6428563545107939870
@@ -2929,18 +2907,18 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6850890794425329839}
   toggleTransition: 1
   graphic: {fileID: 8617225369359370781}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
-        m_MethodName: SelectVictim
-        m_Mode: 1
+        m_MethodName: SelectScroll
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
+          m_IntArgument: 2
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -2971,7 +2949,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3521225179651907041}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3028,7 +3006,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4318608991664810866}
   toggleTransition: 1
   graphic: {fileID: 8161741763579153644}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -3866,7 +3844,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5286233149752675868}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3923,7 +3901,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3231512817922719936}
   toggleTransition: 1
   graphic: {fileID: 8356583490806636458}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -4220,7 +4198,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5445440256776340791}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4277,7 +4255,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8520049891372695805}
   toggleTransition: 1
   graphic: {fileID: 3969450675438228471}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -5311,7 +5289,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8250038641865232020}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5368,7 +5346,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6234508501639651306}
   toggleTransition: 1
   graphic: {fileID: 8882215918800269101}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -5410,7 +5388,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8277432527906997784}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5467,7 +5445,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3312132257461985496}
   toggleTransition: 1
   graphic: {fileID: 7653365781353980422}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -5661,7 +5639,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8481971253383961793}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -213.47778}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5718,7 +5696,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3783196470914748567}
   toggleTransition: 1
   graphic: {fileID: 825455853463753017}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
@@ -5770,8 +5748,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 44.5014, y: 65.90964}
-  m_SizeDelta: {x: 1014.1404, y: 517.7662}
+  m_AnchoredPosition: {x: 44.5014, y: 32.9124}
+  m_SizeDelta: {x: 1014.1404, y: 451.7716}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &9140220784724319261
 CanvasRenderer:
@@ -5801,7 +5779,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 12bb22f1c966076468889b811606a91c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 4939565085877dc459146796ffdb350b, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -5981,7 +5959,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &5995303886397368156
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5999,9 +5977,9 @@ RectTransform:
   m_Father: {fileID: 4444517492897537498}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -179, y: -60.61725}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &7651845198506278416
@@ -6047,14 +6025,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4793202512832440076}
   toggleTransition: 1
   graphic: {fileID: 7837772986542753820}
-  m_Group: {fileID: 7490686984530900184}
+  m_Group: {fileID: 0}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
-        m_MethodName: SelectVictim
-        m_Mode: 1
+        m_MethodName: SelectScroll
+        m_Mode: 3
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

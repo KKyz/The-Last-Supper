@@ -115,11 +115,14 @@ MonoBehaviour:
   health: 0
   currentPlate: 
   actionable: 0
+  hasWon: 0
   isEncouraged: 0
   hasRecommended: 0
   hasTalked: 0
   orderVictim: 0
   canContinue: 0
+  canSteal: 0
+  stolenScroll: 
   psn0: 0
   psn1: 0
   psn2: 0
@@ -150,42 +153,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0d24de33068a2e469638f4f317cc219, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerScrolls:
-  - amount: 1
+  syncMode: 0
+  syncInterval: 0.1
+  allScrolls:
+  - amount: 0
     name: Slap
     description: Slap the current player to cancel their turn! (Can only be activated
-      if your turn isn't active)
-    scroll: {fileID: 21300000, guid: f7198a9abe80269419a56f3c9d6a0472, type: 3}
-  - amount: 1
+  - amount: 0
     name: Skip
     description: Activating skips your turn.
-    scroll: {fileID: 21300000, guid: ff4ecc95785ec0b43b634824a3a4536d, type: 3}
-  - amount: 1
+  - amount: 0
     name: Smell
     description: Allows you to reveal up to 3 pieces
-    scroll: {fileID: 21300000, guid: 5a5ef060a11b74a4ea2722d9286bfb44, type: 3}
-  - amount: 1
+  - amount: 0
     name: Quake
     description: Activating causes an earthquake to trigger, shuffling all remaining
       pieces.
-    scroll: {fileID: 21300000, guid: 22c3b9ec89c810149a172708ec54c242, type: 3}
-  - amount: 1
+  - amount: 0
     name: Order
     description: Order 4 drinks to a player, of which one (or two) of them can be
       poisonous.
-    scroll: {fileID: 21300000, guid: 2bb9e2b040d757f468915b057c2ce1cb, type: 3}
-  - amount: 1
+  - amount: 0
     name: Taunt
     description: Taunts the next player, forcing them to take two turns
-    scroll: {fileID: 21300000, guid: ff4ecc95785ec0b43b634824a3a4536d, type: 3}
-  - amount: 1
+  - amount: 0
     name: Swap
     description: Swap the types of two pieces
-    scroll: {fileID: 21300000, guid: 5a5ef060a11b74a4ea2722d9286bfb44, type: 3}
-  - amount: 1
+  - amount: 0
     name: Decoy
     description: Tag a piece as poisoned, turning it into a decoy.
-    scroll: {fileID: 21300000, guid: f7198a9abe80269419a56f3c9d6a0472, type: 3}
+  scrollSprites:
+  - {fileID: 21300000, guid: 2bb9e2b040d757f468915b057c2ce1cb, type: 3}
+  - {fileID: 21300000, guid: 22c3b9ec89c810149a172708ec54c242, type: 3}
+  - {fileID: 21300000, guid: ff4ecc95785ec0b43b634824a3a4536d, type: 3}
+  - {fileID: 21300000, guid: f7198a9abe80269419a56f3c9d6a0472, type: 3}
+  - {fileID: 21300000, guid: 5a5ef060a11b74a4ea2722d9286bfb44, type: 3}
+  - {fileID: 21300000, guid: 45f9bc8354af9c340a986dd0ec9fa42e, type: 3}
+  - {fileID: 21300000, guid: 68b267b50f58eac46a09c22d2b0fc53a, type: 3}
+  - {fileID: 21300000, guid: 22c3b9ec89c810149a172708ec54c242, type: 3}
 --- !u!114 &5026244676830656758
 MonoBehaviour:
   m_ObjectHideFlags: 0
