@@ -11,18 +11,19 @@ public class SettingsMenu : MonoBehaviour
 
     private TMP_Dropdown resolutionDropdown;
     private TMP_InputField nameInput;
-
     private Slider bgmSlider, sfxSlider;
-    
     private List<Resolution> availableResolutions;
+    private GameObject purchaseButton, restoreButton;
     
     void Start()
     {
-        nameInput = GameObject.Find("NameInput").GetComponent<TMP_InputField>();
-        nameInput.text = PlayerPrefs.GetString("PlayerName");
-        resolutionDropdown = GameObject.Find("Resolutions").GetComponent<TMP_Dropdown>();
-        bgmSlider = GameObject.Find("BGMSlider").GetComponent<Slider>();
-        sfxSlider = GameObject.Find("SFXSlider").GetComponent<Slider>();
+        nameInput = transform.Find("NameInput").GetComponent<TMP_InputField>();
+        nameInput.text = PlayerPrefs.GetString("PlayerName", "");
+        resolutionDropdown = transform.Find("Resolutions").GetComponent<TMP_Dropdown>();
+        bgmSlider = transform.Find("BGMSlider").GetComponent<Slider>();
+        sfxSlider = transform.Find("SFXSlider").GetComponent<Slider>();
+        purchaseButton = GameObject.Find("BuyButton");
+        restoreButton = GameObject.Find("RestoreButton");
         
         Resolution[] resolutions = Screen.resolutions;
         availableResolutions = new List<Resolution>();
@@ -56,6 +57,21 @@ public class SettingsMenu : MonoBehaviour
         
         sfxSlider.value = PlayerPrefs.GetFloat("SFXVolPref", 1f);
         bgmSlider.value = PlayerPrefs.GetFloat("BGMVolPref", 0.5f);
+        
+        //Platform specific compilation for remove ads button
+        #if UNITY_EDITOR
+        restoreButton.SetActive(true);
+        purchaseButton.SetActive(true);
+        #elif UNITY_IOS
+        restoreButton.SetActive(true);
+        purchaseButton.SetActive(true);
+        #elif UNITY_ANDROID
+        restoreButton.SetActive(true);
+        purchaseButton.SetActive(true);
+        #else
+        restoreButton.SetActive(false);
+        purchaseButton.SetActive(false);
+        #endif
     }
 
     public void SetResolution(int resolutionIndex)

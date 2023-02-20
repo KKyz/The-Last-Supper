@@ -7,7 +7,7 @@ public class ShowStats : MonoBehaviour
     public TextMeshProUGUI scrollCounter, courseCounter, pieceCounter, timeCounter;
     private GameManager gameManager;
 
-    public void Start()
+    public void LoadStats(PlayerManager player)
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         PlayerData data = SaveSystem.LoadPlayer();
@@ -18,10 +18,7 @@ public class ShowStats : MonoBehaviour
         gameManager.playTime = data.playTime;
         gameManager.gamesWon = data.gamesWon;
         gameManager.gamesJoined = data.gamesJoined;
-    }
-
-    public void LoadStats(PlayerManager player)
-    {
+        
         scrollCounter.text = player.scrollCount.ToString();
         courseCounter.text = player.courseCount.ToString();
         pieceCounter.text = player.pieceCount.ToString();

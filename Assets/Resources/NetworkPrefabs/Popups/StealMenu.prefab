@@ -324,6 +324,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7180617706542355833}
+  - component: {fileID: 1976208841056271426}
   m_Layer: 0
   m_Name: Scrolls
   m_TagString: Untagged
@@ -354,6 +355,19 @@ Transform:
   m_Father: {fileID: 1726764216373698845}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1976208841056271426
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702910264586011270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AllowSwitchOff: 0
 --- !u!1 &900287265259153154
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,6 +378,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4444517492897537498}
   - component: {fileID: 7284727903934634680}
+  - component: {fileID: 4025139337532904066}
   m_Layer: 0
   m_Name: Players
   m_TagString: Untagged
@@ -420,6 +435,19 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &4025139337532904066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 900287265259153154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2fafe2cfe61f6974895a912c3755e8f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_AllowSwitchOff: 0
 --- !u!1 &984950714167603817
 GameObject:
   m_ObjectHideFlags: 0
@@ -578,14 +606,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8867676773438339382}
   toggleTransition: 1
   graphic: {fileID: 7005644853489140451}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 4025139337532904066}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
-        m_MethodName: SelectScroll
-        m_Mode: 3
+        m_MethodName: SelectVictim
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -1529,9 +1557,8 @@ MonoBehaviour:
   playerFunctions: {fileID: 0}
   victim: {fileID: 0}
   playerToggles: {fileID: 0}
-  playerToggle: {fileID: 0}
-  selectedScroll: {fileID: 0}
-  scrollToggles: []
+  scrollToggles: {fileID: 0}
+  selectedScroll: 
 --- !u!1 &1726818762309545675
 GameObject:
   m_ObjectHideFlags: 0
@@ -1768,14 +1795,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3366098946639941336}
   toggleTransition: 1
   graphic: {fileID: 7934067140667175918}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2198,14 +2225,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4930640859200335747}
   toggleTransition: 1
   graphic: {fileID: 6910020536183843711}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -2907,14 +2934,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6850890794425329839}
   toggleTransition: 1
   graphic: {fileID: 8617225369359370781}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 4025139337532904066}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
-        m_MethodName: SelectScroll
-        m_Mode: 3
+        m_MethodName: SelectVictim
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3006,14 +3033,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4318608991664810866}
   toggleTransition: 1
   graphic: {fileID: 8161741763579153644}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3901,14 +3928,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3231512817922719936}
   toggleTransition: 1
   graphic: {fileID: 8356583490806636458}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -4255,14 +4282,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8520049891372695805}
   toggleTransition: 1
   graphic: {fileID: 3969450675438228471}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5346,14 +5373,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6234508501639651306}
   toggleTransition: 1
   graphic: {fileID: 8882215918800269101}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5445,14 +5472,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3312132257461985496}
   toggleTransition: 1
   graphic: {fileID: 7653365781353980422}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5696,14 +5723,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 3783196470914748567}
   toggleTransition: 1
   graphic: {fileID: 825455853463753017}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 1976208841056271426}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
         m_MethodName: SelectScroll
-        m_Mode: 3
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -6025,14 +6052,14 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 4793202512832440076}
   toggleTransition: 1
   graphic: {fileID: 7837772986542753820}
-  m_Group: {fileID: 0}
+  m_Group: {fileID: 4025139337532904066}
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 7490610825099684474}
         m_TargetAssemblyTypeName: StealScroll, Assembly-CSharp
-        m_MethodName: SelectScroll
-        m_Mode: 3
+        m_MethodName: SelectVictim
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

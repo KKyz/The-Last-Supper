@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Mirror;
 using UnityEngine;
@@ -9,10 +10,9 @@ public class StealScroll : NetworkBehaviour
     public PlayerFunctions playerFunctions;
     public ScrollArray victim;
     private Button stealButton;
-    public readonly List<ScrollArray> victims = new();
-    public Transform playerToggles;
-    public Toggle playerToggle, selectedScroll;
-    public List<Toggle> scrollToggles = new();
+    private readonly List<ScrollArray> victims = new();
+    public ToggleGroup playerToggles, scrollToggles;
+    public string selectedScroll;
     private StateManager stateManager;
 
 
@@ -25,8 +25,8 @@ public class StealScroll : NetworkBehaviour
         stealButton = transform.Find("StealButton").GetComponent<Button>();
         stateManager = GameObject.Find("StateManager(Clone)").GetComponent<StateManager>();
         playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
-        playerToggles = transform.Find("Players");
-        playerToggle = null;
+        playerToggles = transform.Find("Players").GetComponent<ToggleGroup>();
+        scrollToggles = transform.Find("Scrolls").GetComponent<ToggleGroup>();
 
         for (int i = 0; i < 3; i++)
         {
@@ -48,99 +48,50 @@ public class StealScroll : NetworkBehaviour
 
         foreach (Transform toggle in transform.Find("Scrolls"))
         {
-            scrollToggles.Add(toggle.GetComponent<Toggle>());
             toggle.gameObject.SetActive(false);
         }
-        
-        SelectVictim(0);
     }
     
-    public void SelectVictim(int index)
+    public void SelectVictim()
     {
+        Debug.LogWarning("Selected new victim");
         if (playerToggles != null)
         {
-            if (playerToggle == null)
-            {
-                playerToggles.GetChild(0).GetComponent<Toggle>().isOn = true;  
-            }
-            else if (index != playerToggle.transform.GetSiblingIndex())
-            {
-                playerToggle.isOn = false;
-            }
-
-            foreach (Transform toggle in playerToggles.transform)
-            {
-                if (toggle.GetComponent<Toggle>().isOn)
-                {
-                    playerToggle = toggle.GetComponent<Toggle>();
-                }
-            }
-            
+            Toggle playerToggle = playerToggles.GetFirstActiveToggle();
             victim = victims[playerToggle.transform.GetSiblingIndex()];
+            
+            ShowAvailableScrolls();
         }
-        
-        ShowAvailableScrolls();
+    }
+    
+    public void SelectScroll()
+    {
+        if (scrollToggles != null)
+        {
+            selectedScroll = scrollToggles.GetFirstActiveToggle().transform.GetComponentInChildren<TMP_Text>().text;
+        }
     }
 
     private void ShowAvailableScrolls()
     {
         selectedScroll = null;
         
-        if (scrollToggles.Count > 0)
+        foreach (Transform scrollLabel in scrollToggles.transform)
         {
-            foreach (var scrollLabel in scrollToggles)
-            {
-                scrollLabel.gameObject.SetActive(false); 
-            }
+            scrollLabel.gameObject.SetActive(false); 
         }
 
         if (victim != null)
         {
             for (int i = 0; i < victim.NumberOfScrolls(); i++)
             {
-                scrollToggles[i].GetComponentInChildren<TMP_Text>().text = victim.GetName(i);
-                scrollToggles[i].gameObject.SetActive(true);
-            }
-        }
-        
-        SelectScroll(0);
-    }
-
-    public void SelectScroll(int index)
-    {
-        if (selectedScroll == null)
-        {
-            foreach (Toggle toggle in scrollToggles)
-            {
-                if (toggle.gameObject.activeInHierarchy)
-                {
-                    selectedScroll = toggle;
-                }
-            }
-        }
-        else if (index != selectedScroll.transform.GetSiblingIndex())
-        {
-            selectedScroll.isOn = false;
-        }
-        
-        foreach (Toggle toggle in scrollToggles)
-        {
-            if (toggle.isOn)
-            {
-                selectedScroll = toggle;
-            }
-        }
-        
-        foreach (Toggle toggle in scrollToggles)
-        {
-            if (toggle.transform.GetSiblingIndex() != selectedScroll.transform.GetSiblingIndex())
-            {
-                toggle.isOn = false;
+                scrollToggles.transform.GetChild(i).GetComponentInChildren<TMP_Text>().text = victim.GetName(i);
+                scrollToggles.transform.GetChild(i).gameObject.SetActive(true);
             }
         }
     }
 
-    
+
     public void Update()
     {
         if (victim != null && selectedScroll != null)
@@ -162,11 +113,11 @@ public class StealScroll : NetworkBehaviour
     
     public void Steal()
     {
-        string stolenScroll = selectedScroll.GetComponentInChildren<TMP_Text>().text;
-        playerFunctions.RemoveStealScroll(stolenScroll);
+        playerFunctions.RemoveStealScroll(selectedScroll);
 
-        victim.CmdRemoveScrollAmount(stolenScroll);
-        playerFunctions.player.GetComponent<ScrollArray>().CmdAddScrollAmount(stolenScroll);
+        victim.CmdRemoveScrollAmount(selectedScroll);
+        victim.GetComponent<PlayerManager>().CmdSetScrollVictim(selectedScroll);
+        playerFunctions.player.GetComponent<ScrollArray>().CmdAddScrollAmount(selectedScroll);
         
         CloseMenu();
     }

@@ -462,10 +462,10 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
 
         openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
-        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("Your " + pieceType + " scroll was stolen...");
+        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("Your " + pieceType + " scroll was stolen!");
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = "You have lost a " + pieceType + " scroll.";
         buttonToggle.ToggleButtons(6);
-        player.CmdRemoveVictim();
+        player.CmdSetScrollVictim(null);
     }
 
     [Client]
@@ -530,6 +530,22 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
         openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("You've got a " + pieceType + " scroll!");
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = playerScrolls.GetDescription(pieceType);
+        buttonToggle.ToggleButtons(6);
+    }
+    
+    [Client]
+    private void StolenScrollInfo(string pieceType)
+    {
+        openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
+        
+        uiAudio.PlayOneShot(scrollGetSfx);
+        openPopup.transform.SetParent(transform, false);
+        openPopup.transform.SetSiblingIndex(transform.childCount - 2);
+        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
+
+        openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
+        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("Your " + pieceType + " scroll has been stolen!");
+        openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = "You have lost this scroll to a thief.";
         buttonToggle.ToggleButtons(6);
     }
 
@@ -774,7 +790,7 @@ public class PlayerFunctions : NetworkBehaviour
         }
     }
     
-    [Command(requiresAuthority = false)]
+    [Command]
     private void CmdNextCourse()
     {
         RpcForceButtonsOff();
@@ -794,12 +810,12 @@ public class PlayerFunctions : NetworkBehaviour
         netIdentity.AssignClientAuthority(conn);
         stateManager.netIdentity.AssignClientAuthority(conn);
     }
-    
+
     [Command(requiresAuthority =  false)]
     private void CmdRemoveAuthority()
     {
         netIdentity.RemoveClientAuthority();
-        stateManager.netIdentity.RemoveClientAuthority(); 
+        stateManager.netIdentity.RemoveClientAuthority();
     }
 
     private bool PlateIsPresent()
@@ -880,7 +896,7 @@ public class PlayerFunctions : NetworkBehaviour
         {
             CmdNextCourse();
         }
-        
+
         if (countTime && player != null)
         {
             accumulatedTime += Time.deltaTime;
@@ -892,7 +908,7 @@ public class PlayerFunctions : NetworkBehaviour
             //If it is the player's turn, switch to Action Buttons
             if (stateManager.currentPlayer == player.gameObject && (buttonToggle.menuMode == 4 || buttonToggle.menuMode == 6 || buttonToggle.menuMode == 5))
             {
-                if (!player.actionable && netIdentity.hasAuthority == false)
+                if (!player.actionable)
                 {
                     player.actionable = true;
                     player.hasRecommended = false;
@@ -914,20 +930,11 @@ public class PlayerFunctions : NetworkBehaviour
             else if (stateManager.currentPlayer != player.gameObject)
             {
                 player.actionable = false;
-                
-                if (netIdentity.hasAuthority)
-                {
-                    CmdRemoveAuthority();
-                }
 
                 if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
                 {
                     buttonToggle.ToggleButtons(4);
                     ShowInfoText("Waiting for other players' turns..");
-                    if (!infoText.gameObject.activeInHierarchy)
-                    {
-                        
-                    }
                 }
             }
         }

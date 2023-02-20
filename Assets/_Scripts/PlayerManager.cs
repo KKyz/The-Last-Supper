@@ -86,6 +86,8 @@ public class PlayerManager : NetworkBehaviour
         {
             InitScrollArray();
         }
+        
+        CmdChangeHealth(health);
     }
     
     [Command(requiresAuthority = false)]
@@ -158,7 +160,7 @@ public class PlayerManager : NetworkBehaviour
         
         fill.transform.localScale = new Vector3(fillLengths[value], fillLocalScale.y, fillLocalScale.z);
     }
-    public void SyncPsn(bool oldValue, bool newValue)
+    public void SyncPsn(bool oldValue, bool newValue) 
     {
         psnArray[0] = psn0;
         psnArray[1] = psn1;
@@ -260,9 +262,9 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CmdRemoveVictim()
+    public void CmdSetScrollVictim(string scroll)
     {
-        stolenScroll = null;
+        stolenScroll = scroll;
     }
     
     #endregion

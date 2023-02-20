@@ -162,7 +162,6 @@ public class MealManager : NetworkBehaviour
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerCanvas.player.GetComponent<CameraActions>().FaceCenter();
         playerCanvas.playerCam.transform.LookAt(stateManager.transform.position);
-        playerCanvas.player.CmdChangeHealth(playerCanvas.player.health);
     }
 
     [Command(requiresAuthority = false)]

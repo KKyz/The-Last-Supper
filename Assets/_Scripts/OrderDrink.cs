@@ -10,10 +10,10 @@ public class OrderDrink : NetworkBehaviour
     
     private Transform glasses;
     private PlayerFunctions playerFunctions;
-    private PlayerManager victim;
+    public PlayerManager victim;
     private readonly bool[] psnArray = new bool[4];
     private int psnMax;
-    public Queue<int> glassQueue = new();
+    private readonly Queue<int> glassQueue = new();
     private Button orderButton, switchButton;
     private readonly List<PlayerManager> victims = new();
     private ToggleGroup playerToggles;
@@ -82,16 +82,9 @@ public class OrderDrink : NetworkBehaviour
     {
         if (playerToggles != null)
         {
-            Toggle playerToggle = playerToggles.ActiveToggles().FirstOrDefault();
-
-            foreach (Transform toggle in playerToggles.transform)
-            {
-                if (toggle.GetComponent<Toggle>().isOn)
-                {
-                    playerToggle = toggle.GetComponent<Toggle>();
-                }
-            }
+            Toggle playerToggle = playerToggles.GetFirstActiveToggle();
             victim = victims[playerToggle.transform.GetSiblingIndex()];
+            Debug.LogWarning(playerToggle.transform.GetSiblingIndex());
         }
     }
 
@@ -124,13 +117,6 @@ public class OrderDrink : NetworkBehaviour
                 glasses.GetChild(index).GetComponent<Image>().sprite = psnDrink;
                 glassQueue.Enqueue(glasses.GetChild(index).GetSiblingIndex());
             }
-        }
-        
-        else
-        {
-            psnArray[index] = false;
-            glasses.GetChild(index).GetComponent<Image>().sprite = normalDrink;
-            glassQueue.Dequeue();
         }
     }
 

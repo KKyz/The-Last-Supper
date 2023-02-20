@@ -65,7 +65,6 @@ public class ScrollArray : NetworkBehaviour
     public void CmdAddScrollAmount(string scrollName)
     {
         int index = GetIndex(scrollName);
-        //find index of item in list
         PlayerScrolls item = GetScroll(index);
         scrollAmounts[index] += 1;
     }
