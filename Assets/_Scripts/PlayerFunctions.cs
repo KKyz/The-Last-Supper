@@ -74,7 +74,8 @@ public class PlayerFunctions : NetworkBehaviour
     public GameObject playerCam;
 
     private EnableDisableScrollButtons buttonToggle;
-    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, openPopup, fakeTarget, chatPanel;
+    private GameObject smellTarget, smellConfirm, swapConfirm, fakeConfirm, decoyTarget, chatPanel;
+    public GameObject openPopup;
     private Vector3 zoomOutPos;
     private FadeInOut fade;
     private CameraActions camActions;
@@ -118,7 +119,7 @@ public class PlayerFunctions : NetworkBehaviour
         currentState = "Idle";
         player = null;
         openPopup = null;
-        fakeTarget = null;
+        decoyTarget = null;
         accumulatedTime = 0;
         chatPanel.SetActive(false);
         smellTargets.Clear();
@@ -304,13 +305,13 @@ public class PlayerFunctions : NetworkBehaviour
     public void ConfirmFake()
     {
         //DebugAnim("DecoyTr"); 
-        if (fakeTarget.transform.parent.GetComponent<FoodPiece>().type == "Normal")
+        if (decoyTarget.transform.parent.GetComponent<FoodPiece>().type == "Normal")
         {
             mealManager.CmdCheckNPieces();
         }
         
-        fakeTarget.transform.parent.GetComponent<FoodPiece>().FakePsn();
-        foreach (Transform flag in fakeTarget.transform.parent)
+        decoyTarget.transform.parent.GetComponent<FoodPiece>().FakePsn();
+        foreach (Transform flag in decoyTarget.transform.parent)
         {
             if (flag.CompareTag("TypeFlag"))
             {
@@ -668,9 +669,9 @@ public class PlayerFunctions : NetworkBehaviour
             infoText.GetComponent<InfoText>().CloseInfoText();
         }
 
-        if (fakeTarget != null)
+        if (decoyTarget != null)
         {
-            StartCoroutine(DespawnBillboard(fakeTarget));
+            StartCoroutine(DespawnBillboard(decoyTarget));
         }
 
         foreach (GameObject targetPiece in smellTargets)
@@ -931,6 +932,11 @@ public class PlayerFunctions : NetworkBehaviour
             {
                 player.actionable = false;
 
+                if (openPopup != null)
+                {
+                    openPopup.GetComponent<SpawnMenu>().SlideOutMenu(); 
+                }
+
                 if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
                 {
                     buttonToggle.ToggleButtons(4);
@@ -1087,16 +1093,16 @@ public class PlayerFunctions : NetworkBehaviour
 
                             else if (currentState == "Poisoning")
                             {
-                                if (fakeTarget == null)
+                                if (decoyTarget == null)
                                 {
-                                    fakeTarget = Instantiate(fakeFlag, piece.transform);
-                                    StartCoroutine(SpawnBillboard(fakeTarget.transform));
+                                    decoyTarget = Instantiate(fakeFlag, piece.transform);
+                                    StartCoroutine(SpawnBillboard(decoyTarget.transform));
                                     StartCoroutine(buttonToggle.ButtonEnable(fakeConfirm.transform));
                                 }
 
                                 else
                                 {
-                                    StartCoroutine(DespawnBillboard(fakeTarget));
+                                    StartCoroutine(DespawnBillboard(decoyTarget));
                                     StartCoroutine(buttonToggle.ButtonDisable(fakeConfirm.transform));
                                 }
                             }

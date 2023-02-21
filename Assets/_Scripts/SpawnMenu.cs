@@ -1,7 +1,15 @@
+using System;
 using UnityEngine;
 
 public class SpawnMenu : MonoBehaviour
 {
+    private PlayerFunctions playerFunctions;
+
+    public void Start()
+    {
+        playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
+    }
+
     public void SlideInMenu()
     {
         CanvasGroup menuCanvas = transform.GetComponent<CanvasGroup>();
@@ -20,11 +28,11 @@ public class SpawnMenu : MonoBehaviour
         LeanTween.moveY(gameObject, goalPos.y, 1f).setEaseInOutBack().setLoopPingPong(1);
         LeanTween.alphaCanvas(menuCanvas, 0, 0.85f);
         Destroy(gameObject, 0.6f);
+        playerFunctions.openPopup = null;
     }
 
     public void CanContinue()
     {
-        PlayerFunctions playerFunctions = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
         playerFunctions.player.CmdSwitchContinueState(true);
     }
 }

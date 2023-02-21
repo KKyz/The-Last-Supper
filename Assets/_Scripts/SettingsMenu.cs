@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using TMPro;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine.SceneManagement;
 
 public class SettingsMenu : MonoBehaviour
@@ -13,7 +14,7 @@ public class SettingsMenu : MonoBehaviour
     private TMP_InputField nameInput;
     private Slider bgmSlider, sfxSlider;
     private List<Resolution> availableResolutions;
-    private GameObject purchaseButton, restoreButton;
+    private GameObject purchaseButton, restoreButton, fullScreenButton;
     
     void Start()
     {
@@ -24,12 +25,11 @@ public class SettingsMenu : MonoBehaviour
         sfxSlider = transform.Find("SFXSlider").GetComponent<Slider>();
         purchaseButton = GameObject.Find("BuyButton");
         restoreButton = GameObject.Find("RestoreButton");
+        fullScreenButton = transform.Find("Fullscreen").gameObject;
         
         Resolution[] resolutions = Screen.resolutions;
         availableResolutions = new List<Resolution>();
         resolutionDropdown.ClearOptions();
-        
-        //int currentRefreshRate = Screen.currentResolution.refreshRate;
 
         for (int i = 0; i < resolutions.Length; i++)
         {
@@ -62,15 +62,23 @@ public class SettingsMenu : MonoBehaviour
         #if UNITY_EDITOR
         restoreButton.SetActive(true);
         purchaseButton.SetActive(true);
+        fullScreenButton.SetActive(true);
+        resolutionDropdown.gameObject.SetActive(true);
         #elif UNITY_IOS
         restoreButton.SetActive(true);
         purchaseButton.SetActive(true);
+        fullScreenButton.SetActive(false);
+        resolutionDropdown.gameObject.SetActive(false);
         #elif UNITY_ANDROID
         restoreButton.SetActive(true);
         purchaseButton.SetActive(true);
-        #else
+        fullScreenButton.SetActive(false);
+        resolutionDropdown.gameObject.SetActive(false);
+        #elif UNITY_STANDALONE
         restoreButton.SetActive(false);
         purchaseButton.SetActive(false);
+        fullScreenButton.SetActive(true);
+        resolutionDropdown.gameObject.SetActive(true);
         #endif
     }
 

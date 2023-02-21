@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
-using UnityEditor.Localization.Plugins.XLIFF.V20;
 
 public class StateManager : NetworkBehaviour
 {

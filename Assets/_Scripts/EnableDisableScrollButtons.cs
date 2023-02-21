@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using Mirror;
 
-public class EnableDisableScrollButtons : NetworkBehaviour
+public class EnableDisableScrollButtons : MonoBehaviour
 {
     public AudioClip selectSfx, cancelSfx, buttonSfx;
 
@@ -182,7 +182,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 }
             }
         }
-        
+
         if (playerManager != null)
         {
             if (!playerManager.hasRecommended)
@@ -237,17 +237,20 @@ public class EnableDisableScrollButtons : NetworkBehaviour
                 outTalkButton.gameObject.SetActive(false);
                 outTalkButton.blocksRaycasts = false;
             }
-            
-            if (playerManager.canSteal && playerFunctions.stateManager.stealActive)
-            {
-                if (menuMode == 2)
-                {
-                    stealButton.gameObject.SetActive(true);
-                    stealButton.alpha = 1;
-                    stealButton.blocksRaycasts = true;
-                }
 
-                else
+            if (playerFunctions.stateManager.stealActive)
+            {
+                if (playerManager.canSteal)
+                {
+                    if (menuMode == 2 && !stealButton.blocksRaycasts)
+                    {
+                        stealButton.gameObject.SetActive(true);
+                        stealButton.alpha = 0;
+                        stealButton.blocksRaycasts = true;
+                    }
+                }
+                
+                else if (menuMode == 2)
                 {
                     stealButton.gameObject.SetActive(false);
                     stealButton.blocksRaycasts = false;
@@ -300,8 +303,7 @@ public class EnableDisableScrollButtons : NetworkBehaviour
         }
         
     }
-
-    [Client]
+    
     public void ToggleButtons(int isActive)
     {
         menuMode = isActive;
