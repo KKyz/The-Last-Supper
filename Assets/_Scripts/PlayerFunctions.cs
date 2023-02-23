@@ -61,7 +61,7 @@ public class PlayerFunctions : NetworkBehaviour
     public Sprite dropdownUp;
     public Sprite dropdownDown;
     
-    [HideInInspector]
+    //[HideInInspector]
     public string currentState;
     
     [HideInInspector]
@@ -463,7 +463,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
 
         openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
-        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("Your " + pieceType + " scroll was stolen!");
+        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("A" + pieceType + " scroll was stolen!");
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = "You have lost a " + pieceType + " scroll.";
         buttonToggle.ToggleButtons(6);
         player.CmdSetScrollVictim(null);
@@ -472,7 +472,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Eat()
     {
-        currentState = "Eating";
+        currentState = "Eating"; 
         StartAction();
         ShowInfoText("Select a piece to eat (eating will end your turn)");
     }
@@ -488,6 +488,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Steal()
     {
+        currentState = "Stealing";
         openPopup = Instantiate(stealMenu, Vector2.zero, quaternion.identity);
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
@@ -500,6 +501,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void SpawnTalkMenu()
     {
+        currentState = "Talking";
         uiAudio.PlayOneShot(popupSfx);
         openPopup = Instantiate(talkMenu, Vector2.zero, quaternion.identity);
         openPopup.transform.SetParent(transform, false);
@@ -522,6 +524,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void ShowScrollInfo(string pieceType)
     {
         openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
+        openPopup.name = "ScrollInfo";
         
         uiAudio.PlayOneShot(scrollGetSfx);
         openPopup.transform.SetParent(transform, false);
@@ -531,22 +534,6 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
         openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("You've got a " + pieceType + " scroll!");
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = playerScrolls.GetDescription(pieceType);
-        buttonToggle.ToggleButtons(6);
-    }
-    
-    [Client]
-    private void StolenScrollInfo(string pieceType)
-    {
-        openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
-        
-        uiAudio.PlayOneShot(scrollGetSfx);
-        openPopup.transform.SetParent(transform, false);
-        openPopup.transform.SetSiblingIndex(transform.childCount - 2);
-        openPopup.GetComponent<SpawnMenu>().SlideInMenu();
-
-        openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
-        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("Your " + pieceType + " scroll has been stolen!");
-        openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = "You have lost this scroll to a thief.";
         buttonToggle.ToggleButtons(6);
     }
 
@@ -652,7 +639,7 @@ public class PlayerFunctions : NetworkBehaviour
     public void ResetActions()
     {
         currentState = "Idle";
-        player.orderVictim = false;
+        player.orderVictim = false; 
         LeanTween.move(playerCam, zoomOutPos, 1f).setEaseOutSine();
 
         if (player.actionable)
@@ -904,10 +891,10 @@ public class PlayerFunctions : NetworkBehaviour
         }
 
         //Manages player options when playing 
-        if (openPopup == null && player != null)
+        if (player != null)
         {
             //If it is the player's turn, switch to Action Buttons
-            if (stateManager.currentPlayer == player.gameObject && (buttonToggle.menuMode == 4 || buttonToggle.menuMode == 6 || buttonToggle.menuMode == 5))
+            if (stateManager.currentPlayer == player.gameObject && openPopup == null && (buttonToggle.menuMode == 4 || buttonToggle.menuMode == 6 || buttonToggle.menuMode == 5))
             {
                 if (!player.actionable)
                 {
@@ -932,12 +919,20 @@ public class PlayerFunctions : NetworkBehaviour
             {
                 player.actionable = false;
 
-                if (openPopup != null)
+                if (openPopup != null && stateManager.AllPlayersCanContinue())
                 {
-                    openPopup.GetComponent<SpawnMenu>().SlideOutMenu(); 
+                    if (openPopup.name != "ScrollInfo")
+                    {
+                        openPopup.GetComponent<SpawnMenu>().SlideOutMenu();
+                    }
+                }
+                
+                if (currentState != "Idle")
+                {
+                    ResetActions();
                 }
 
-                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
+                if (buttonToggle.menuMode != 4 && buttonToggle.menuMode != 3 && !fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue() && openPopup == null)
                 {
                     buttonToggle.ToggleButtons(4);
                     ShowInfoText("Waiting for other players' turns..");
@@ -959,17 +954,14 @@ public class PlayerFunctions : NetworkBehaviour
             }
 
 
-            else if (stateManager.gameCanEnd)
+            else if (stateManager.gameCanEnd && stateManager.gameMode == "Free-For-All" && stateManager.activePlayers.Count < 2 && player.health >= 1 && openPopup == null)
             {
-                if (stateManager.gameMode == "Free-For-All" && stateManager.activePlayers.Count < 2 && player.health >= 1 && openPopup == null)
-                {
-                    Win();  
-                }
-                
-                else if (stateManager.gameMode == "Most Pieces" && player.pieceCount == stateManager.maxPiecesEaten)
-                {
-                    Win();  
-                }
+                Win();  
+            }
+            
+            else if (stateManager.activePlayers.Count == 0 && stateManager.gameMode == "Most Pieces" && player.pieceCount == stateManager.maxPiecesEaten && stateManager.AllPlayersCanContinue() && stateManager.maxPiecesEaten > 0)
+            {
+                Win();  
             }
             
             if (player.actionable)

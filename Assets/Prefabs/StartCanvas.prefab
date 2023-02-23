@@ -3404,7 +3404,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -5126,7 +5126,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -5634,7 +5634,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -6935,7 +6935,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -17584,7 +17584,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: InitScrollProb
         m_Mode: 1
@@ -27507,7 +27507,7 @@ GameObject:
   - component: {fileID: 6604831637380780581}
   - component: {fileID: 9075587212215157600}
   m_Layer: 5
-  m_Name: Team Toggle
+  m_Name: TeamToggle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -27693,7 +27693,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -28431,7 +28431,7 @@ GameObject:
   - component: {fileID: 9116611053673490255}
   - component: {fileID: 477136762523852317}
   m_Layer: 5
-  m_Name: ModeDropdown
+  m_Name: GameModeDrop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28570,6 +28570,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 3252609467428214786}
+        m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
+        m_MethodName: SelectGameMode
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   m_AlphaFadeSpeed: 0.15
 --- !u!1 &4475604399190770636
 GameObject:
@@ -28618,7 +28630,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1877559584586645171}
   - component: {fileID: 8076903633859059021}
-  - component: {fileID: 1884423392506234648}
   m_Layer: 5
   m_Name: Toggles
   m_TagString: Untagged
@@ -28680,19 +28691,6 @@ MonoBehaviour:
   m_Spacing: {x: -63.9, y: 35.3}
   m_Constraint: 0
   m_ConstraintCount: 2
---- !u!114 &1884423392506234648
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4479857459223141934}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 747400b5089938041b5266f29df65c9b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  scrollToggles: []
 --- !u!1 &4483412304957940664
 GameObject:
   m_ObjectHideFlags: 0
@@ -31567,7 +31565,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -31764,7 +31762,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -32687,7 +32685,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -33132,7 +33130,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2
@@ -33973,6 +33971,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 447797333782128257}
+  - component: {fileID: 3252609467428214786}
   m_Layer: 5
   m_Name: Customization
   m_TagString: Untagged
@@ -34001,6 +34000,22 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &3252609467428214786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8730491812027947828}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747400b5089938041b5266f29df65c9b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  scrollToggles: []
+  gameModes:
+  - Free-For-All
+  - Most Pieces
 --- !u!1 &8812532607221384651
 GameObject:
   m_ObjectHideFlags: 0
@@ -34259,7 +34274,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1884423392506234648}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: ToggleScroll
         m_Mode: 2

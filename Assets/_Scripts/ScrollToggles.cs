@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -6,13 +8,27 @@ public class ScrollToggles : MonoBehaviour
 {
     [SerializeField]private List<string> scrollToggles;
     private GameManager gameManager;
-    
+    [SerializeField]private List<string> gameModes;
+    private TMP_Dropdown gameModeDrop;
+
+    public void Start()
+    {
+        gameModeDrop = transform.Find("Window").Find("GameOptions").Find("GameModeDrop").GetComponent<TMP_Dropdown>(); 
+        gameModeDrop.ClearOptions();
+        gameModeDrop.AddOptions(gameModes);
+    }
+
+    public void SelectGameMode(int index)
+    {
+        gameManager.gameMode = gameModes[index];
+    }
+
     // Do NOT change names of toggles in inspector
     public void InitScrollProb()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         
-        foreach (Transform toggle in transform)
+        foreach (Transform toggle in transform.Find("Window").Find("Toggles"))
         {
             if (toggle.name != "Steal")
             {

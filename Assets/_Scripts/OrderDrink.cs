@@ -51,6 +51,7 @@ public class OrderDrink : NetworkBehaviour
             }
         }
         
+        SelectVictim();
         PsnGlass(0);
     }
 

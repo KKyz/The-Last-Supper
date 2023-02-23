@@ -86,8 +86,6 @@ public class PlayerManager : NetworkBehaviour
         {
             InitScrollArray();
         }
-        
-        CmdChangeHealth(health);
     }
     
     [Command(requiresAuthority = false)]

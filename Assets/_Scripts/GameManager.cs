@@ -33,9 +33,10 @@ public class GameManager : NetworkManager
     [HideInInspector]public int currentMenu;
     public float scrollProb;
     public bool stealActive;
-    public List<PlayerLobby> team1, team2 = new();
+    public bool teamGame;
+    public List<PlayerManager> team1, team2 = new();
     public List<string> availableScrolls;
-    private string GameMode;
+    [HideInInspector]public string gameMode;
 
     [Header("Network Discovery")] 
     public CustomNetworkDiscovery networkDiscovery;
@@ -53,7 +54,7 @@ public class GameManager : NetworkManager
         if (networkDiscovery == null)
         {
             networkDiscovery = GetComponent<CustomNetworkDiscovery>();
-            UnityEditor.Events.UnityEventTools.AddPersistentListener(networkDiscovery.OnServerFound, OnDiscoverServer);
+            UnityEditor.Events.UnityEventTools.AddPersistentListener(networkDiscovery.OnServerFound, OnDiscoverServer); 
             UnityEditor.Undo.RecordObjects(new Object[] {this, networkDiscovery}, "Set NetworkDiscovery");
         }
     }
@@ -91,6 +92,8 @@ public class GameManager : NetworkManager
         cleanupTimer = 0;
         autoCreatePlayer = false;
         currentRestaurant = null;
+        teamGame = false;
+        gameMode = "Free-For-All";
         team1.Clear();
         team2.Clear();
         fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
@@ -362,6 +365,7 @@ public class GameManager : NetworkManager
         yield return new WaitUntil(IsRestaurantInstantiated);
 
         stateManager.stealActive = stealActive;
+        stateManager.gameMode = gameMode;
         stateManager.transform.position = GameObject.Find("StateManagerPos").transform.position;
         ReplacePlayers();
 

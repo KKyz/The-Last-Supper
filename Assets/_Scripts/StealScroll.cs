@@ -50,11 +50,12 @@ public class StealScroll : NetworkBehaviour
         {
             toggle.gameObject.SetActive(false);
         }
+        
+        SelectVictim();
     }
     
     public void SelectVictim()
     {
-        Debug.LogWarning("Selected new victim");
         if (playerToggles != null)
         {
             Toggle playerToggle = playerToggles.GetFirstActiveToggle();

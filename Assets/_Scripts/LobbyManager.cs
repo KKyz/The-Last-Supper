@@ -16,6 +16,7 @@ public class LobbyManager : MonoBehaviour
     private TMP_Dropdown menuDropdown;
     private TMP_Text estTimeText;
     private Image restaurantThumbnail;
+    private List<PlayerLobby> team1, team2 = new();
 
     public void Init()
     {
@@ -42,8 +43,10 @@ public class LobbyManager : MonoBehaviour
         SelectRestaurant(0);
     }
 
-    public void ToggleTagMode(bool toggle)
+    public void ToggleTeamMode(bool toggle)
     {
+        gameManager.teamGame = toggle;
+        
         int team1Length = (int)(gameManager.roomPlayers.Count / 2);
         int team2Length = gameManager.roomPlayers.Count - team1Length;
 
@@ -51,14 +54,14 @@ public class LobbyManager : MonoBehaviour
         {
             for (int i = 0; i < team1Length; i++)
             {
-                gameManager.team1.Add(gameManager.roomPlayers[i]);
+                team1.Add(gameManager.roomPlayers[i]);
             }
 
             if (gameManager.roomPlayers.Count > 1)
             {
                 for (int i = team1Length; i < team2Length; i++)
                 {
-                    gameManager.team2.Add(gameManager.roomPlayers[i]);
+                   team2.Add(gameManager.roomPlayers[i]);
                 }
             }
         }
@@ -72,9 +75,8 @@ public class LobbyManager : MonoBehaviour
         UpdatePlayerTeams();
     }
 
-    public void ChangePlayerTeams(String parentName)
+    public void ChangePlayerTeams(int index)
     {
-        
     }
 
     public void UpdatePlayerTeams()
@@ -131,6 +133,10 @@ public class LobbyManager : MonoBehaviour
         {
             button.GetComponent<Button>().interactable = false;
         }
+
+        restaurantDropdown.GetComponent<TMP_Dropdown>().interactable = false;
+        menuDropdown.gameObject.GetComponent<TMP_Dropdown>().interactable = false;
+        customizeButton.GetComponent<Button>().interactable = false;
     }
 
     public void UpdateDisplay()

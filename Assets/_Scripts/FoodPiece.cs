@@ -44,7 +44,7 @@ public class FoodPiece : NetworkBehaviour
         float random = 1f;
         
         if (activeScrolls.Length > 1)
-        {
+        { 
             random = (float)Random.Range(0, 100)/100;
         }
             
@@ -52,7 +52,7 @@ public class FoodPiece : NetworkBehaviour
         {
             if (random <= prob)
             {
-                return activeScrolls[scrollProbs.IndexOf(prob)];
+                return activeScrolls[scrollProbs.IndexOf(prob)]; 
             }
         }
 
