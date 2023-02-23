@@ -65,11 +65,6 @@ public class StateManager : NetworkBehaviour
         turn = 0;
         currentPlayer = activePlayers[turn].gameObject;
         playerScript = currentPlayer.GetComponent<PlayerManager>();
-        
-        foreach (NetworkIdentity player in activePlayers)
-        {
-            player.GetComponent<PlayerManager>().CmdChangeHealth(2);
-        }
     }
 
     public bool CurrentPlayerAssigned()

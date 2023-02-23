@@ -140,6 +140,11 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.OnStartGame();
         
         player.canSteal = true;
+
+        if (player.isLocalPlayer)
+        {
+            player.CmdChangeHealth(player.health);
+        }
     }
 
     [Client]
@@ -488,7 +493,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void Steal()
     {
-        currentState = "Stealing";
+        currentState = "Stealing"; 
         openPopup = Instantiate(stealMenu, Vector2.zero, quaternion.identity);
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
@@ -1136,7 +1141,7 @@ public class PlayerFunctions : NetworkBehaviour
 
                             else if (currentState != "Idle")
                             {
-                                Debug.LogError("STATE NOT FOUND");
+                                Debug.LogWarning("STATE NOT FOUND");
                             }
                         }
                     }
