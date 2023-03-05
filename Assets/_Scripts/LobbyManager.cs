@@ -9,7 +9,7 @@ public class LobbyManager : MonoBehaviour
     public TMP_Text[] playerNames = new TMP_Text[4];
     public Toggle[] playerReadyToggles = new Toggle[4];
     public Button startGameButton;
-    public Transform setupButtons, tableSetup, customizeButton;
+    public Transform setupButtons, tableSetup, customizeButton, guestsList;
 
     private GameManager gameManager;
     private TMP_Dropdown restaurantDropdown;
@@ -41,6 +41,7 @@ public class LobbyManager : MonoBehaviour
 
         restaurantDropdown.AddOptions(restaurantNames);
         SelectRestaurant(0);
+        ToggleTeamMode(false);
     }
 
     public void ToggleTeamMode(bool toggle)
@@ -64,12 +65,22 @@ public class LobbyManager : MonoBehaviour
                    team2.Add(gameManager.roomPlayers[i]);
                 }
             }
+            
+            foreach (Transform guest in guestsList)
+            {
+                guest.Find("TeamColor").gameObject.SetActive(true);
+            }
         }
 
         else
         {
             gameManager.team1.Clear();
             gameManager.team2.Clear();
+
+            foreach (Transform guest in guestsList)
+            {
+                guest.Find("TeamColor").gameObject.SetActive(false);
+            }
         }
         
         UpdatePlayerTeams();

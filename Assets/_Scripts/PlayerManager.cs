@@ -125,6 +125,8 @@ public class PlayerManager : NetworkBehaviour
             PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
             
             playerCanvas.OnStartGame(this);
+            
+            CmdChangeHealth(health);
         }
         
         GetComponent<CameraActions>().OnStartGame();

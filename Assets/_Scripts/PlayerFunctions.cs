@@ -140,11 +140,6 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.OnStartGame();
         
         player.canSteal = true;
-
-        if (player.isLocalPlayer)
-        {
-            player.CmdChangeHealth(player.health);
-        }
     }
 
     [Client]
@@ -392,9 +387,9 @@ public class PlayerFunctions : NetworkBehaviour
     }
     
     [TargetRpc]
-    public void TargetSendMessage(NetworkConnection target, string message, string senderName)
+    public void TargetSendMessage(NetworkConnection target, int messageID, string senderName)
     {
-        chatPanel.GetComponentInChildren<TextMeshProUGUI>().text += "\n" + senderName + ": " + message;
+        chatPanel.GetComponentInChildren<TextMeshProUGUI>().text += "\n" + senderName + ": " + stateManager.messages[messageID];
         chatPanel.SetActive(true);
     }
 
@@ -418,7 +413,7 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void OrderDrink()
     {
-        //DebugAnim("OrderTr"); 
+        //DebugAnim("OrderTr");
         openPopup = Instantiate(drinkMenu, Vector2.zero, quaternion.identity);
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
@@ -509,6 +504,7 @@ public class PlayerFunctions : NetworkBehaviour
         currentState = "Talking";
         uiAudio.PlayOneShot(popupSfx);
         openPopup = Instantiate(talkMenu, Vector2.zero, quaternion.identity);
+        openPopup.name = "TalkMenu";
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
@@ -779,11 +775,16 @@ public class PlayerFunctions : NetworkBehaviour
         
         if (mealManager.nPieces == 0 && stateManager.currentPlayer == player.gameObject)
         {
+            if (openPopup != null)
+            {
+                openPopup.GetComponent<SpawnMenu>().SlideOutMenu();
+            }
+            
             CmdNextCourse();
         }
     }
     
-    [Command]
+    [Command(requiresAuthority = false)]
     private void CmdNextCourse()
     {
         RpcForceButtonsOff();
@@ -924,9 +925,9 @@ public class PlayerFunctions : NetworkBehaviour
             {
                 player.actionable = false;
 
-                if (openPopup != null && stateManager.AllPlayersCanContinue())
+                if (openPopup != null && stateManager.AllPlayersCanContinue() && player.health > 0)
                 {
-                    if (openPopup.name != "ScrollInfo")
+                    if (openPopup.name != "ScrollInfo" && openPopup.name != "StealResults" && openPopup.name != "TalkMenu")
                     {
                         openPopup.GetComponent<SpawnMenu>().SlideOutMenu();
                     }
@@ -1139,9 +1140,9 @@ public class PlayerFunctions : NetworkBehaviour
                                 }
                             }
 
-                            else if (currentState != "Idle")
+                            else if (currentState != "Idle" || currentState != "Talking")
                             {
-                                Debug.LogWarning("STATE NOT FOUND");
+                                Debug.LogWarning("STATE NOT FOUND: " + currentState); 
                             }
                         }
                     }

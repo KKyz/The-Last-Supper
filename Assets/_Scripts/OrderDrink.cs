@@ -85,7 +85,6 @@ public class OrderDrink : NetworkBehaviour
         {
             Toggle playerToggle = playerToggles.GetFirstActiveToggle();
             victim = victims[playerToggle.transform.GetSiblingIndex()];
-            Debug.LogWarning(playerToggle.transform.GetSiblingIndex());
         }
     }
 

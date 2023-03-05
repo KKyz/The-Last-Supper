@@ -31,6 +31,6 @@ public class BGCharacterAnim : MonoBehaviour
 
         yield return new WaitForSeconds(6f);
         
-        isInAnimation = false;
+        isInAnimation = false; 
     }
 }

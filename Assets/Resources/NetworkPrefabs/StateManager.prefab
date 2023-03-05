@@ -73,8 +73,20 @@ MonoBehaviour:
   currentPlayer: {fileID: 0}
   playerScript: {fileID: 0}
   gameCanEnd: 0
+  stealActive: 0
   turn: 0
+  centerPos: {x: 0, y: 0, z: 0}
+  platePos: {x: 0, y: 0, z: 0}
+  gameMode: 
+  maxPiecesEaten: 0
   connectedPlayers: []
+  messages:
+  - I am targeting you
+  - is targeting you
+  - I am helping you
+  - is helping you
+  - Follow my recommendation
+  - let's team up on
 --- !u!114 &3518149696456122340
 MonoBehaviour:
   m_ObjectHideFlags: 0

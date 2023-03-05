@@ -17584,7 +17584,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 3252609467428214786}
         m_TargetAssemblyTypeName: ScrollToggles, Assembly-CSharp
         m_MethodName: InitScrollProb
         m_Mode: 1
@@ -19510,6 +19510,7 @@ MonoBehaviour:
   setupButtons: {fileID: 8792625762918299904}
   tableSetup: {fileID: 0}
   customizeButton: {fileID: 0}
+  guestsList: {fileID: 4618325063079400325}
 --- !u!1 &3252609467145447804
 GameObject:
   m_ObjectHideFlags: 0
@@ -23269,7 +23270,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &3252609467693695815
 RectTransform:
   m_ObjectHideFlags: 0
@@ -27594,13 +27595,13 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 3252609467636339208}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: 
-        m_Mode: 1
+      - m_Target: {fileID: 3252609467428214796}
+        m_TargetAssemblyTypeName: LobbyManager, Assembly-CSharp
+        m_MethodName: ToggleTeamMode
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

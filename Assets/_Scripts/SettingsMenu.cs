@@ -25,7 +25,7 @@ public class SettingsMenu : MonoBehaviour
         sfxSlider = transform.Find("SFXSlider").GetComponent<Slider>();
         purchaseButton = GameObject.Find("BuyButton");
         restoreButton = GameObject.Find("RestoreButton");
-        fullScreenButton = transform.Find("Fullscreen").gameObject;
+        fullScreenButton = transform.Find("FSToggle").gameObject;
         
         Resolution[] resolutions = Screen.resolutions;
         availableResolutions = new List<Resolution>();

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -32,6 +33,8 @@ public class StateManager : NetworkBehaviour
     [HideInInspector] public List<NetworkIdentity> connectedPlayers = new();
     
     public readonly SyncList<NetworkIdentity> activePlayers = new();
+    
+    public List<String> messages = new(); 
 
     public void Start()
     {
