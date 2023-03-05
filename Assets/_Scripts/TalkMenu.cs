@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Mirror;
 using TMPro;
@@ -8,12 +7,15 @@ using UnityEngine.UI;
 public class TalkMenu : NetworkBehaviour
 {
     public int messageID;
-    private NetworkIdentity targetPlayer;
+    public NetworkIdentity targetPlayer;
     private List<NetworkIdentity> players = new(); 
+    private List<NetworkIdentity> allPlayers = new(); 
     private StateManager stateManager;
     private PlayerFunctions playerFunctions;
     public ToggleGroup playerToggles, messageToggles;
+    private Dictionary<Toggle, int> messageDict= new ();
     private Button talkButton;
+    private int currentPlayerIndex;
 
     void Start()
     {
@@ -31,25 +33,25 @@ public class TalkMenu : NetworkBehaviour
         {
             playerToggles.transform.GetChild(i).gameObject.SetActive(false); 
         }
-
+        
         foreach (NetworkIdentity player in stateManager.activePlayers)
         {
-            players.Add(player);
+            allPlayers.Add(player);
             
             if (player.gameObject != playerFunctions.player.gameObject)
             {
+                players.Add(player);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
-                playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TextMeshProUGUI>().text = player.name; 
+                playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TextMeshProUGUI>().text = player.name;
                 playerCount += 1;
             }
-            
         }
-        
+
         foreach (Transform toggle in messageToggles.transform)
         {
             toggle.gameObject.SetActive(false); 
         }
-        
+
         SelectPlayer();
     }
 
@@ -59,16 +61,16 @@ public class TalkMenu : NetworkBehaviour
         {
             Toggle playerToggle = playerToggles.GetFirstActiveToggle();
             targetPlayer = players[playerToggle.transform.GetSiblingIndex()];
-        }
         
-        UpdateMessageToggles();
+            UpdateMessageToggles();
+        }
     }
 
     public void SelectMessage()
     {
         if (messageToggles != null)
         {
-            messageID = messageToggles.GetFirstActiveToggle().transform.GetSiblingIndex();
+            messageID = messageDict[messageToggles.GetFirstActiveToggle()];
         }
     }
 
@@ -94,84 +96,95 @@ public class TalkMenu : NetworkBehaviour
     private void UpdateMessageToggles()
     {
         //Attack Row
-        
-        for (int i = 0; i < players.Count; i++)
-        {
-            for (int j = 0; j < 2; j++)
-            {
-                GameObject messageToggle = messageToggles.transform.GetChild(j).gameObject;
-                messageToggle.SetActive(true);
-                string toggleText = messageToggle.transform.GetChild(1).GetComponent<TMP_Text>().text;
 
-                if (players[i].isLocalPlayer)
-                {
-                    toggleText = stateManager.messages[0];
-                }
-                else
-                {
-                    toggleText = players[i] + " " + stateManager.messages[1];
-                }
+        int index = 0;
+        foreach (var player in allPlayers)
+        {
+            GameObject messageToggle = messageToggles.transform.GetChild(index).gameObject;
+            TMP_Text toggleText = messageToggle.transform.GetChild(1).GetComponent<TMP_Text>();
+
+            if (player.isLocalPlayer)
+            {
+                toggleText.text = stateManager.messages[0];
+                messageToggle.SetActive(true);
+                messageDict.Add(messageToggle.GetComponent<Toggle>(), 0);
+                index++;
+            }
+            else if (player != targetPlayer)
+            {
+                toggleText.text = player.gameObject.name + " " + stateManager.messages[1];
+                messageToggle.SetActive(true);
+                messageDict.Add(messageToggle.GetComponent<Toggle>(), 1);
+                index++;
             }
         }
         
         //Support Row
 
-        for (int i = 0; i < players.Count; i++)
+        foreach (var player in allPlayers)
         {
-            if (players[i] != targetPlayer)
+            if (player != targetPlayer)
             {
-                for (int j = 2; j < 4; j++)
-                {
-                    GameObject messageToggle = messageToggles.transform.GetChild(j).gameObject;
-                    messageToggle.SetActive(true);
-                    string toggleText = messageToggle.transform.GetChild(1).GetComponent<TMP_Text>().text;
+                GameObject messageToggle = messageToggles.transform.GetChild(index).gameObject;
+                TMP_Text toggleText = messageToggle.transform.GetChild(1).GetComponent<TMP_Text>();
 
-                    if (players[i].isLocalPlayer)
-                    {
-                        toggleText = stateManager.messages[2];
-                    }
-                    else
-                    {
-                        toggleText = players[i] + " " + stateManager.messages[3];
-                    }
+                if (player.isLocalPlayer)
+                {
+                    toggleText.text = stateManager.messages[2];
+                    messageDict.Add(messageToggle.GetComponent<Toggle>(), 2);
+                    messageToggle.SetActive(true);
+                    index++;
+                }
+                else
+                {
+                    toggleText.text = player.gameObject.name + " " + stateManager.messages[3];
+                    messageDict.Add(messageToggle.GetComponent<Toggle>(), 3);
+                    messageToggle.SetActive(true);
+                    index++;
                 }
             }
         }
         
         //Team Row
 
-        for (int i = 0; i < players.Count; i++)
+        foreach (var player in allPlayers)
         {
-            for (int j = 2; j < 4; j++)
+            if (player != targetPlayer)
             {
-                GameObject messageToggle = messageToggles.transform.GetChild(j).gameObject;
-                messageToggle.SetActive(true);
-                string toggleText = messageToggle.transform.GetChild(1).GetComponent<TMP_Text>().text;
+                GameObject messageToggle = messageToggles.transform.GetChild(index).gameObject;
+                TMP_Text toggleText = messageToggle.transform.GetChild(1).GetComponent<TMP_Text>();
 
-                if (players[i] != targetPlayer && players[i].isLocalPlayer == false)
+                if (!player.isLocalPlayer)
                 {
-                    toggleText = stateManager.messages[4];
+                    toggleText.text = stateManager.messages[5] + " " + player.gameObject.name;
+                    messageToggle.SetActive(true);
+                    messageDict.Add(messageToggle.GetComponent<Toggle>(), 5);
+                    index++;
                 }
-                else
+                else if (player.isLocalPlayer)
                 {
-                    toggleText = stateManager.messages[5];
+                    toggleText.text = stateManager.messages[4];
+                    messageToggle.SetActive(true);
+                    messageDict.Add(messageToggle.GetComponent<Toggle>(), 4);
+                    index++;
                 }
             }
         }
 
     }
 
-    [Command(requiresAuthority = false)]
-    private void CmdConfirmTalk(int messageToSend)
+    public class MsgContents
     {
-        NetworkConnection conn = targetPlayer.connectionToClient;  
-        playerFunctions.TargetSendMessage(conn, messageToSend, playerFunctions.player.name);
+        public int MessageID;
+        public NetworkIdentity TargetPlayer;
+        public string SenderName;
     }
 
     public void ConfirmTalk()
     {
-        playerFunctions.player.hasTalked = true;
-        CmdConfirmTalk(messageID);
-        gameObject.GetComponent<SpawnMenu>().SlideOutMenu();
+        MsgContents msgContents = new MsgContents{MessageID = messageID, TargetPlayer = targetPlayer, SenderName = playerFunctions.player.name};
+        //playerFunctions.player.hasTalked = true;
+        playerFunctions.CmdConfirmTalk(msgContents);
+        gameObject.GetComponent<SpawnMenu>().SlideOutMenu(); 
     }
 }

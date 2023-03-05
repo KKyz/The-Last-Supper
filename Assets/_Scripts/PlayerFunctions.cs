@@ -386,10 +386,17 @@ public class PlayerFunctions : NetworkBehaviour
         }
     }
     
-    [TargetRpc]
-    public void TargetSendMessage(NetworkConnection target, int messageID, string senderName)
+    [Command(requiresAuthority = false)]
+    public void CmdConfirmTalk(TalkMenu.MsgContents msgContents)
     {
-        chatPanel.GetComponentInChildren<TextMeshProUGUI>().text += "\n" + senderName + ": " + stateManager.messages[messageID];
+        NetworkConnection conn = msgContents.TargetPlayer.connectionToClient;  
+        TargetSendMessage(conn, msgContents);
+    }
+    
+    [TargetRpc]
+    private void TargetSendMessage(NetworkConnection target, TalkMenu.MsgContents msgContents)
+    {
+        chatPanel.GetComponentInChildren<TextMeshProUGUI>().text += "\n" + msgContents.SenderName + ": " + stateManager.messages[msgContents.MessageID];
         chatPanel.SetActive(true);
     }
 
@@ -698,7 +705,7 @@ public class PlayerFunctions : NetworkBehaviour
         NetworkServer.Destroy(piece);
         RpcCheckNPieces();
     }
-    
+
     public IEnumerator DespawnBillboard(GameObject billboard)
     {
         uiAudio.PlayOneShot(flagSfx);

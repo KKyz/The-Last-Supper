@@ -1399,6 +1399,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   messageID: 0
+  targetPlayer: {fileID: 0}
   playerToggles: {fileID: 0}
   messageToggles: {fileID: 0}
 --- !u!1 &2128858567102670239
@@ -3605,14 +3606,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 12
+    m_Left: -24
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 517.9, y: 63.86}
+  m_CellSize: {x: 562.64, y: 63.86}
   m_Spacing: {x: -215.5, y: 0}
   m_Constraint: 2
   m_ConstraintCount: 3
@@ -3738,6 +3739,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 7548668287651284547}
+        m_TargetAssemblyTypeName: TalkMenu, Assembly-CSharp
+        m_MethodName: CloseMenu
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 3375377506419943315}
         m_TargetAssemblyTypeName: SpawnMenu, Assembly-CSharp
         m_MethodName: SlideOutMenu
