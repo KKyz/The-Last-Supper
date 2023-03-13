@@ -15,6 +15,7 @@ public class RestaurantContents : MonoBehaviour
     public class Menus
     {
         public string menuName;
+        public string condition;
         public GameObject[] meals;
     }
     

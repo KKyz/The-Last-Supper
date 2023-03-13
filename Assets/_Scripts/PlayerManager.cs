@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Mirror;
 using TMPro;
@@ -15,8 +17,6 @@ public class PlayerManager : NetworkBehaviour
     [SyncVar]
     public string currentPlate;
 
-    public readonly SyncList<PlayerManager> myTeam = new();
-
     public bool actionable, hasWon;
 
     [SyncVar] 
@@ -30,7 +30,10 @@ public class PlayerManager : NetworkBehaviour
 
     [HideInInspector]
     public bool[] psnArray = new bool[4];
-    
+
+    // This is a list of allies used for Tag Tournament Mode
+    public List<NetworkIdentity> allies = new();
+
     [SyncVar(hook=nameof(SyncRecommended))]
     public GameObject recommendedPiece;
 
@@ -155,12 +158,15 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     private void RpcSetHealth(int value) 
     {
-        Vector3 fillLocalScale = fill.transform.localScale;
-        fill.color = barGradient[value];
+        if (isClient)
+        {
+            Vector3 fillLocalScale = fill.transform.localScale;
+            fill.color = barGradient[value];
         
-        fill.transform.localScale = new Vector3(fillLengths[value], fillLocalScale.y, fillLocalScale.z);
+            fill.transform.localScale = new Vector3(fillLengths[value], fillLocalScale.y, fillLocalScale.z);
+        }
     }
-    public void SyncPsn(bool oldValue, bool newValue) 
+    public void SyncPsn(bool oldValue, bool newValue)
     {
         psnArray[0] = psn0;
         psnArray[1] = psn1;
@@ -190,8 +196,13 @@ public class PlayerManager : NetworkBehaviour
     {
         currentRecommendFlag = recommend.gameObject;
         recommend.Find("FlagSprite").Find("PlayerName").GetComponent<TextMeshPro>().text = newName;
-        recommend.SetParent(piece, false);
+        recommend.SetParent(piece, false); 
         StartCoroutine(playerCanvas.SpawnBillboard(recommend));
+
+        if (GameObject.Find(newName) != gameObject && playerCanvas.stateManager.tagTournament && !allies.Contains(GameObject.Find(newName).GetComponent<NetworkIdentity>()))
+        {
+            recommend.gameObject.SetActive(false);
+        }
     }
     
     [ClientRpc]

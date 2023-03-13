@@ -74,9 +74,25 @@ MonoBehaviour:
   - {fileID: 8171562422275575177, guid: a03b3fd9e0f3cea4f9c665a13b5d9c62, type: 3}
   currentRestaurant: {fileID: 0}
   currentMenu: 0
+  scrollProb: 0
+  stealActive: 0
+  teamGame: 0
+  team1: []
+  team2: []
+  availableScrolls: []
+  gameMode: 
+  languageFont: {fileID: 0}
   networkDiscovery: {fileID: 9167018127983579808}
   cleanupTimer: 0
   discoveryList: {fileID: 0}
+  playTime: 0
+  maxCourse: 0
+  maxPiece: 0
+  maxScroll: 0
+  gamesJoined: 0
+  gamesWon: 0
+  jpFont: {fileID: 11400000, guid: 69303bd03a5fd694eb3323caa75e5851, type: 2}
+  engFont: {fileID: 11400000, guid: 2bf68f21a0bb507499fe4e2291c13e42, type: 2}
 --- !u!114 &2420248719740585852
 MonoBehaviour:
   m_ObjectHideFlags: 0

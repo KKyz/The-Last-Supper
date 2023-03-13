@@ -34,6 +34,7 @@ public class MenuManager : MonoBehaviour
         
         gameManager = Instantiate(gameManagerPrefab).GetComponent<GameManager>();
         gameManager.gameObject.name = "GameManager";
+        transform.Find("Settings").Find("Menu").GetComponent<SettingsMenu>().gameManager = gameManager;
         
         gameManager.Init(); 
         gameManager.discoveryList = content;
@@ -61,15 +62,10 @@ public class MenuManager : MonoBehaviour
     public void CancelTableButton()
     {
         gameManager.GetComponent<CustomNetworkDiscovery>().StopAdvertising();
-        try
-        {
-            gameManager.StopHost();
-            gameManager.StopClient();
-        }
-        catch(NullReferenceException)
-        {
-            
-        }
+        FindObjectOfType<LobbyManager>(true).ToggleTagTournament(false); 
+        gameManager.StopHost();
+        gameManager.StopClient();
+        
     }
     
     public void CancelSearchButton()

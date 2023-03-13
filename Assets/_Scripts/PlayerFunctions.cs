@@ -66,6 +66,9 @@ public class PlayerFunctions : NetworkBehaviour
     
     [HideInInspector]
     public bool countTime;
+    
+    [HideInInspector]
+    private GameManager gameManager;
 
     [HideInInspector]
     public float accumulatedTime;
@@ -100,6 +103,7 @@ public class PlayerFunctions : NetworkBehaviour
     public void OnStartGame(PlayerManager localPlayer)
     {
         GameObject stateManagerObj = GameObject.Find("StateManager(Clone)");
+        gameManager = gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         normCounter = transform.Find("NormCounter").GetComponentInChildren<TextMeshProUGUI>();
         normTop = normCounter.colorGradient.topLeft;
         normBottom = normCounter.colorGradient.bottomRight;
@@ -138,8 +142,7 @@ public class PlayerFunctions : NetworkBehaviour
         playerScrolls.CmdGiveAllScrolls();
         camActions.OnStartGame();
         buttonToggle.OnStartGame();
-        
-        player.canSteal = true;
+        gameManager.ChangeFont();
     }
 
     [Client]
@@ -397,15 +400,20 @@ public class PlayerFunctions : NetworkBehaviour
     private void TargetSendMessage(NetworkConnection target, TalkMenu.MsgContents msgContents)
     {
         chatPanel.GetComponentInChildren<TextMeshProUGUI>().text += "\n" + msgContents.SenderName + ": " + stateManager.messages[msgContents.MessageID];
-        chatPanel.SetActive(true);
+        if (!chatPanel.activeInHierarchy)
+        {
+            ToggleChatPanel();
+        }
     }
 
     [Client]
     public void ToggleChatPanel()
     {
+        chatPanel.SetActive(!chatPanel.activeSelf);
+        
         Image dropdownArrow = transform.Find("ChatLog").Find("DropdownArrow").GetComponent<Image>();
         
-        if (dropdownArrow.sprite == dropdownDown)
+        if (chatPanel.activeInHierarchy)
         {
             dropdownArrow.sprite = dropdownUp;
         }
@@ -413,8 +421,6 @@ public class PlayerFunctions : NetworkBehaviour
         {
             dropdownArrow.sprite = dropdownDown;
         }
-        
-        chatPanel.SetActive(!chatPanel.activeSelf);
     }
     
     [Client]
@@ -427,6 +433,7 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         buttonToggle.ToggleButtons(6);
+        gameManager.ChangeFont();
     }
 
     [Client]
@@ -436,14 +443,6 @@ public class PlayerFunctions : NetworkBehaviour
         player.scrollCount += 1;
     }
 
-    [Client]
-    public void RemoveStealScroll(string scroll)
-    {
-        player.canSteal = false;
-        player.scrollCount += 1;
-        ShowScrollInfo(scroll);
-    }
-    
     [Client]
     private void ReceiveDrink()
     {
@@ -456,6 +455,7 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.ToggleButtons(5);
         player.orderVictim = false;
         ShowInfoText("Select a glass to drink from");
+        gameManager.ChangeFont();
     }
     
     [Client]
@@ -463,6 +463,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
         openPopup.name = "StealResults";
+        gameManager.ChangeFont();
         
         uiAudio.PlayOneShot(scrollLoseSfx);
         openPopup.transform.SetParent(transform, false);
@@ -470,10 +471,18 @@ public class PlayerFunctions : NetworkBehaviour
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
 
         openPopup.transform.Find("Icon").GetComponent<Image>().sprite = playerScrolls.GetSprite(pieceType);
-        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("A" + pieceType + " scroll was stolen!");
+        openPopup.transform.Find("Name").GetComponent<TextMeshProUGUI>().text = ("A " + pieceType + " scroll was stolen!");
         openPopup.transform.Find("Description").GetComponent<TextMeshProUGUI>().text = "You have lost a " + pieceType + " scroll.";
         buttonToggle.ToggleButtons(6);
         player.CmdSetScrollVictim(null);
+    }
+    
+    [Client]
+    public void RemoveStealScroll(string scroll)
+    {
+        player.canSteal = false;
+        player.scrollCount += 1;
+        ShowScrollInfo(scroll);
     }
 
     [Client]
@@ -497,12 +506,13 @@ public class PlayerFunctions : NetworkBehaviour
     {
         currentState = "Stealing"; 
         openPopup = Instantiate(stealMenu, Vector2.zero, quaternion.identity);
+        gameManager.ChangeFont();
         uiAudio.PlayOneShot(popupSfx);
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
         openPopup.GetComponent<SpawnMenu>().SlideInMenu();
         buttonToggle.ToggleButtons(6);
-        //player.canSteal = false;
+        player.canSteal = false;
     }
 
     [Client]
@@ -511,6 +521,7 @@ public class PlayerFunctions : NetworkBehaviour
         currentState = "Talking";
         uiAudio.PlayOneShot(popupSfx);
         openPopup = Instantiate(talkMenu, Vector2.zero, quaternion.identity);
+        gameManager.ChangeFont();
         openPopup.name = "TalkMenu";
         openPopup.transform.SetParent(transform, false);
         openPopup.transform.SetSiblingIndex(transform.childCount - 2);
@@ -532,6 +543,7 @@ public class PlayerFunctions : NetworkBehaviour
     private void ShowScrollInfo(string pieceType)
     {
         openPopup = Instantiate(scrollInfo, Vector2.zero, quaternion.identity);
+        gameManager.ChangeFont();
         openPopup.name = "ScrollInfo";
         
         uiAudio.PlayOneShot(scrollGetSfx);
@@ -552,6 +564,7 @@ public class PlayerFunctions : NetworkBehaviour
         stateManager.CmdRemovePlayer(player.netIdentity);
         if (openPopup != null){Destroy(openPopup);}
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
+        gameManager.ChangeFont();
         openPopup.name = "LoseScreen";
 
         if (player.pieceCount <= 2)
@@ -584,6 +597,7 @@ public class PlayerFunctions : NetworkBehaviour
         ResetActions();
         if (openPopup != null){Destroy(openPopup);}
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
+        gameManager.ChangeFont();
         openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "This Game Has Ended";
 
         openPopup.GetComponent<ShowStats>().LoadStats(player);
@@ -600,6 +614,7 @@ public class PlayerFunctions : NetworkBehaviour
         stateManager.CmdRemovePlayer(player.netIdentity);
         if (openPopup != null){Destroy(openPopup);}
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
+        gameManager.ChangeFont();
         openPopup.transform.Find("Banner").GetComponent<TextMeshProUGUI>().text = "You Win!";
         openPopup.GetComponent<ShowStats>().LoadStats(player);
         openPopup.transform.SetParent(transform, false);
@@ -621,6 +636,7 @@ public class PlayerFunctions : NetworkBehaviour
             string chalkDescription = ""; 
         
             openPopup = Instantiate(chalkBoard, Vector2.zero, quaternion.identity);
+            gameManager.ChangeFont();
             openPopup.transform.SetParent(transform, false);
             openPopup.transform.SetSiblingIndex(transform.childCount - 2);
             openPopup.GetComponent<SpawnMenu>().SlideInMenu();
@@ -875,7 +891,7 @@ public class PlayerFunctions : NetworkBehaviour
     {
         if (Input.GetKeyDown("1"))
         {
-            Poison(true);
+            Poison(true); 
         }
 
         if (Input.GetKeyDown("2"))
@@ -927,7 +943,7 @@ public class PlayerFunctions : NetworkBehaviour
                 }
             }
 
-            //else, set player mode as inactive
+            //else, set player mode as inactive 
             else if (stateManager.currentPlayer != player.gameObject)
             {
                 player.actionable = false;
@@ -940,7 +956,7 @@ public class PlayerFunctions : NetworkBehaviour
                     }
                 }
                 
-                if (currentState != "Idle")
+                if (currentState != "Idle" && currentState != "Recommending")
                 {
                     ResetActions();
                 }
@@ -967,12 +983,12 @@ public class PlayerFunctions : NetworkBehaviour
             }
 
 
-            else if (stateManager.gameCanEnd && stateManager.gameMode == "Free-For-All" && stateManager.activePlayers.Count < 2 && player.health >= 1 && openPopup == null)
+            else if (stateManager.gameCanEnd && stateManager.gameMode == 0 && stateManager.activePlayers.Count < 2 && player.health >= 1 && openPopup == null)
             {
                 Win();  
             }
             
-            else if (stateManager.activePlayers.Count == 0 && stateManager.gameMode == "Most Pieces" && player.pieceCount == stateManager.maxPiecesEaten && stateManager.AllPlayersCanContinue() && stateManager.maxPiecesEaten > 0)
+            else if (stateManager.activePlayers.Count == 0 && stateManager.gameMode == 1 && player.pieceCount == stateManager.maxPiecesEaten && stateManager.AllPlayersCanContinue() && stateManager.maxPiecesEaten > 0)
             {
                 Win();  
             }
@@ -1040,7 +1056,7 @@ public class PlayerFunctions : NetworkBehaviour
                                     player.nPiecesEaten += 1;
                                 }
 
-                                if (player.nPiecesEaten >= 0)
+                                if (player.nPiecesEaten >= 3)
                                 { 
                                     player.canSteal = true;
                                     player.nPiecesEaten = 0;
@@ -1147,7 +1163,7 @@ public class PlayerFunctions : NetworkBehaviour
                                 }
                             }
 
-                            else if (currentState != "Idle" || currentState != "Talking")
+                            else if (currentState != "Idle" && currentState != "Talking")
                             {
                                 Debug.LogWarning("STATE NOT FOUND: " + currentState); 
                             }

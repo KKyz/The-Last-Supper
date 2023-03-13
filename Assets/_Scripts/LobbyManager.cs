@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,7 @@ public class LobbyManager : MonoBehaviour
     public TMP_Text[] playerNames = new TMP_Text[4];
     public Toggle[] playerReadyToggles = new Toggle[4];
     public Button startGameButton;
+    public Toggle tagToggle;
     public Transform setupButtons, tableSetup, customizeButton, guestsList;
 
     private GameManager gameManager;
@@ -16,7 +18,7 @@ public class LobbyManager : MonoBehaviour
     private TMP_Dropdown menuDropdown;
     private TMP_Text estTimeText;
     private Image restaurantThumbnail;
-    private List<PlayerLobby> team1, team2 = new();
+    public List<string> team1, team2 = new();
 
     public void Init()
     {
@@ -36,33 +38,35 @@ public class LobbyManager : MonoBehaviour
         List<string> restaurantNames = new List<string>();
         foreach (var restaurant in gameManager.restaurants)
         {
+            Debug.LogWarning("Add unlock conditions here");
             restaurantNames.Add(restaurant.restaurantName);
         }
 
         restaurantDropdown.AddOptions(restaurantNames);
         SelectRestaurant(0);
-        ToggleTeamMode(false);
+        ToggleTagTournament(false);
     }
 
-    public void ToggleTeamMode(bool toggle)
+    public void ToggleTagTournament(bool toggle)
     {
-        gameManager.teamGame = toggle;
+        gameManager.tagTournament = toggle;
         
         int team1Length = (int)(gameManager.roomPlayers.Count / 2);
-        int team2Length = gameManager.roomPlayers.Count - team1Length;
+        int counter = 0;
 
         if (toggle)
         {
-            for (int i = 0; i < team1Length; i++)
+            foreach (var player in gameManager.roomPlayers)
             {
-                team1.Add(gameManager.roomPlayers[i]);
-            }
-
-            if (gameManager.roomPlayers.Count > 1)
-            {
-                for (int i = team1Length; i < team2Length; i++)
+                if (counter < team1Length)
                 {
-                   team2.Add(gameManager.roomPlayers[i]);
+                    team1.Add(player.displayName);
+                    counter++;
+                }
+
+                else
+                {
+                    team2.Add(player.displayName);
                 }
             }
             
@@ -70,6 +74,8 @@ public class LobbyManager : MonoBehaviour
             {
                 guest.Find("TeamColor").gameObject.SetActive(true);
             }
+            
+            UpdatePlayerTeams();
         }
 
         else
@@ -81,29 +87,64 @@ public class LobbyManager : MonoBehaviour
             {
                 guest.Find("TeamColor").gameObject.SetActive(false);
             }
+
+            tagToggle.isOn = false;
         }
-        
-        UpdatePlayerTeams();
     }
 
     public void ChangePlayerTeams(int index)
     {
+        if (gameManager.tagTournament)
+        {
+            string playerName = guestsList.GetChild(index).GetComponent<TMP_Text>().text;
+        
+            if (team1.Contains(playerNames[index].text))
+            {
+                team1.Remove(playerName);
+                team2.Add(playerName);
+                Debug.LogWarning("Swapped to team 2: " + playerName);
+            }
+            else if (team2.Contains(playerNames[index].text))
+            {
+                team2.Remove(playerName);
+                team1.Add(playerName); 
+                Debug.LogWarning("Swapped to team 1: " + playerName);
+            }
+            else
+            {
+                Debug.LogWarning("This is not working: Change Player");
+            }
+
+            if (team2.Count > 2)
+            {
+                startGameButton.interactable = false;
+            }
+            else
+            {
+                startGameButton.interactable = true;
+            }
+        
+            UpdatePlayerTeams();
+        }
     }
 
-    public void UpdatePlayerTeams()
+    private void UpdatePlayerTeams()
     {
-        for (int i = 0; i < gameManager.team1.Count; i++)
+        if (gameManager.tagTournament)
         {
-            Button TeamToggle = playerNames[i].transform.Find("TeamColour").GetComponent<Button>();
-            TeamToggle.gameObject.SetActive(true);
-            TeamToggle.image.color = Color.red;
-        }
+            foreach (var player in team1)
+            {
+                Button TeamToggle = guestsList.GetChild(team1.IndexOf(player)).GetComponentInChildren<Button>();
+                TeamToggle.gameObject.SetActive(true);
+                TeamToggle.image.color = new Color(255, 0, 0);
+            }
         
-        for (int i = 0; i < gameManager.team2.Count; i++)
-        {
-            Button TeamToggle = playerNames[i].transform.Find("TeamColour").GetComponent<Button>();
-            TeamToggle.gameObject.SetActive(true);
-            TeamToggle.image.color = Color.blue;
+            foreach (var player in team2)
+            {
+                Button TeamToggle = guestsList.GetChild(team2.IndexOf(player)).GetComponentInChildren<Button>();
+                TeamToggle.gameObject.SetActive(true);
+                TeamToggle.image.color = new Color(0, 0, 255);
+            }
         }
     }
 

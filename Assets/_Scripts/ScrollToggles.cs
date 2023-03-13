@@ -20,7 +20,7 @@ public class ScrollToggles : MonoBehaviour
 
     public void SelectGameMode(int index)
     {
-        gameManager.gameMode = gameModes[index];
+        gameManager.gameMode = index;
     }
 
     // Do NOT change names of toggles in inspector

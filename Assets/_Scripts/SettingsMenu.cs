@@ -1,9 +1,10 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
 using TMPro;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
+using UnityEngine.Localization.Settings;
 using UnityEngine.SceneManagement;
 
 public class SettingsMenu : MonoBehaviour
@@ -11,6 +12,8 @@ public class SettingsMenu : MonoBehaviour
     public AudioMixer bgmMixer, sfxMixer;
 
     private TMP_Dropdown resolutionDropdown;
+    [HideInInspector] public GameManager gameManager;
+    public TMP_Dropdown languageDropdown;
     private TMP_InputField nameInput;
     private Slider bgmSlider, sfxSlider;
     private List<Resolution> availableResolutions;
@@ -18,6 +21,8 @@ public class SettingsMenu : MonoBehaviour
     
     void Start()
     {
+        StartCoroutine(InitLocalization());
+        
         nameInput = transform.Find("NameInput").GetComponent<TMP_InputField>();
         nameInput.text = PlayerPrefs.GetString("PlayerName", "");
         resolutionDropdown = transform.Find("Resolutions").GetComponent<TMP_Dropdown>();
@@ -26,7 +31,7 @@ public class SettingsMenu : MonoBehaviour
         purchaseButton = GameObject.Find("BuyButton");
         restoreButton = GameObject.Find("RestoreButton");
         fullScreenButton = transform.Find("FSToggle").gameObject;
-        
+
         Resolution[] resolutions = Screen.resolutions;
         availableResolutions = new List<Resolution>();
         resolutionDropdown.ClearOptions();
@@ -80,6 +85,37 @@ public class SettingsMenu : MonoBehaviour
         fullScreenButton.SetActive(true);
         resolutionDropdown.gameObject.SetActive(true);
         #endif
+    }
+
+    private IEnumerator InitLocalization()
+    {
+        yield return LocalizationSettings.InitializationOperation;
+
+        // Generate list of available Locales
+        var options = new List<TMP_Dropdown.OptionData>();
+        int selected = 0;
+        for (int i = 0; i < LocalizationSettings.AvailableLocales.Locales.Count; ++i)
+        {
+            var locale = LocalizationSettings.AvailableLocales.Locales[i];
+            if (LocalizationSettings.SelectedLocale == locale)
+                selected = i;
+            options.Add(new TMP_Dropdown.OptionData(locale.name));
+        }
+        languageDropdown.options = options;
+
+        languageDropdown.value = selected;
+    }
+
+    public void LocaleSelected(int index)
+    {
+        LocalizationSettings.SelectedLocale = LocalizationSettings.AvailableLocales.Locales[index];
+        Debug.LogWarning(LocalizationSettings.SelectedLocale);
+        
+        //Change fonts for special cases
+        if (gameManager != null)
+        {
+            gameManager.ChangeFont(); 
+        }
     }
 
     public void SetResolution(int resolutionIndex)

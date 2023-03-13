@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Mirror;
 using TMPro;
+using UnityEngine.Localization.Settings;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -33,10 +34,11 @@ public class GameManager : NetworkManager
     [HideInInspector]public int currentMenu;
     public float scrollProb;
     public bool stealActive;
-    public bool teamGame;
+    public bool tagTournament;
     public List<PlayerManager> team1, team2 = new();
     public List<string> availableScrolls;
-    [HideInInspector]public string gameMode;
+    [HideInInspector]public int gameMode;
+    [HideInInspector]public TMP_FontAsset languageFont;
 
     [Header("Network Discovery")] 
     public CustomNetworkDiscovery networkDiscovery;
@@ -47,6 +49,10 @@ public class GameManager : NetworkManager
     
     [HideInInspector]public float playTime;
     [HideInInspector]public int maxCourse, maxPiece, maxScroll, gamesJoined, gamesWon;
+
+    [Header("Misc")] 
+    public TMP_FontAsset jpFont;
+    public TMP_FontAsset engFont;
 
 #if UNITY_EDITOR
     new void OnValidate()
@@ -74,6 +80,27 @@ public class GameManager : NetworkManager
         }
     }
 
+    public void ChangeFont()
+    {
+        if (LocalizationSettings.SelectedLocale.LocaleName == "Japanese (ja)")
+        {
+            languageFont = jpFont;
+        }
+        else
+        {
+            languageFont = engFont;
+        }
+        
+        var textComponents = FindObjectsOfType<TMP_Text>(true);
+        foreach (var component in textComponents)
+        {
+            if (component.font == jpFont || component.font == engFont)
+            {
+                component.font = languageFont;
+            }
+        }
+    }
+
     public void ReturnToTitle()
     {
         if (GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>().player.isServer)
@@ -92,12 +119,13 @@ public class GameManager : NetworkManager
         cleanupTimer = 0;
         autoCreatePlayer = false;
         currentRestaurant = null;
-        teamGame = false;
-        gameMode = "Free-For-All";
+        tagTournament = false;
+        gameMode = 0;
         team1.Clear();
         team2.Clear();
         fade = GameObject.Find("Fade").GetComponent<FadeInOut>();
         menuManager = GameObject.Find("StartCanvas").GetComponent<MenuManager>();
+        ChangeFont();
 
         spawnPrefabs.Clear();
         scrollProb = 0;
@@ -366,6 +394,7 @@ public class GameManager : NetworkManager
 
         stateManager.stealActive = stealActive;
         stateManager.gameMode = gameMode;
+        stateManager.tagTournament = tagTournament;
         stateManager.transform.position = GameObject.Find("StateManagerPos").transform.position;
         ReplacePlayers();
 

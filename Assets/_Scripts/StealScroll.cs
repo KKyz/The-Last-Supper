@@ -37,7 +37,7 @@ public class StealScroll : NetworkBehaviour
         {
             ScrollArray scrollArray = player.GetComponent<ScrollArray>();
 
-            if (player.gameObject != stateManager.currentPlayer)
+            if (player.gameObject != stateManager.currentPlayer && !playerFunctions.player.allies.Contains(player))
             {
                 victims.Add(scrollArray);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
@@ -119,7 +119,7 @@ public class StealScroll : NetworkBehaviour
         victim.CmdRemoveScrollAmount(selectedScroll);
         victim.GetComponent<PlayerManager>().CmdSetScrollVictim(selectedScroll);
         playerFunctions.player.GetComponent<ScrollArray>().CmdAddScrollAmount(selectedScroll);
-        
+
         CloseMenu();
     }
 }

@@ -25,10 +25,13 @@ public class StateManager : NetworkBehaviour
     public Vector3 platePos;
 
     [SyncVar] 
-    public string gameMode;
+    public int gameMode;
 
     [SyncVar] 
     public int maxPiecesEaten;
+
+    [SyncVar] 
+    public bool tagTournament;
     
     [HideInInspector] public List<NetworkIdentity> connectedPlayers = new();
     
@@ -41,7 +44,7 @@ public class StateManager : NetworkBehaviour
         DontDestroyOnLoad(this);
         gameCanEnd = false;
         maxPiecesEaten = 0;
-        gameMode = "Free-For-All";
+        gameMode = 0;
     }
 
     public void Reset()
@@ -93,7 +96,7 @@ public class StateManager : NetworkBehaviour
         return true;
     }
 
-    [Command]
+    [Command(requiresAuthority = false)]
     public void CmdRemovePlayer(NetworkIdentity player)
     {
         activePlayers.Remove(player);

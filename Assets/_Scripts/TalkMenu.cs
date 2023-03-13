@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using TMPro;
 using UnityEngine;
@@ -40,10 +41,13 @@ public class TalkMenu : NetworkBehaviour
             
             if (player.gameObject != playerFunctions.player.gameObject)
             {
-                players.Add(player);
-                playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
-                playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TextMeshProUGUI>().text = player.name;
-                playerCount += 1;
+                if (!stateManager.tagTournament || (stateManager.tagTournament && playerFunctions.player.allies.Contains(player)))
+                {
+                    players.Add(player);
+                    playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
+                    playerToggles.transform.GetChild(playerCount).GetComponentInChildren<TextMeshProUGUI>().text = player.name;
+                    playerCount += 1;
+                }
             }
         }
 
@@ -170,7 +174,8 @@ public class TalkMenu : NetworkBehaviour
                 }
             }
         }
-
+        
+        SelectMessage();
     }
 
     public class MsgContents
@@ -183,7 +188,7 @@ public class TalkMenu : NetworkBehaviour
     public void ConfirmTalk()
     {
         MsgContents msgContents = new MsgContents{MessageID = messageID, TargetPlayer = targetPlayer, SenderName = playerFunctions.player.name};
-        //playerFunctions.player.hasTalked = true;
+        playerFunctions.player.hasTalked = true;
         playerFunctions.CmdConfirmTalk(msgContents);
         gameObject.GetComponent<SpawnMenu>().SlideOutMenu(); 
     }

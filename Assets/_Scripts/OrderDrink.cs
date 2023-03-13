@@ -42,7 +42,7 @@ public class OrderDrink : NetworkBehaviour
         {
             PlayerManager playerManager = player.GetComponent<PlayerManager>();
             
-            if (player.gameObject != stateManager.currentPlayer)
+            if (player.gameObject != stateManager.currentPlayer && !playerFunctions.player.allies.Contains(player))
             {
                 victims.Add(playerManager);
                 playerToggles.transform.GetChild(playerCount).gameObject.SetActive(true);
