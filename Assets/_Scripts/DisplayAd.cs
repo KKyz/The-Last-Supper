@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class DisplayAd : MonoBehaviour
 {
-    public string myGameIdAndroid = "5203299";
-    public string myGameIdIOS = "5203298";
+    [HideInInspector]public string myGameIdAndroid = "5203299";
+    [HideInInspector]public string myGameIdIOS = "5203298";
     public string adUnitIdAndroid = "Interstitial_Android";
     public string adUnitIdIOS = "Interstitial_iOS";
     public string myAdUnitId; 
