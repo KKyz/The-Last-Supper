@@ -20,7 +20,7 @@ public class CameraActions : MonoBehaviour
             stateManager.centerPos = GameObject.Find("StateManager(Clone)").transform.position;
 
             Vector3 lookDir = (stateManager.centerPos - player.transform.position) * 0.01f;
-            Transform playerModel = player.transform.Find("Model").GetChild(0);
+            Transform playerModel = transform.GetComponentInChildren<Animator>().transform;
             playerModel.LookAt(player.transform.position + lookDir);
         }
     }

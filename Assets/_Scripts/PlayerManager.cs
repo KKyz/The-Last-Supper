@@ -71,8 +71,8 @@ public class PlayerManager : NetworkBehaviour
         hasRecommended = false;
         orderVictim = false;
         stolenScroll = null;
-        fill = transform.Find("PlayerTag").Find("PlayerHealth").Find("Fill").GetComponent<SpriteRenderer>();
         scrollArray = GetComponent<ScrollArray>();
+        playerCam = transform.Find("Camera").gameObject;
 
         for (int i = 0; i < 4; i++)
         {
@@ -112,12 +112,12 @@ public class PlayerManager : NetworkBehaviour
         {
             playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
 
-            Transform playerModel = transform.Find("Model").GetChild(0);
+            Animator playerModel = transform.GetComponentInChildren<Animator>();
             
             playerCam.SetActive(true);
             transform.Find("PlayerTag").gameObject.SetActive(false);
             
-            foreach (Transform child in playerModel)
+            foreach (Transform child in playerModel.transform)
             {
                 if (child.GetComponent<SkinnedMeshRenderer>() != null)
                 {
@@ -128,8 +128,6 @@ public class PlayerManager : NetworkBehaviour
             PlayerPrefs.SetInt("gamesJoined", PlayerPrefs.GetInt("gamesJoined", 0) + 1);
             
             playerCanvas.OnStartGame(this);
-            
-            CmdChangeHealth(health);
         }
         
         GetComponent<CameraActions>().OnStartGame();
@@ -139,9 +137,8 @@ public class PlayerManager : NetworkBehaviour
     public void RpcAddPlayerModel(int index)
     {
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
-        Transform modelContainer = transform.Find("Model");
-        GameObject newPlayerModel = Instantiate(restaurant.playerModels[index], modelContainer, false);
-        //NetworkServer.Spawn(newPlayerModel);
+        GameObject playerModel = Instantiate(restaurant.playerModels[index], transform, false);
+        playerModel.transform.position = new Vector3(transform.position.x, -2f, transform.position.z);
     }
 
     #endregion
@@ -156,9 +153,14 @@ public class PlayerManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    private void RpcSetHealth(int value) 
+    private void RpcSetHealth(int value)
     {
-        if (isClient)
+        if (fill == null)
+        {
+            fill = transform.Find("PlayerTag").Find("PlayerHealth").Find("Fill").GetComponent<SpriteRenderer>();
+        }
+        
+        if (fill != null)
         {
             Vector3 fillLocalScale = fill.transform.localScale;
             fill.color = barGradient[value];

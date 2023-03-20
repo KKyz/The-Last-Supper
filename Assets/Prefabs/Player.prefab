@@ -17,7 +17,6 @@ GameObject:
   - component: {fileID: 8732499030961596611}
   - component: {fileID: 8262548222001227528}
   - component: {fileID: 5044029737296358253}
-  - component: {fileID: 2648410864039311251}
   - component: {fileID: 2418067408302117329}
   m_Layer: 0
   m_Name: Player
@@ -39,7 +38,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 554996796174229467}
-  - {fileID: 1581792745571666265}
   - {fileID: 1204102164145607914}
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -128,6 +126,7 @@ MonoBehaviour:
   psn2: 0
   psn3: 0
   psnArray: 00000000
+  allies: []
   recommendedPiece: {fileID: 0}
   playerCam: {fileID: 554996796174229470}
   playerCanvas: {fileID: 0}
@@ -156,31 +155,23 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   allScrolls:
-  - amount: 0
-    name: Slap
+  - name: Slap
     description: Slap the current player to cancel their turn! (Can only be activated
-  - amount: 0
-    name: Skip
+  - name: Skip
     description: Activating skips your turn.
-  - amount: 0
-    name: Smell
+  - name: Smell
     description: Allows you to reveal up to 3 pieces
-  - amount: 0
-    name: Quake
+  - name: Quake
     description: Activating causes an earthquake to trigger, shuffling all remaining
       pieces.
-  - amount: 0
-    name: Order
+  - name: Order
     description: Order 4 drinks to a player, of which one (or two) of them can be
       poisonous.
-  - amount: 0
-    name: Taunt
+  - name: Taunt
     description: Taunts the next player, forcing them to take two turns
-  - amount: 0
-    name: Swap
+  - name: Swap
     description: Swap the types of two pieces
-  - amount: 0
-    name: Decoy
+  - name: Decoy
     description: Tag a piece as poisoned, turning it into a decoy.
   scrollSprites:
   - {fileID: 21300000, guid: 2bb9e2b040d757f468915b057c2ce1cb, type: 3}
@@ -269,22 +260,6 @@ MonoBehaviour:
   DefaultPosInfluence: {x: 0, y: 0, z: 0}
   DefaultRotInfluence: {x: 1, y: 1, z: 1}
   RestRotationOffset: {x: 0, y: 0, z: 0}
---- !u!114 &2648410864039311251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 554996796167789163}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncMode: 0
-  syncInterval: 0.1
-  clientAuthority: 0
-  animator: {fileID: 3971818850708863530}
 --- !u!114 &2418067408302117329
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -438,58 +413,6 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
---- !u!1 &571005577936519396
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1581792745571666265}
-  - component: {fileID: 3971818850708863530}
-  m_Layer: 0
-  m_Name: Model
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1581792745571666265
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 571005577936519396}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -4, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 554996796167789158}
-  m_RootOrder: 1
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!95 &3971818850708863530
-Animator:
-  serializedVersion: 4
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 571005577936519396}
-  m_Enabled: 0
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 2b807a9afb6d3294e885f8caa19d7490, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &1939397711657547862
 GameObject:
   m_ObjectHideFlags: 0
@@ -523,7 +446,7 @@ Transform:
   - {fileID: 1133995768022529372}
   - {fileID: 1495903770807083170}
   m_Father: {fileID: 554996796167789158}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3310720125401909385
 MonoBehaviour:

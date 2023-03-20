@@ -56,18 +56,21 @@ MonoBehaviour:
   estPlayTime: 3
   menus:
   - menuName: Standard Menu
+    condition: 
     meals:
     - {fileID: 2525988890905768603, guid: 13f317259b2cc0e41957671f9f9cf4a0, type: 3}
     - {fileID: 2525988890905768603, guid: e3bce77c05a02af46be4c9e9eadb8f42, type: 3}
     - {fileID: 8136041450091477235, guid: 53e8816d61c70aa4aa4bc6cedc7119c2, type: 3}
     - {fileID: 4723392658126809247, guid: 0ab3463af263aed43a081e7d2ec4e12b, type: 3}
   - menuName: Mozarella Menu
+    condition: 
     meals:
     - {fileID: 2525988890905768603, guid: aa0b4f322c909024ba80e1bbde86a866, type: 3}
     - {fileID: 2525988890905768603, guid: 3bc97d6d971f1f24fa3d406e50f8014c, type: 3}
     - {fileID: 8136041450091477235, guid: 25f7e0e2132589b49b21613589e9be14, type: 3}
     - {fileID: 4723392658126809247, guid: 420532bd96ba682468eef4b35bd72a3c, type: 3}
   - menuName: Extravagant Menu
+    condition: 
     meals:
     - {fileID: 2525988890905768603, guid: aa0b4f322c909024ba80e1bbde86a866, type: 3}
     - {fileID: 2525988890905768603, guid: 3bc97d6d971f1f24fa3d406e50f8014c, type: 3}
@@ -96,10 +99,10 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 67b6c9f70a61a5040892f9dd7b6e46a4, type: 3}
   - {fileID: 8300000, guid: 6adbecdcb067bfd4b88fa8696ef09fb6, type: 3}
   playerModels:
-  - {fileID: 1429887785752911839, guid: 8ad7e763215b5c7498228a194fddb735, type: 3}
-  - {fileID: 4911692958129090101, guid: f1cf401c0f0e01d4dbc1177e1a5db240, type: 3}
-  - {fileID: 1429887785752911839, guid: 8ad7e763215b5c7498228a194fddb735, type: 3}
-  - {fileID: 4911692958129090101, guid: f1cf401c0f0e01d4dbc1177e1a5db240, type: 3}
+  - {fileID: 247981916516846785, guid: 8ad7e763215b5c7498228a194fddb735, type: 3}
+  - {fileID: 2973943420353964111, guid: 0f3de21722344274c87c192c2fa4e52d, type: 3}
+  - {fileID: 4760717941314058984, guid: 950b0225933cf3846a3e3ca10649aa92, type: 3}
+  - {fileID: 7919379506296913453, guid: c05fa086999e90a4abc12d5aaeefa8b6, type: 3}
 --- !u!114 &-4065937298884651616
 MonoBehaviour:
   m_ObjectHideFlags: 0
