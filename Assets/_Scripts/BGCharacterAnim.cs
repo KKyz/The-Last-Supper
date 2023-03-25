@@ -1,23 +1,25 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BGCharacterAnim : MonoBehaviour
 {
-    private bool isInAnimation;
+    private bool nextAnimation;
     private Animator anim;
-    public List<string> animList = new();
+    private Vector3 startPos;
+    private Quaternion rotationPos;
 
     void Start()
     {
-        isInAnimation = false;
+        startPos = transform.position;
+        rotationPos = transform.rotation;
+        nextAnimation = true;
         anim = GetComponent<Animator>();
     }
 
     
     void Update()
     {
-        if (!isInAnimation)
+        if (nextAnimation)
         {
             StartCoroutine(PlayRandomAnim());
         }
@@ -25,12 +27,19 @@ public class BGCharacterAnim : MonoBehaviour
 
     private IEnumerator PlayRandomAnim()
     {
-        isInAnimation = true;
-        string index = animList[Random.Range(0, animList.Count)];
-        anim.SetTrigger(index);
-
-        yield return new WaitForSeconds(6f);
+        nextAnimation = false;
         
-        isInAnimation = false;
+        yield return new WaitForSeconds(1f);
+        
+        int randIndex = Random.Range(1, 12);
+        anim.SetTrigger(randIndex.ToString());
+
+        yield return new WaitForSeconds(Random.Range(6f, 10f));
+        
+        anim.SetTrigger("7"); // Reset to Active Anim
+        transform.position = startPos;
+        transform.rotation = rotationPos;
+        
+        nextAnimation = true;
     }
 }

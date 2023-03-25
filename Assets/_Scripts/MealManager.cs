@@ -139,7 +139,10 @@ public class MealManager : NetworkBehaviour
             bgmStack.Pop();
         }
 
-        musicManager.PlayBGM(bgmStack.Peek());
+        if (musicManager.musicPlayer != null)
+        {
+            musicManager.PlayBGM(bgmStack.Peek());
+        }
 
         if (isServer)
         {
@@ -186,11 +189,8 @@ public class MealManager : NetworkBehaviour
         RpcAddCourseCounter();
 
         yield return new WaitForSeconds(0.5f);
-
-        if (firstPlate)
-        {
-            RpcFaceCenter();
-        }
+        
+        RpcFaceCenter();
 
         yield return new WaitForSeconds(2f);
 

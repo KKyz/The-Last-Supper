@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
+using PlayFab.Networking;
 using TMPro;
 using UnityEngine.Localization.Settings;
 using Unity.Mathematics;
@@ -10,7 +11,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-public class GameManager : NetworkManager
+public class GameManager : UnityNetworkServer
 {
     [Header("Lobby")] 
     [Scene] public string gameScene;

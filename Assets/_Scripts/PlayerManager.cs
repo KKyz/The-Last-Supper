@@ -138,7 +138,7 @@ public class PlayerManager : NetworkBehaviour
     {
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
         GameObject playerModel = Instantiate(restaurant.playerModels[index], transform, false);
-        playerModel.transform.position = new Vector3(transform.position.x, -2f, transform.position.z);
+        playerModel.transform.position = transform.position;
     }
 
     #endregion

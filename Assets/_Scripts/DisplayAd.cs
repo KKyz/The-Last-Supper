@@ -26,7 +26,7 @@ public class DisplayAd : MonoBehaviour
     
     void Update()
     {
-	    if (Advertisement.isInitialized &&  !adStarted)
+	    if (Advertisement.isInitialized &&  !adStarted && PlayerPrefs.GetInt("BuyAds", 1) == 1)
 	    {
 		    Advertisement.Load(myAdUnitId);
 		    Advertisement.Show(myAdUnitId);

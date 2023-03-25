@@ -18,7 +18,7 @@ public class SettingsMenu : MonoBehaviour
     private Slider bgmSlider, sfxSlider;
     private List<Resolution> availableResolutions;
     private GameObject purchaseButton, restoreButton, fullScreenButton;
-    
+
     void Start()
     {
         StartCoroutine(InitLocalization());
@@ -86,6 +86,12 @@ public class SettingsMenu : MonoBehaviour
         resolutionDropdown.gameObject.SetActive(true);
         #endif
     }
+
+    void RemoveAds()
+    {
+        PlayerPrefs.SetInt("Ads", 0);
+    }
+
 
     private IEnumerator InitLocalization()
     {
