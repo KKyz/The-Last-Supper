@@ -308,24 +308,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  normalCount: 4
-  psnCount: 1
-  scrollCount: 4
-  scrollProbability:
-  - 0.111
-  - 0.111
-  - 0.111
-  - 0.111
-  - 0.111
-  - 0.111
-  - 0.111
-  - 0.111
-  - 0.111
   chalkSprite: {fileID: 21300000, guid: b1086aa324f7b6f45bd5c8e4a12f650e, type: 3}
   courseName: Breadsticks
-  courseBGM: {fileID: 8300000, guid: 40569c4b2abf17b4ca3ce959d628e533, type: 3}
   pieces:
   - {fileID: 1966451691840043423, guid: 6732302ff0020b74b91ff9c1e2b5a712, type: 3}
+  pieceType:
+    normalAmount: 4
+    psnAmount: 1
+    scrollAmount: 4
 --- !u!114 &9199579677233840243
 MonoBehaviour:
   m_ObjectHideFlags: 0

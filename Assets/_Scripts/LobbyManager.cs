@@ -36,15 +36,42 @@ public class LobbyManager : MonoBehaviour
         restaurantDropdown.ClearOptions();
         menuDropdown.ClearOptions();
         List<string> restaurantNames = new List<string>();
+        
         foreach (var restaurant in gameManager.restaurants)
         {
-            Debug.LogWarning("Add unlock conditions here");
-            restaurantNames.Add(restaurant.restaurantName);
+            restaurantNames.Add(restaurant.name);
         }
 
         restaurantDropdown.AddOptions(restaurantNames);
         SelectRestaurant(0);
         ToggleTagTournament(false);
+    }
+
+    private void CheckMenuConditions(RestaurantContents restaurant, List<String> menuNames)
+    {
+        foreach (var menu in restaurant.menus)
+        {
+            if (menu.condition == RestaurantContents.DataEnum.GamesWon)
+            {
+                if (menu.conditionVal >= gameManager.gamesWon){menuNames.Add(menu.menuName);}
+            }
+            else if (menu.condition == RestaurantContents.DataEnum.GamesLost)
+            {
+                if (menu.conditionVal >= gameManager.gamesJoined - gameManager.gamesWon){menuNames.Add(menu.menuName);}
+            }
+            else if (menu.condition == RestaurantContents.DataEnum.GamesJoined)
+            {
+                if (menu.conditionVal >= gameManager.gamesJoined){menuNames.Add(menu.menuName);}
+            }
+            else if (menu.condition == RestaurantContents.DataEnum.TeamGamesWon)
+            {
+                if (menu.conditionVal >= gameManager.teamGamesWon){menuNames.Add(menu.menuName);}
+            }
+            else if (menu.condition == RestaurantContents.DataEnum.None)
+            {
+                menuNames.Add(menu.menuName);
+            }
+        }
     }
 
     public void ToggleTagTournament(bool toggle)
@@ -163,11 +190,7 @@ public class LobbyManager : MonoBehaviour
     {
         RestaurantContents currentRestaurant = gameManager.currentRestaurant.GetComponent<RestaurantContents>(); 
         List<string> menuNames = new List<string>();
-
-        foreach (var menu in currentRestaurant.menus)
-        {
-            menuNames.Add(menu.menuName);
-        }
+        CheckMenuConditions(currentRestaurant, menuNames);
         menuDropdown.ClearOptions();
         menuDropdown.AddOptions(menuNames);
         

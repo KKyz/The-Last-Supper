@@ -7,7 +7,6 @@ public class RestaurantContents : MonoBehaviour
     public string restaurantName;
     public int estPlayTime;
     public Menus[] menus;
-    public PieceTypes[] pieceTypes;
     public AudioClip[] bgmClips;
     public GameObject[] playerModels;
     
@@ -15,8 +14,18 @@ public class RestaurantContents : MonoBehaviour
     public class Menus
     {
         public string menuName;
-        public string condition;
+        public DataEnum condition;
+        public int conditionVal;
         public GameObject[] meals;
+    }
+    
+    public enum DataEnum
+    {
+        GamesWon, 
+        GamesJoined,
+        TeamGamesWon,
+        GamesLost,
+        None
     }
     
     public GameObject[] GetCourses(int index)
@@ -27,20 +36,5 @@ public class RestaurantContents : MonoBehaviour
     public string GetNames(int index)
     {
         return menus[index].menuName;
-    }
-    
-    [System.Serializable]
-    public class PieceTypes
-    {
-        public string course;
-        public int normalAmount;
-        public int psnAmount;
-        public int scrollAmount;
-    }
-
-    public int[] GetTypeAmounts(int index)
-    {
-        int[] typeAmount = {pieceTypes[index].normalAmount, pieceTypes[index].psnAmount, pieceTypes[index].scrollAmount};
-        return typeAmount;
     }
 }

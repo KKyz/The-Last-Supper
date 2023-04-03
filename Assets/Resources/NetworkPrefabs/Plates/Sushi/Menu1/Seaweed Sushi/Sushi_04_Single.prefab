@@ -98,9 +98,10 @@ GameObject:
   - component: {fileID: -6103397196455127058}
   - component: {fileID: -7560499543345839007}
   - component: {fileID: 2171854210383671092}
+  - component: {fileID: -4129424366166535540}
   m_Layer: 0
   m_Name: Sushi_04_Single
-  m_TagString: Untagged
+  m_TagString: FoodPiece
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -270,3 +271,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.046238635, y: 0.047029205, z: 0.043001235}
   m_Center: {x: -0.00000020489097, y: 0.023514602, z: 0.0000014919788}
+--- !u!114 &-4129424366166535540
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8702087976555754669}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce7d4980e22067c44ad3994bfa153c3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
+  type: 

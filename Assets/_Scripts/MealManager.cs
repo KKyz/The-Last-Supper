@@ -184,7 +184,7 @@ public class MealManager : NetworkBehaviour
         Vector3 platterStartPos = new Vector3(managerPos.x, managerPos.y + 50f, managerPos.z);
         GameObject platterInstance = Instantiate(platterTop, platterStartPos, Quaternion.identity);
         NetworkServer.Spawn(platterInstance);
-        LeanTween.moveY(platterInstance, managerPos.y, 1.8f).setEaseInSine();
+        LeanTween.moveY(platterInstance, managerPos.y, 1.8f).setEaseInSine(); 
 
         RpcAddCourseCounter();
 

@@ -105,4 +105,4 @@ public enum AnimEnum
     Right,
     Fade,
     None
-};
+}

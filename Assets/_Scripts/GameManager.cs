@@ -3,15 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Mirror;
-using PlayFab.Networking;
 using TMPro;
 using UnityEngine.Localization.Settings;
 using Unity.Mathematics;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
+//using PlayFab;
+using System;
+//using kcp2k;
 
-public class GameManager : UnityNetworkServer
+public class GameManager : NetworkManager
 {
     [Header("Lobby")] 
     [Scene] public string gameScene;
@@ -49,11 +51,20 @@ public class GameManager : UnityNetworkServer
     [HideInInspector]public Transform discoveryList;
     
     [HideInInspector]public float playTime;
-    [HideInInspector]public int maxCourse, maxPiece, maxScroll, gamesJoined, gamesWon;
+    public int maxCourse, maxPiece, maxScroll, gamesJoined, gamesWon, teamGamesWon;
 
     [Header("Misc")] 
     public TMP_FontAsset jpFont;
     public TMP_FontAsset engFont;
+    
+    public event Action<string> OnPlayerAdded;
+    public event Action<string> OnPlayerRemoved;
+    public static event Action<NetworkConnection> OnClientConnected;
+    public static event Action<NetworkConnection> OnClientDisconnected;
+    public List<UnityNetworkConnection> Connections { get; set; }
+
+    [SerializeField] Configuration configuration = default;
+
 
 #if UNITY_EDITOR
     new void OnValidate()
@@ -66,6 +77,41 @@ public class GameManager : UnityNetworkServer
         }
     }
 #endif
+  /*  
+    public Configuration Config {
+        get {
+            return configuration;
+        }
+    }
+    
+    public KcpTransport Transport {
+        get {
+            return transport as KcpTransport;
+        }
+        set {
+            transport = value;
+        }
+    }
+
+
+    public override void Awake () {
+        base.Awake ();
+
+        if (Config.buildType == BuildType.REMOTE_SERVER) {
+            Connections = new List<UnityNetworkConnection> ();
+            NetworkServer.RegisterHandler<ReceiveAuthenticateMessage> (OnRecieveAuthenticate);
+        }
+    }
+
+    private void OnRecieveAuthenticate (NetworkConnection _conn, ReceiveAuthenticateMessage msgType) {
+        var conn = Connections.Find (c => c.ConnectionId == _conn.connectionId);
+        if (conn != null) {
+            conn.PlayFabId = msgType.PlayFabId;
+            conn.IsAuthenticated = true;
+            OnPlayerAdded?.Invoke (msgType.PlayFabId);
+        }
+    }
+    */
 
     private void Update()
     {
@@ -149,6 +195,7 @@ public class GameManager : UnityNetworkServer
         playTime = data.playTime;
         gamesWon = data.gamesWon;
         gamesJoined = data.gamesJoined;
+        teamGamesWon = data.teamGamesWon;
     }
 
     public void OnServerInitialized()
@@ -164,6 +211,15 @@ public class GameManager : UnityNetworkServer
         {
             conn.Disconnect();
         }
+        
+        /*var uconn = Connections.Find (c => c.ConnectionId == conn.connectionId);
+        if (uconn == null) {
+            Connections.Add (new UnityNetworkConnection () {
+                Connection = conn,
+                ConnectionId = conn.connectionId,
+                LobbyId = PlayFabMultiplayerAgentAPI.SessionConfig.SessionId
+            });
+        }*/
     }
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
@@ -184,26 +240,39 @@ public class GameManager : UnityNetworkServer
         }
     }
 
-    public override void OnClientDisconnect()
+    public override void OnClientDisconnect(NetworkConnection conn)
     {
+        base.OnClientDisconnect();
+        
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
             GameObject.Find("StartCanvas").GetComponent<MenuManager>().ForceReturnToTitle();
         }
 
-        else
+        else if (conn.identity.CompareTag("Player"))
         {
-            SceneManager.LoadScene("StartMenu");
+            if (conn.identity.isLocalPlayer)
+            {
+                SceneManager.LoadScene("StartMenu");
+            }
+            else
+            {
+                conn.identity.GetComponent<PlayerFunctions>().Die();
+            }
         }
+        
+        //OnClientDisconnected?.Invoke (NetworkClient.connection);
     }
 
     public override void OnClientConnect()
     {
         base.OnClientConnect();
+        
 
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
             NetworkClient.AddPlayer();
+            OnClientConnected?.Invoke (NetworkClient.connection);
         }
     }
 

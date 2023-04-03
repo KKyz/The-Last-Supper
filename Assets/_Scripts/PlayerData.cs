@@ -6,6 +6,7 @@ public class PlayerData
     public int maxScroll;
     public int gamesJoined;
     public int gamesWon;
+    public int teamGamesWon;
     public float playTime;
 
     public PlayerData(GameManager player)
@@ -16,6 +17,7 @@ public class PlayerData
         playTime = player.playTime;
         gamesJoined = player.gamesJoined;
         gamesWon = player.gamesWon;
+        teamGamesWon = player.teamGamesWon;
 
     }
 }

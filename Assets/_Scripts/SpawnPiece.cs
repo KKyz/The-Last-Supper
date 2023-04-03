@@ -10,6 +10,7 @@ public class SpawnPiece : NetworkBehaviour
     public Sprite chalkSprite;
     public string courseName;
     public GameObject[] pieces;
+    public PieceTypes pieceType;
     
     private List<Vector3> piecePos = new();
     private List<Quaternion> pieceRot = new();
@@ -18,16 +19,20 @@ public class SpawnPiece : NetworkBehaviour
     private GameObject newPiece;
     private Vector3 newRandPos;
     private Quaternion newRandRot;
-    private PlayerManager playerManager;
-    private RestaurantContents restaurant;
     private GameManager gameManager;
+    
+    [System.Serializable]
+    public class PieceTypes
+    {
+        public int normalAmount;
+        public int psnAmount;
+        public int scrollAmount;
+    }
 
     public void Start()
     {
         RefreshPieceList();
         
-        restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
-        playerManager = GameObject.FindWithTag("Player").GetComponent<PlayerManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
 
         if (isServer)
@@ -36,7 +41,7 @@ public class SpawnPiece : NetworkBehaviour
         }
     }
     
-    public void RefreshPieceList()
+    public void RefreshPieceList() 
     {
         piecePos.Clear();
         pieceRot.Clear();
@@ -64,26 +69,12 @@ public class SpawnPiece : NetworkBehaviour
         //Code will check what the percentage of scroll pieces should be
         
         pieceTypes.Clear();
-        int index = playerManager.courseCount - 1;
 
-        if (index <= 2)
+        int[] types = {pieceType.normalAmount, pieceType.psnAmount, pieceType.scrollAmount};
+
+        foreach (int amount in types)
         {
-            int[] types = restaurant.GetTypeAmounts(index);
-
-            foreach (int amount in types)
-            {
-                pieceTypes.Add(amount); 
-            }
-        }
-
-        else
-        {
-            int[] types = restaurant.GetTypeAmounts(3);
-
-            foreach (int amount in types)
-            {
-                pieceTypes.Add(amount);
-            }
+            pieceTypes.Add(amount); 
         }
 
         for (int i = pieceTypes[0]; i > 0; i--)

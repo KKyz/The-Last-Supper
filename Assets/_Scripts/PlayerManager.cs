@@ -136,7 +136,7 @@ public class PlayerManager : NetworkBehaviour
     [ClientRpc]
     public void RpcAddPlayerModel(int index)
     {
-        RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>();
+        RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>(); 
         GameObject playerModel = Instantiate(restaurant.playerModels[index], transform, false);
         playerModel.transform.position = transform.position;
     }

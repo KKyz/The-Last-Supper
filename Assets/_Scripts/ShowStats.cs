@@ -34,7 +34,7 @@ public class ShowStats : MonoBehaviour
             gameManager.maxPiece = player.pieceCount;
         }
         
-        if (player.scrollCount > gameManager.maxScroll)
+        if (player.scrollCount > gameManager.maxScroll) 
         {
             gameManager.maxScroll = player.scrollCount;
         }
@@ -47,6 +47,10 @@ public class ShowStats : MonoBehaviour
         if (player.hasWon)
         {
             gameManager.gamesWon += 1;
+            if (gameManager.tagTournament)
+            {
+                gameManager.teamGamesWon += 1;
+            }
         }
 
         gameManager.gamesJoined += 1;

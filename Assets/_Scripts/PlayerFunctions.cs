@@ -242,7 +242,7 @@ public class PlayerFunctions : NetworkBehaviour
         fade.FadeIn(1.5f);
         buttonToggle.ToggleButtons(6);
         yield return new WaitForSeconds(2f);
-        
+
         if (stateManager.currentPlayer == player.gameObject)
         {
             plate.Shuffle();
@@ -294,7 +294,7 @@ public class PlayerFunctions : NetworkBehaviour
                 {
                     StartCoroutine(flag.GetComponentInChildren<SetFlagType>().SetFlag());
                 }
-            }
+            } 
         }
 
         if (removeScroll)
@@ -560,10 +560,11 @@ public class PlayerFunctions : NetworkBehaviour
     }
 
     [Client]
-    private void Die()
+    public void Die()
     {
         ResetActions();
         stateManager.CmdRemovePlayer(player.netIdentity);
+        DebugAnim("DieTr");
         if (openPopup != null){Destroy(openPopup);}
         openPopup = Instantiate(receipt, Vector2.zero, quaternion.identity);
         gameManager.ChangeFont();
@@ -588,6 +589,8 @@ public class PlayerFunctions : NetworkBehaviour
         buttonToggle.ToggleButtons(6);
         countTime = false;
         StartCoroutine(musicManager.PlayLoseResultBGM());
+        player.health = 0;
+        player.CmdChangeHealth(0);
 
         if (stateManager.activePlayers.Count > 1)
         {stateManager.CmdNextPlayer();}
