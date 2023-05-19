@@ -290,7 +290,7 @@ Transform:
   - {fileID: 5708508136350205799}
   - {fileID: 5597188653760232484}
   - {fileID: 4696189109532193700}
-  - {fileID: 4723392658461425491}
+  - {fileID: 5655376472641887169}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -308,7 +308,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  chalkSprite: {fileID: 21300000, guid: b1086aa324f7b6f45bd5c8e4a12f650e, type: 3}
+  chalkSprite: {fileID: 21300000, guid: 0980740626bf95941933f8587b288568, type: 3}
   courseName: Chicken Nuggets
   pieces:
   - {fileID: 199132937805366949, guid: 080014d564b065e4bb5f926056c511a0, type: 3}
@@ -403,8 +403,8 @@ MonoBehaviour:
   showGizmos: 0
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
-  target: {fileID: 4723392658461425491}
---- !u!1 &4723392658461425490
+  target: {fileID: 5655376472641887169}
+--- !u!1 &4847579635859279815
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -412,9 +412,9 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4723392658461425491}
-  - component: {fileID: 4723392658461425502}
-  - component: {fileID: 4723392658461425489}
+  - component: {fileID: 5655376472641887169}
+  - component: {fileID: 8946996053412587300}
+  - component: {fileID: 5074675972471604134}
   m_Layer: 0
   m_Name: Plate
   m_TagString: Untagged
@@ -422,36 +422,36 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4723392658461425491
+--- !u!4 &5655376472641887169
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4723392658461425490}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 11, y: 40.53282, z: 11}
+  m_GameObject: {fileID: 4847579635859279815}
+  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.38, y: -0.24, z: 0.58}
+  m_LocalScale: {x: 10.988, y: 10.988, z: 10.988}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4723392658126809245}
   m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &4723392658461425502
+--- !u!33 &8946996053412587300
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4723392658461425490}
-  m_Mesh: {fileID: 4300000, guid: b46bb4420be82274bbba48de5944537e, type: 3}
---- !u!23 &4723392658461425489
+  m_GameObject: {fileID: 4847579635859279815}
+  m_Mesh: {fileID: 4300000, guid: 9ebbe02f038e9b14c8f0ed10e80c9827, type: 3}
+--- !u!23 &5074675972471604134
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4723392658461425490}
+  m_GameObject: {fileID: 4847579635859279815}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -465,7 +465,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0a4251d4d8a686b43bed64ba12750b20, type: 2}
+  - {fileID: 2100000, guid: 7a216e77559f8f345a6abac57e12686b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -477,7 +477,7 @@ MeshRenderer:
   m_PreserveUVs: 0
   m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
+  m_StitchLightmapSeams: 0
   m_SelectedEditorRenderState: 3
   m_MinimumChartSize: 4
   m_AutoUVMaxDistance: 0.5

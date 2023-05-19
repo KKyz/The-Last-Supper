@@ -38,7 +38,7 @@ public class GameManager : NetworkManager
     public float scrollProb;
     public bool stealActive;
     public bool tagTournament;
-    public List<PlayerManager> team1, team2 = new();
+    public List<NetworkIdentity> team1, team2 = new();
     public List<string> availableScrolls;
     [HideInInspector]public int gameMode;
     [HideInInspector]public TMP_FontAsset languageFont;
@@ -257,7 +257,7 @@ public class GameManager : NetworkManager
             }
             else
             {
-                conn.identity.GetComponent<PlayerFunctions>().Die();
+                //conn.identity.GetComponent<PlayerFunctions>().Die();
             }
         }
         
@@ -272,7 +272,7 @@ public class GameManager : NetworkManager
         if (SceneManager.GetActiveScene().name == "StartMenu")
         {
             NetworkClient.AddPlayer();
-            OnClientConnected?.Invoke (NetworkClient.connection);
+            //OnClientConnected?.Invoke (NetworkClient.connection);
         }
     }
 
@@ -391,11 +391,28 @@ public class GameManager : NetworkManager
             
             conn.identity.name = playerName;
             stateManager.connectedPlayers.Add(conn.identity);
-
-            //if (team1.Contains(player))
+            
+            if (tagTournament)
             {
-                //conn.identity.transform.GetComponent<PlayerManager>().myTeam.Add(player);
+                if (team1.Contains(player.netIdentity))
+                {
+                    foreach (var ally in team1)
+                    {
+                        if (ally != player.netIdentity)
+                            player.GetComponent<PlayerManager>().allies.Add(ally);
+                    }
+                }
+
+                else
+                {
+                    foreach (var ally in team2)
+                    {
+                        if (ally != player.netIdentity)
+                            player.GetComponent<PlayerManager>().allies.Add(ally);
+                    }
+                }
             }
+            
             i++;
         }
     }
@@ -484,7 +501,6 @@ public class GameManager : NetworkManager
         }
 
         stateManager.OnStartGame();
-
         if (stateManager.activePlayers.Count >= minPlayers)
         {
             stateManager.gameCanEnd = true;

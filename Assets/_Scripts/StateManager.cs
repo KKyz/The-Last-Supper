@@ -28,9 +28,6 @@ public class StateManager : NetworkBehaviour
     public int gameMode;
 
     [SyncVar] 
-    public int maxPiecesEaten;
-
-    [SyncVar] 
     public bool tagTournament;
     
     [HideInInspector] public List<NetworkIdentity> connectedPlayers = new();
@@ -43,7 +40,6 @@ public class StateManager : NetworkBehaviour
     {
         DontDestroyOnLoad(this);
         gameCanEnd = false;
-        maxPiecesEaten = 0;
         gameMode = 0;
     }
 

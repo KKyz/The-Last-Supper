@@ -19,7 +19,7 @@ public class SettingsMenu : MonoBehaviour
     private List<Resolution> availableResolutions;
     private GameObject purchaseButton, restoreButton, fullScreenButton;
 
-    void Start()
+    void Awake()
     {
         StartCoroutine(InitLocalization());
         
@@ -60,8 +60,18 @@ public class SettingsMenu : MonoBehaviour
         resolutionDropdown.value = currentResolutionIndex;
         resolutionDropdown.RefreshShownValue();
         
-        sfxSlider.value = PlayerPrefs.GetFloat("SFXVolPref", 1f);
-        bgmSlider.value = PlayerPrefs.GetFloat("BGMVolPref", 0.5f);
+        var bgmVal = PlayerPrefs.GetFloat("BGMVolPref", 0.5f);
+        var sfxVal = PlayerPrefs.GetFloat("SFXVolPref", 1f);
+        sfxSlider.value = sfxVal;
+        bgmSlider.value = bgmVal;
+        bgmMixer.SetFloat("BGMVolume", bgmVal);
+        sfxMixer.SetFloat("BGMVolume", bgmVal);
+        
+        var fullScreen = PlayerPrefs.GetInt("Fullscreen", 0);
+        if (fullScreen == 1)
+            Screen.fullScreen = true;
+        else
+            Screen.fullScreen = false;
         
         //Platform specific compilation for remove ads button
         #if UNITY_EDITOR
@@ -70,13 +80,13 @@ public class SettingsMenu : MonoBehaviour
         fullScreenButton.SetActive(true);
         resolutionDropdown.gameObject.SetActive(true);
         #elif UNITY_IOS
-        restoreButton.SetActive(true);
-        purchaseButton.SetActive(true);
+        restoreButton.SetActive(false);
+        purchaseButton.SetActive(false);
         fullScreenButton.SetActive(false);
         resolutionDropdown.gameObject.SetActive(false);
         #elif UNITY_ANDROID
-        restoreButton.SetActive(true);
-        purchaseButton.SetActive(true);
+        restoreButton.SetActive(false);
+        purchaseButton.SetActive(false);
         fullScreenButton.SetActive(false);
         resolutionDropdown.gameObject.SetActive(false);
         #elif UNITY_STANDALONE
@@ -128,19 +138,20 @@ public class SettingsMenu : MonoBehaviour
     {
         Resolution resolution = availableResolutions[resolutionIndex];
         Screen.SetResolution(resolution.width, resolution.height, true);
-        SetFullscreen(true);
     }
     
     public void BgmVolume (float sliderValue)
     {
-        bgmMixer.SetFloat("BGMVolume", Mathf.Log10(sliderValue) * 20);
-        PlayerPrefs.SetFloat("BGMVolPref", Mathf.Log10(sliderValue) * 20);
+        var bgmVal = Mathf.Log10(sliderValue) * 20;
+        bgmMixer.SetFloat("BGMVolume", bgmVal);
+        PlayerPrefs.SetFloat("BGMVolPref", bgmVal);
     }
 
     public void SfxVolume (float sliderValue)
     {
-        sfxMixer.SetFloat("SFXVolume", Mathf.Log10(sliderValue) * 20);
-        PlayerPrefs.SetFloat("SFXVolPref", Mathf.Log10(sliderValue) * 20);
+        var sfxVal = Mathf.Log10(sliderValue) * 20;
+        sfxMixer.SetFloat("SFXVolume", sfxVal);
+        PlayerPrefs.SetFloat("SFXVolPref", sfxVal);
     }
     
     public void SetQuality(int qualityIndex)
@@ -151,6 +162,10 @@ public class SettingsMenu : MonoBehaviour
     public void SetFullscreen(bool isFullscreen)
     {
         Screen.fullScreen = isFullscreen;
+        if (isFullscreen)
+            PlayerPrefs.SetInt("Fullscreen", 1);
+        else
+            PlayerPrefs.SetInt("Fullscreen", 0);
     }
 
     public void DeletePlayerData()

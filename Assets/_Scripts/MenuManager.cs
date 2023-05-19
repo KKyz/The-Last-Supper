@@ -15,9 +15,11 @@ public class MenuManager : MonoBehaviour
     private Transform startMenu, settingsMenu, gameSetup, gameFind;
     private CustomNetworkDiscovery networkDiscovery;
     private string playerName;
+    private InterstitialAds interstitialAds;
 
     public void Start()
     {
+        interstitialAds = GetComponent<InterstitialAds>();
         playerName = PlayerPrefs.GetString("PlayerName");
         
         GameObject gm = GameObject.Find("GameManager");
@@ -150,6 +152,7 @@ public class MenuManager : MonoBehaviour
         {
             gameManager.StartHost();
             networkDiscovery.AdvertiseServer();
+            interstitialAds.ShowAd();
             OpenSubMenu(gameSetup); 
         }
     }
@@ -163,6 +166,7 @@ public class MenuManager : MonoBehaviour
         else
         {
             networkDiscovery.StartDiscovery();
+            interstitialAds.ShowAd();
             OpenSubMenu(subMenu);
         }
     }

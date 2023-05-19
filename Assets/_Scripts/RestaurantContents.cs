@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class RestaurantContents : MonoBehaviour
@@ -9,7 +10,9 @@ public class RestaurantContents : MonoBehaviour
     public Menus[] menus;
     public AudioClip[] bgmClips;
     public GameObject[] playerModels;
-    
+
+    [HideInInspector] public List<Menus> availableMenus = new();
+
     [System.Serializable]
     public class Menus
     {
@@ -30,7 +33,7 @@ public class RestaurantContents : MonoBehaviour
     
     public GameObject[] GetCourses(int index)
     {
-        return menus[index].meals;
+        return availableMenus[index].meals;
     }
     
     public string GetNames(int index)

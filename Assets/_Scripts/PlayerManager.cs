@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -32,7 +33,7 @@ public class PlayerManager : NetworkBehaviour
     public bool[] psnArray = new bool[4];
 
     // This is a list of allies used for Tag Tournament Mode
-    public List<NetworkIdentity> allies = new();
+    public SyncList<NetworkIdentity> allies = new();
 
     [SyncVar(hook=nameof(SyncRecommended))]
     public GameObject recommendedPiece;
@@ -90,7 +91,7 @@ public class PlayerManager : NetworkBehaviour
             InitScrollArray();
         }
     }
-    
+
     [Command(requiresAuthority = false)]
     public void CmdSwitchContinueState(bool state)
     {
@@ -138,7 +139,8 @@ public class PlayerManager : NetworkBehaviour
     {
         RestaurantContents restaurant = GameObject.FindWithTag("Restaurant").GetComponent<RestaurantContents>(); 
         GameObject playerModel = Instantiate(restaurant.playerModels[index], transform, false);
-        playerModel.transform.position = transform.position;
+        //playerModel.transform.position = transform.position;
+        playerModel.transform.localPosition = new Vector3(0, -2.85f, 0);
     }
 
     #endregion
@@ -201,9 +203,11 @@ public class PlayerManager : NetworkBehaviour
         recommend.SetParent(piece, false); 
         StartCoroutine(playerCanvas.SpawnBillboard(recommend));
 
-        if (GameObject.Find(newName) != gameObject && playerCanvas.stateManager.tagTournament && !allies.Contains(GameObject.Find(newName).GetComponent<NetworkIdentity>()))
+        if (GameObject.Find(newName) != gameObject && playerCanvas.stateManager.tagTournament)
         {
-            recommend.gameObject.SetActive(false);
+            Debug.LogWarning("Disappear recommend");
+            if (!allies.Contains(GameObject.Find(newName).GetComponent<NetworkIdentity>()))
+                recommend.gameObject.SetActive(false);
         }
     }
     

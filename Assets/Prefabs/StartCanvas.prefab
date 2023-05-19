@@ -5033,7 +5033,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7858242465678158204
 RectTransform:
   m_ObjectHideFlags: 0
@@ -20205,8 +20205,6 @@ MonoBehaviour:
   tableSetup: {fileID: 0}
   customizeButton: {fileID: 0}
   guestsList: {fileID: 4618325063079400325}
-  team1: []
-  team2: []
 --- !u!1 &3252609467145447804
 GameObject:
   m_ObjectHideFlags: 0
@@ -20819,7 +20817,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3252609467221909171}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.43917134}
+  m_LocalPosition: {x: 0, y: 0, z: 9.34}
   m_LocalScale: {x: 0.19715281, y: 0.19705431, z: 0.19715281}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -23668,6 +23666,7 @@ GameObject:
   - component: {fileID: 3252609467636339209}
   - component: {fileID: 3252609467636339213}
   - component: {fileID: 982156893}
+  - component: {fileID: 2049024131}
   m_Layer: 5
   m_Name: StartCanvas
   m_TagString: Untagged
@@ -23882,6 +23881,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &2049024131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3252609467636339208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54ffd30357191f7498e53c990f2ab29e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _androidAdUnitId: Interstitial_Android
+  _iOsAdUnitId: Interstitial_iOS
 --- !u!1 &3252609467638397264
 GameObject:
   m_ObjectHideFlags: 0
@@ -27402,7 +27415,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6917881283404217864}
-  - component: {fileID: 8039084897704770395}
+  - component: {fileID: 1430586036}
   m_Layer: 0
   m_Name: AdObject
   m_TagString: Untagged
@@ -27425,7 +27438,7 @@ Transform:
   m_Father: {fileID: 3252609467636339212}
   m_RootOrder: 12
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8039084897704770395
+--- !u!114 &1430586036
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -27434,15 +27447,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 3391899555566933445}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8d66cc88ac0c91c42a932924a1692b5e, type: 3}
+  m_Script: {fileID: 11500000, guid: 5288814dc8ec273468e50c7ad1975900, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myGameIdAndroid: XXXXXXX
-  myGameIdIOS: XXXXXXX
-  adUnitIdAndroid: Interstitial_Android
-  adUnitIdIOS: Interstitial_iOS
-  myAdUnitId: 
-  adStarted: 0
+  _androidGameId: 5203299
+  _iOSGameId: 5203298
+  _testMode: 1
+  interstitialAds: {fileID: 2049024131}
 --- !u!1 &3430205324965884089
 GameObject:
   m_ObjectHideFlags: 0
@@ -28516,7 +28527,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6604831637380780581
 RectTransform:
   m_ObjectHideFlags: 0

@@ -163,8 +163,7 @@ public class MealManager : NetworkBehaviour
     private void RpcFaceCenter()
     {
         PlayerFunctions playerCanvas = GameObject.Find("PlayerCanvas").GetComponent<PlayerFunctions>();
-        playerCanvas.player.GetComponent<CameraActions>().FaceCenter();
-        playerCanvas.playerCam.transform.LookAt(stateManager.transform.position);
+        playerCanvas.FaceCenter();
     }
 
     [Command(requiresAuthority = false)]

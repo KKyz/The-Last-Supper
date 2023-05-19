@@ -83,7 +83,7 @@ public class PlayerFunctions : NetworkBehaviour
     private FadeInOut fade;
     private CameraActions camActions;
     private ShowHealth healthBar;
-    private Animator playerAnim;
+    private NetworkAnimator playerAnim;
     private AudioSource uiAudio;
     [SerializeField]private SpawnPiece plate;
     private readonly List<GameObject> smellTargets = new();
@@ -94,6 +94,7 @@ public class PlayerFunctions : NetworkBehaviour
     private Color normTop;
     private Color normBottom;
 
+    [Command(requiresAuthority = false)]
     private void DebugAnim(string name)
     {
         Debug.LogWarning(name);
@@ -134,7 +135,7 @@ public class PlayerFunctions : NetworkBehaviour
         camActions = localPlayer.GetComponent<CameraActions>();
         playerCam = localPlayer.transform.Find("Camera").gameObject;
         playerScrolls = localPlayer.GetComponent<ScrollArray>();
-        playerAnim = localPlayer.GetComponentInChildren<Animator>();
+        playerAnim = localPlayer.GetComponentInChildren<NetworkAnimator>();
 
         zoomOutPos = new Vector3(0, 0, 0);
         countTime = true;
@@ -144,7 +145,20 @@ public class PlayerFunctions : NetworkBehaviour
         player.CmdChangeHealth(2);
         buttonToggle.OnStartGame();
         gameManager.ChangeFont();
-        camActions.FaceCenter();
+        //FaceCenter();
+    }
+    
+    [Command(requiresAuthority = false)]
+    public void FaceCenter()
+    {
+        foreach (var player in stateManager.connectedPlayers)
+        {
+            Transform playerModel = player.transform.GetComponentInChildren<Animator>().transform;
+            Vector3 center = new Vector3(stateManager.centerPos.x, playerModel.transform.position.y, stateManager.centerPos.z);
+            playerModel.LookAt(center, Vector3.up);
+            player.transform.LookAt(center, Vector3.up);
+            Debug.LogWarning("Re-centered Local Character");
+        }
     }
 
     [Client]
@@ -285,7 +299,9 @@ public class PlayerFunctions : NetworkBehaviour
     [Client]
     public void ConfirmSmell(bool removeScroll)
     {
-        DebugAnim("SmellTr");
+        if (currentState == "Smelling") 
+            DebugAnim("SmellTr");
+        
         foreach (GameObject piece in smellTargets)
         {
             foreach (Transform flag in piece.transform)
@@ -886,12 +902,6 @@ public class PlayerFunctions : NetworkBehaviour
         }
     }
 
-    [Command]
-    private void UpdateMaxPiecesEaten(int pieceCount)
-    {
-        stateManager.maxPiecesEaten = pieceCount;
-    }
-
     void Update()
     {
         if (Input.GetKeyDown("1"))
@@ -939,7 +949,9 @@ public class PlayerFunctions : NetworkBehaviour
                     DebugAnim("ActiveTr");
                     CmdRemoveAuthority();
                     CmdAddAuthority(player.connectionToClient);
-                    StartCoroutine(AddOneSmellFlag());
+                    
+                    if (player.pieceCount % 3 == 0)
+                        StartCoroutine(AddOneSmellFlag());
                 }
 
                 if (!fade.gameObject.activeInHierarchy && stateManager.AllPlayersCanContinue())
@@ -992,12 +1004,7 @@ public class PlayerFunctions : NetworkBehaviour
             {
                 Win();  
             }
-            
-            else if (stateManager.activePlayers.Count == 0 && stateManager.gameMode == 1 && player.pieceCount == stateManager.maxPiecesEaten && stateManager.AllPlayersCanContinue() && stateManager.maxPiecesEaten > 0)
-            {
-                Win();  
-            }
-            
+
             if (player.actionable)
             {
                 if (player.orderVictim && openPopup == null && stateManager.AllPlayersCanContinue())
@@ -1072,11 +1079,6 @@ public class PlayerFunctions : NetworkBehaviour
                                 player.pieceCount += 1;
                                 uiAudio.PlayOneShot(eatingSfx);
 
-                                if (player.pieceCount > stateManager.maxPiecesEaten)
-                                {
-                                    UpdateMaxPiecesEaten(player.pieceCount);
-                                }
-                                
                                 stateManager.CmdNextPlayer();
                                 ResetActions();
                             }

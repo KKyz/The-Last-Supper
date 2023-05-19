@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Mirror;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,7 +19,6 @@ public class LobbyManager : MonoBehaviour
     private TMP_Dropdown menuDropdown;
     private TMP_Text estTimeText;
     private Image restaurantThumbnail;
-    public List<string> team1, team2 = new();
 
     public void Init()
     {
@@ -53,23 +53,40 @@ public class LobbyManager : MonoBehaviour
         {
             if (menu.condition == RestaurantContents.DataEnum.GamesWon)
             {
-                if (menu.conditionVal >= gameManager.gamesWon){menuNames.Add(menu.menuName);}
+                if (gameManager.gamesWon >= menu.conditionVal)
+                {
+                    menuNames.Add(menu.menuName);
+                    restaurant.availableMenus.Add(menu);
+                }
             }
             else if (menu.condition == RestaurantContents.DataEnum.GamesLost)
             {
-                if (menu.conditionVal >= gameManager.gamesJoined - gameManager.gamesWon){menuNames.Add(menu.menuName);}
+                if (gameManager.gamesJoined - gameManager.gamesWon >= menu.conditionVal)
+                {
+                    menuNames.Add(menu.menuName);
+                    restaurant.availableMenus.Add(menu);
+                }
             }
             else if (menu.condition == RestaurantContents.DataEnum.GamesJoined)
             {
-                if (menu.conditionVal >= gameManager.gamesJoined){menuNames.Add(menu.menuName);}
+                if (gameManager.gamesJoined >= menu.conditionVal)
+                {
+                    menuNames.Add(menu.menuName);
+                    restaurant.availableMenus.Add(menu);
+                }
             }
             else if (menu.condition == RestaurantContents.DataEnum.TeamGamesWon)
             {
-                if (menu.conditionVal >= gameManager.teamGamesWon){menuNames.Add(menu.menuName);}
+                if (gameManager.teamGamesWon >= menu.conditionVal)
+                {
+                    menuNames.Add(menu.menuName);
+                    restaurant.availableMenus.Add(menu);
+                }
             }
             else if (menu.condition == RestaurantContents.DataEnum.None)
             {
                 menuNames.Add(menu.menuName);
+                restaurant.availableMenus.Add(menu);
             }
         }
     }
@@ -78,22 +95,21 @@ public class LobbyManager : MonoBehaviour
     {
         gameManager.tagTournament = toggle;
         
-        int team1Length = (int)(gameManager.roomPlayers.Count / 2);
         int counter = 0;
 
         if (toggle)
         {
             foreach (var player in gameManager.roomPlayers)
             {
-                if (counter < team1Length)
+                if (counter < 1)
                 {
-                    team1.Add(player.displayName);
+                    gameManager.team1.Add(player.netIdentity);
                     counter++;
                 }
 
                 else
                 {
-                    team2.Add(player.displayName);
+                    gameManager.team2.Add(player.netIdentity);
                 }
             }
             
@@ -123,26 +139,22 @@ public class LobbyManager : MonoBehaviour
     {
         if (gameManager.tagTournament)
         {
-            string playerName = guestsList.GetChild(index).GetComponent<TMP_Text>().text;
+            NetworkIdentity playerID = gameManager.roomPlayers[index].netIdentity;
         
-            if (team1.Contains(playerNames[index].text))
+            if (gameManager.team1.Contains(playerID))
             {
-                team1.Remove(playerName);
-                team2.Add(playerName);
-                Debug.LogWarning("Swapped to team 2: " + playerName);
-            }
-            else if (team2.Contains(playerNames[index].text))
-            {
-                team2.Remove(playerName);
-                team1.Add(playerName); 
-                Debug.LogWarning("Swapped to team 1: " + playerName);
+                gameManager.team1.Remove(playerID);
+                gameManager.team2.Add(playerID);
+                Debug.LogWarning("Swapped to team 2: " + playerID);
             }
             else
             {
-                Debug.LogWarning("This is not working: Change Player");
+                gameManager.team2.Remove(playerID);
+                gameManager.team1.Add(playerID); 
+                Debug.LogWarning("Swapped to team 1: " + playerID);
             }
 
-            if (team2.Count > 2)
+            if (gameManager.team2.Count > 2)
             {
                 startGameButton.interactable = false;
             }
@@ -159,16 +171,16 @@ public class LobbyManager : MonoBehaviour
     {
         if (gameManager.tagTournament)
         {
-            foreach (var player in team1)
+            foreach (var player in gameManager.team1)
             {
-                Button TeamToggle = guestsList.GetChild(team1.IndexOf(player)).GetComponentInChildren<Button>();
+                Button TeamToggle = guestsList.GetChild(gameManager.team1.IndexOf(player)).GetComponentInChildren<Button>();
                 TeamToggle.gameObject.SetActive(true);
                 TeamToggle.image.color = new Color(255, 0, 0);
             }
         
-            foreach (var player in team2)
+            foreach (var player in gameManager.team2)
             {
-                Button TeamToggle = guestsList.GetChild(team2.IndexOf(player)).GetComponentInChildren<Button>();
+                Button TeamToggle = guestsList.GetChild(gameManager.team2.IndexOf(player)).GetComponentInChildren<Button>();
                 TeamToggle.gameObject.SetActive(true);
                 TeamToggle.image.color = new Color(0, 0, 255);
             }

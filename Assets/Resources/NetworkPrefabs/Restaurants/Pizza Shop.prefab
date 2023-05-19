@@ -74,29 +74,12 @@ MonoBehaviour:
     - {fileID: 4723392658126809247, guid: 420532bd96ba682468eef4b35bd72a3c, type: 3}
   - menuName: Extravagant Menu
     condition: 2
-    conditionVal: 55
+    conditionVal: 0
     meals:
     - {fileID: 4723392658126809247, guid: e09df4c2ba6178c42af85f608e6cdf7b, type: 3}
     - {fileID: 4723392658126809247, guid: 538fadabed86a434dab98abdffcd7c77, type: 3}
     - {fileID: 6006381533899338031, guid: c38c798fb94ce324bb6a2532eb749dde, type: 3}
     - {fileID: 4723392658126809247, guid: 1c7571c83d5945e4f8970f81e4e538de, type: 3}
-  pieceTypes:
-  - course: Starters
-    normalAmount: 4
-    psnAmount: 1
-    scrollAmount: 4
-  - course: Main
-    normalAmount: 6
-    psnAmount: 5
-    scrollAmount: 5
-  - course: Desserts
-    normalAmount: 3
-    psnAmount: 4
-    scrollAmount: 2
-  - course: Sudden Death Desserts
-    normalAmount: 2
-    psnAmount: 5
-    scrollAmount: 2
   bgmClips:
   - {fileID: 8300000, guid: 3b44c9eec180b8d4aaba571cb055b918, type: 3}
   - {fileID: 8300000, guid: e59277a05d7319042998d6ab8557aa36, type: 3}
@@ -107,6 +90,7 @@ MonoBehaviour:
   - {fileID: 2973943420353964111, guid: 0f3de21722344274c87c192c2fa4e52d, type: 3}
   - {fileID: 4760717941314058984, guid: 950b0225933cf3846a3e3ca10649aa92, type: 3}
   - {fileID: 7919379506296913453, guid: c05fa086999e90a4abc12d5aaeefa8b6, type: 3}
+  availableMenus: []
 --- !u!114 &-4065937298884651616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -112491,6 +112475,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 761915156072078113, guid: f4d0e97366ebc5f42aad6aadc946e40c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1996309256533258994, guid: f4d0e97366ebc5f42aad6aadc946e40c, type: 3}
       propertyPath: m_RootOrder
       value: 21
@@ -112609,7 +112597,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2628418844834077679, guid: ba8b806a8f4ecee4f83f940d8e90284c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.54600006
+      value: 0.438
       objectReference: {fileID: 0}
     - target: {fileID: 2628418844834077679, guid: ba8b806a8f4ecee4f83f940d8e90284c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -112646,6 +112634,10 @@ PrefabInstance:
     - target: {fileID: 2628418844834077679, guid: ba8b806a8f4ecee4f83f940d8e90284c, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3942210862704256447, guid: ba8b806a8f4ecee4f83f940d8e90284c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ba8b806a8f4ecee4f83f940d8e90284c, type: 3}
@@ -112686,6 +112678,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 3354058553000911999, guid: 3a848d2e10846ef4d968ebf635d4671c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5380468916969610433, guid: 3a848d2e10846ef4d968ebf635d4671c, type: 3}
       propertyPath: m_Name
       value: Lee_Hairstyle1_BowTie
@@ -112782,6 +112778,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Abigail_Hairstyle3_Outfit3
       objectReference: {fileID: 0}
+    - target: {fileID: 6270032799032099623, guid: 044670052b5f3024591de0bdb9ada9be, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8299648085210257360, guid: 044670052b5f3024591de0bdb9ada9be, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -112804,7 +112804,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8299648085210257360, guid: 044670052b5f3024591de0bdb9ada9be, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.58400005
+      value: 0.438
       objectReference: {fileID: 0}
     - target: {fileID: 8299648085210257360, guid: 044670052b5f3024591de0bdb9ada9be, type: 3}
       propertyPath: m_LocalPosition.z
@@ -112941,6 +112941,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 7613301262863624643, guid: 3600f11aff624ad4abf1b711110a4938, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1581657886418248308, guid: 3600f11aff624ad4abf1b711110a4938, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 3600f11aff624ad4abf1b711110a4938, type: 3}
@@ -113041,6 +113045,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 7914385368391030890, guid: 37f6049d1caf8af44a75a658a5722dab, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -596657158758754730, guid: 37f6049d1caf8af44a75a658a5722dab, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 37f6049d1caf8af44a75a658a5722dab, type: 3}
@@ -113137,6 +113145,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 8652367107222040752, guid: d36c8877f7f33124fbcb8645eaaf748a, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9007394921134115798, guid: d36c8877f7f33124fbcb8645eaaf748a, type: 3}
       propertyPath: m_AssetId
       value: 0a4352b7cd4ce61479f16e6a648e358d
@@ -113233,6 +113245,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 4423206392622456252, guid: ba5abab8409eb284bb32b3318c1b8435, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5200799912040302695, guid: ba5abab8409eb284bb32b3318c1b8435, type: 3}
       propertyPath: m_Name
       value: Jalen_Hairstyle5_SuitB_VestBowTie
@@ -113285,6 +113301,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 5887673227586316060, guid: cf088a305d4981f46a4ee5c39339a8ad, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7336728096678442326, guid: cf088a305d4981f46a4ee5c39339a8ad, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -113437,6 +113457,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 2888000271283524673, guid: acf2db375fdc9b24cace22ecd5ca3ae3, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7583890262478480943, guid: acf2db375fdc9b24cace22ecd5ca3ae3, type: 3}
       propertyPath: m_Name
       value: Lee_Hairstyle3_SuitA_VestBowTie
@@ -113477,6 +113501,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 3195002575924696859, guid: 7fa8bd294b237844587d76ad2b7a1af8, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3862475440984843303, guid: 7fa8bd294b237844587d76ad2b7a1af8, type: 3}
       propertyPath: m_Name
       value: Jalen_Hairstyle1_SuitB_Shirt
@@ -113573,6 +113601,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3320981137881268627}
     m_Modifications:
+    - target: {fileID: 417917484322496427, guid: 54c6dc475fdcfb649a4333601de6611c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5993325081513313745, guid: 54c6dc475fdcfb649a4333601de6611c, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -113595,7 +113627,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5993325081513313745, guid: 54c6dc475fdcfb649a4333601de6611c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.56100005
+      value: 0.438
       objectReference: {fileID: 0}
     - target: {fileID: 5993325081513313745, guid: 54c6dc475fdcfb649a4333601de6611c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -113676,6 +113708,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 2952327253444073511, guid: 3c49cfbf99937794cb543d72ca52ed29, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3047066544067940161, guid: 3c49cfbf99937794cb543d72ca52ed29, type: 3}
       propertyPath: m_Name
       value: Brian_Hairstyle1_SuitA_VestBowTie
@@ -113836,6 +113872,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 5770656664362491092, guid: c1885d492910abe4dace610a85a4af2c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 913923824325396117, guid: c1885d492910abe4dace610a85a4af2c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c1885d492910abe4dace610a85a4af2c, type: 3}
@@ -113872,6 +113912,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Abigail_Hairstyle4_Outfit2
       objectReference: {fileID: 0}
+    - target: {fileID: 5176779035228206749, guid: 9dc9957d55c848740b3a91e1cec1b4fd, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7610124140704324923, guid: 9dc9957d55c848740b3a91e1cec1b4fd, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -113894,7 +113938,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7610124140704324923, guid: 9dc9957d55c848740b3a91e1cec1b4fd, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.562
+      value: 0.438
       objectReference: {fileID: 0}
     - target: {fileID: 7610124140704324923, guid: 9dc9957d55c848740b3a91e1cec1b4fd, type: 3}
       propertyPath: m_LocalPosition.z
@@ -114031,6 +114075,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 6928872377205068808, guid: ecce69785836b8547b03686e1d05dff5, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -4654045768895418174, guid: ecce69785836b8547b03686e1d05dff5, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: ecce69785836b8547b03686e1d05dff5, type: 3}
@@ -114075,6 +114123,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 1660350004597812198, guid: 2b28776d4e9fa404c99cf83d9223f3af, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7260683898641860194, guid: 2b28776d4e9fa404c99cf83d9223f3af, type: 3}
       propertyPath: m_RootOrder
       value: 28
@@ -114231,6 +114283,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 4484524113939800251, guid: 1aa2b602e84fa37459b87f840edf426d, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -3106072528759464153, guid: 1aa2b602e84fa37459b87f840edf426d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 1aa2b602e84fa37459b87f840edf426d, type: 3}
@@ -114331,6 +114387,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 9170276357881045482, guid: 8fe644fbbb6db1d468908ece6a02ed5e, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -4913447577966620799, guid: 8fe644fbbb6db1d468908ece6a02ed5e, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 8fe644fbbb6db1d468908ece6a02ed5e, type: 3}
@@ -114427,6 +114487,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 8244757119559181635, guid: a700e81f11137f147a2ff8e8779a6025, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9167530033961748556, guid: a700e81f11137f147a2ff8e8779a6025, type: 3}
       propertyPath: m_Name
       value: Rhett_Hairstyle3_SuitB_Shirt
@@ -114471,6 +114535,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 3976363744955631983, guid: 116004cd62d7e7542b50bf039279432c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5059573771738740430, guid: 116004cd62d7e7542b50bf039279432c, type: 3}
       propertyPath: m_Name
       value: Garrett_Hairstyle1_SuitB_Shirt
@@ -114631,6 +114699,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 8711030178602449352, guid: 25524babfebd2b84a85ec20e003c2ea2, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 160075984895282290, guid: 25524babfebd2b84a85ec20e003c2ea2, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 25524babfebd2b84a85ec20e003c2ea2, type: 3}
@@ -114667,6 +114739,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 2137944511335334262, guid: 84ea774d8297302409c91ebf338e9f3c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5179716620329519405, guid: 84ea774d8297302409c91ebf338e9f3c, type: 3}
       propertyPath: m_AssetId
       value: 0a4352b7cd4ce61479f16e6a648e358d
@@ -114771,6 +114847,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 2113326230137936926, guid: 7bbea204aafbea441a9004b1ef3dc4ef, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5196106230199537649, guid: 7bbea204aafbea441a9004b1ef3dc4ef, type: 3}
       propertyPath: m_Name
       value: Brian_Hairstyle3_VestBowTie
@@ -114871,6 +114951,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 63688058166043654, guid: 05cbf925d3b365345aece6275a80c989, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3108048866427018580, guid: 05cbf925d3b365345aece6275a80c989, type: 3}
       propertyPath: m_Name
       value: Garrett_Hairstyle1_SuitA_Tie
@@ -115031,6 +115115,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 7373650586997101297, guid: a02affa795b385d4693b3dbcd0468f2d, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: -3129688004687711429, guid: a02affa795b385d4693b3dbcd0468f2d, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a02affa795b385d4693b3dbcd0468f2d, type: 3}
@@ -115127,6 +115215,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 8652367107222040752, guid: d36c8877f7f33124fbcb8645eaaf748a, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9007394921134115798, guid: d36c8877f7f33124fbcb8645eaaf748a, type: 3}
       propertyPath: m_AssetId
       value: 0a4352b7cd4ce61479f16e6a648e358d
@@ -115167,6 +115259,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 47057760156342678, guid: c1d943e30341aa24886e489933f1148e, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1261506269266994583, guid: c1d943e30341aa24886e489933f1148e, type: 3}
       propertyPath: m_Name
       value: Jalen_Hairstyle3_VestTie
@@ -115267,6 +115363,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Dahlia_Hairstyle1_Outfit3
       objectReference: {fileID: 0}
+    - target: {fileID: 7772129632495639619, guid: 7a71de9cdaa8c2947a7b673b3416a89c, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9117503567417669461, guid: 7a71de9cdaa8c2947a7b673b3416a89c, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -115289,7 +115389,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9117503567417669461, guid: 7a71de9cdaa8c2947a7b673b3416a89c, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.50100005
+      value: 0.438
       objectReference: {fileID: 0}
     - target: {fileID: 9117503567417669461, guid: 7a71de9cdaa8c2947a7b673b3416a89c, type: 3}
       propertyPath: m_LocalPosition.z
@@ -115362,6 +115462,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 4745520661588320094, guid: 3ad29f6513e61494a835d847c8b3dd05, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5372319455587860123, guid: 3ad29f6513e61494a835d847c8b3dd05, type: 3}
       propertyPath: m_AssetId
       value: 0a4352b7cd4ce61479f16e6a648e358d
@@ -115470,6 +115574,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 70314d98a3300924bb25572875d87cc9, type: 2}
+    - target: {fileID: 6916084361211391354, guid: 9fd71eb40350b7c4c8b73081fbe8402d, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8886417695237667567, guid: 9fd71eb40350b7c4c8b73081fbe8402d, type: 3}
       propertyPath: m_RootOrder
       value: 25
@@ -115584,7 +115692,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 796139782240256131, guid: f83d4b37635921449a45a55ff6512acb, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.5196476
+      value: 0.438
       objectReference: {fileID: 0}
     - target: {fileID: 796139782240256131, guid: f83d4b37635921449a45a55ff6512acb, type: 3}
       propertyPath: m_LocalPosition.z
@@ -115621,6 +115729,10 @@ PrefabInstance:
     - target: {fileID: 796139782240256131, guid: f83d4b37635921449a45a55ff6512acb, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1315275312473349542, guid: f83d4b37635921449a45a55ff6512acb, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f83d4b37635921449a45a55ff6512acb, type: 3}
